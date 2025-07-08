@@ -1,7 +1,8 @@
 from pathlib import Path
 from fabric.widgets.button import Button
+from fabric.widgets.box import Box
 from fabric.widgets.label import Label
-from gi.repository import Gtk, GdkPixbuf  # type: ignore
+from gi.repository import Gtk, GdkPixbuf, Gdk  # type: ignore
 from dataclasses import dataclass
 
 
@@ -11,16 +12,17 @@ class Types:
     IMAGE: str = "image"
 
 
-class Logo(Button):
+class Logo(Box):
     def __init__(
         self,
         type_: str = Types.TEXT,
         content: str = "",
         image_path: str = "",
         image_size: int = 24,
+        orientation_pos: bool = True,
     ):
         self._type = type_
-        image_widget = None
+        self.image_widget = None
 
         if image_path:
             image_path = image_path.replace("~", str(Path.home()))
@@ -31,7 +33,7 @@ class Logo(Button):
                     height=image_size,
                     preserve_aspect_ratio=True,
                 )
-                image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
+                self.image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
             except Exception as e:
                 print("[Logo] Failed to load image:", e)
 
@@ -39,11 +41,25 @@ class Logo(Button):
         if content and self._type == Types.TEXT:
             child_widget = Label(label=content, name="logo-label")
 
+        self.button = Button(
+            name="logo-button",
+            image=self.image_widget if self._type == Types.IMAGE else None,
+            child=child_widget if self._type == Types.TEXT else None,
+            on_clicked=self.do_clicked,
+        )
+
         super().__init__(
             name="logo-container",
-            image=image_widget if self._type == Types.IMAGE else None,
-            child=child_widget if self._type == Types.TEXT else None,
+            orientation="h" if orientation_pos else "v",
+            children=self.button,
         )
+
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect("button-press-event", self._on_box_click)
+
+    def _on_box_click(self, widget, event):
+        self.button.emit("clicked")
+        return True
 
     def do_clicked(self, *args):
         print("[Logo] Clicked")

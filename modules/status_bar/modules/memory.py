@@ -1,32 +1,58 @@
+import shlex
+import re
+from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.utils import exec_shell_command
-from gi.repository import GLib  # type: ignore
+from gi.repository import GLib, Gdk  # type: ignore
 from config import STATUS_BAR_LOCK_MODULES
 from utils import JsonManager
-import shlex
-import re
 
 
-class Memory(Button):
+class Memory(Box):
     def __init__(
         self,
         interval: int = 2,
-        fmt: str = "{used:.2f} GB/{free:.2f} GB",
+        format: str = "used/total",
+        orientation_pos: bool = True,
+        icon: str = "",
     ):
-        self.json = JsonManager()
-        self._label = Label(name="memory-label", text="–")
-        super().__init__(name="memory", child=self._label)
-
         self.interval = interval
-        self.fmt = fmt
+        self.format = format
+        self.icon = icon
+        self.orientation_pos = orientation_pos
+        self.json = JsonManager()
 
+        self._label = Label(name="memory-label", text="–")
+
+        self.button = Button(
+            name="memory-button",
+            child=self._label,
+            on_clicked=self.do_clicked,
+        )
+
+        super().__init__(
+            name="memory",
+            orientation="h" if self.orientation_pos else "v",
+            children=self.button,
+        )
+
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect("button-press-event", self._on_box_click)
+
+        # Создаём файлик состояния
         STATUS_BAR_LOCK_MODULES.parent.mkdir(parents=True, exist_ok=True)
         STATUS_BAR_LOCK_MODULES.touch(exist_ok=True)
 
         self.update_memory()
-
         GLib.timeout_add_seconds(self.interval, self.update_memory_timer)
+
+    def _on_box_click(self, widget, event):
+        self.button.emit("clicked")
+        return True
+
+    def do_clicked(self, *args):
+        print("[Memory] Clicked via subclass!")
 
     def update_memory_timer(self) -> bool:
         self.update_memory()
@@ -42,7 +68,7 @@ class Memory(Button):
         unit = unit.upper()
 
         units = {
-            "": 1 / (1024**3),  # байты → ГБ
+            "": 1 / (1024**3),
             "K": 1 / (1024**2),
             "M": 1 / 1024,
             "G": 1,
@@ -60,38 +86,61 @@ class Memory(Button):
     def update_memory(self):
         try:
             out = exec_shell_command("free -h")
-            line = next(l for l in out.splitlines() if l.startswith("Mem:"))  # type:ignore
+            line = next(l for l in out.splitlines() if l.startswith("Mem:"))  # type: ignore
             parts = shlex.split(line)
 
             total = self.parse_size(parts[1])
             used = self.parse_size(parts[2])
             free = self.parse_size(parts[3])
 
-            self._label.set_text(self.fmt.format(free=free, used=used))
+            if self.format == "used":
+                text = (
+                    f"{self.icon} {used:.1f} GB"
+                    if self.orientation_pos
+                    else f"{self.icon}\n{used:.1f}"
+                )
 
-            current_data = self.json.read(path=STATUS_BAR_LOCK_MODULES) or {}
+            elif self.format == "free":
+                text = (
+                    f"{self.icon} {free:.1f} GB"
+                    if self.orientation_pos
+                    else f"{self.icon}\n{free:.1f}"
+                )
 
-            if "memory" not in current_data:
-                self.json.update(
-                    path=STATUS_BAR_LOCK_MODULES,
-                    key="memory",
-                    new_value={"used": used, "free": free},
+            elif self.format == "used/total":
+                text = (
+                    f"{self.icon} {used:.1f}/{total:.1f}"
+                    if self.orientation_pos
+                    else f"{self.icon}\n{used:.1f}\n{total:.1f}"
                 )
-            else:
-                self.json.update(
-                    path=STATUS_BAR_LOCK_MODULES,
-                    key="memory.used",
-                    new_value=used,
+
+            elif self.format == "total/used":
+                text = (
+                    f"{self.icon} {total:.1f}/{used:.1f}"
+                    if self.orientation_pos
+                    else f"{self.icon}\n{total:.1f}\n{used:.1f}"
                 )
-                self.json.update(
-                    path=STATUS_BAR_LOCK_MODULES,
-                    key="memory.free",
-                    new_value=free,
+
+            else:  # fallback
+                text = (
+                    f"{self.icon} {used:.1f}/{free:.1f}"
+                    if self.orientation_pos
+                    else f"{self.icon}\n{used:.1f}\n{free:.1f}"
                 )
+
+            self._label.set_text(text)
+
+            self.json.update(
+                path=STATUS_BAR_LOCK_MODULES,
+                key="memory.used",
+                new_value=used,
+            )
+            self.json.update(
+                path=STATUS_BAR_LOCK_MODULES,
+                key="memory.free",
+                new_value=free,
+            )
 
         except Exception as e:
             self._label.set_text("err")
             print(f"[Memory] Error: {e}")
-
-    def do_clicked(self, *args):
-        print("[Memory] Clicked")

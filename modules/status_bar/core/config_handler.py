@@ -33,7 +33,7 @@ class ConfigHandler:
 
     "~~ Bar ~~"
 
-    def handler_position(self) -> str:
+    def get_position(self) -> str:
         position = self._get_options("position", "top")
 
         if position == "top":
@@ -49,6 +49,18 @@ class ConfigHandler:
             return "top, right, bottom"
         else:
             return "left, top, right"
+
+    def is_horizontal(self) -> bool:
+        position = self.get_position()
+        horizontal_positions = ["left, top, right", "left, bottom, right"]
+        vertical_positions = ["top, left, bottom", "top, right, bottom"]
+
+        if position in horizontal_positions:
+            return True
+        elif position in vertical_positions:
+            return False
+        else:
+            raise ValueError(f"Unknown position: {position}")
 
     def get_maximum_value(self) -> int:
         data = self._get_options("workspaces", {})
@@ -158,6 +170,19 @@ class ConfigHandler:
             i = i.get("interval", 2)
             return int(i)
         return 2
+
+    def get_memory_icon(self) -> str:
+        i = self._get_options("memory", {})
+        if isinstance(i, dict):
+            i = i.get("icon", "")
+            return i
+        return ""
+
+    "~~ clock ~~"
+
+    def get_clock(self) -> int:
+        i = self._get_options("clock", 12)
+        return int(i)
 
 
 # ch = ConfigHandler()

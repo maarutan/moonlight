@@ -14,7 +14,7 @@ class StatusBar(Window):
             layer=self.confh.get_layer(),
             all_visible=True,
             visible=True,
-            anchor=self.confh.handler_position(),
+            anchor=self.confh.get_position(),
             exclusivity="auto",
             margin=self.confh.get_margin(),
             style_classes="StatusBar",
@@ -23,6 +23,7 @@ class StatusBar(Window):
         )
 
         self.children = CenterBox(
+            orientation="h" if self.confh.is_horizontal() else "v",
             start_children=self.modules.modules_start_handler(),
             center_children=self.modules.modules_center_handler(),
             end_children=self.modules.modules_end_handler(),

@@ -15,9 +15,16 @@ class SystemTrayBar(Box):
         icon_size: int = 20,
         refresh_interval: int = 1,
         spacing: int = 8,
+        orientation_pos: bool = True,
         **kwargs,
     ) -> None:
-        super().__init__(name="tray", spacing=spacing, **kwargs)
+        self._orientation = orientation_pos
+        super().__init__(
+            name="tray",
+            spacing=spacing,
+            orientation="h" if self._orientation else "v",
+            **kwargs,
+        )
         self.enabled = True
         super().set_visible(False)
         self.pixel_size = icon_size

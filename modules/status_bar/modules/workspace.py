@@ -5,18 +5,26 @@ from fabric.widgets.label import Label
 
 
 class WorkspacesBar(Box):
-    def __init__(self, workspaces_numbering=None, maximum_value: int = 10):
+    def __init__(
+        self,
+        workspaces_numbering=None,
+        maximum_value: int = 10,
+        orientation_pos: bool = True,
+    ):
         if workspaces_numbering is None:
             workspaces_numbering = []
 
-        super().__init__(name="workspaces-container")
+        super().__init__(
+            name="workspaces-container",
+            orientation="h" if orientation_pos else "v",
+        )
 
         workspaces = Workspaces(
             name="workspaces",
             invert_scroll=True,
             empty_scroll=True,
             v_align="fill",
-            orientation="h",
+            orientation="h" if orientation_pos else "v",
             spacing=0,
             buttons=[
                 WorkspaceButton(
@@ -37,14 +45,14 @@ class WorkspacesBar(Box):
             invert_scroll=True,
             empty_scroll=True,
             v_align="fill",
-            orientation="h",
+            orientation="h" if orientation_pos else "v",
             spacing=0,
             buttons=[
                 WorkspaceButton(
-                    h_expand=False,
-                    v_expand=False,
-                    h_align="center",
-                    v_align="center",
+                    # h_expand=False,
+                    # v_expand=False,
+                    # h_align="center",
+                    # v_align="center",
                     id=i,
                     label=(
                         workspaces_numbering[i - 1]
@@ -58,5 +66,4 @@ class WorkspacesBar(Box):
             ],
         )
 
-        # Добавляем как дочерний элемент
         self.children = [workspaces_num if workspaces_numbering else workspaces]
