@@ -49,10 +49,10 @@ class WorkspacesBar(Box):
             spacing=0,
             buttons=[
                 WorkspaceButton(
-                    # h_expand=False,
-                    # v_expand=False,
-                    # h_align="center",
-                    # v_align="center",
+                    h_expand=False,
+                    v_expand=False,
+                    h_align="center",
+                    v_align="center",
                     id=i,
                     label=(
                         workspaces_numbering[i - 1]

@@ -45,6 +45,7 @@ class ModulesHandler(Modules):
         self.workspaces = WorkspacesBar(
             workspaces_numbering=self.confh.get_workspaces_numbering(),
             orientation_pos=self.confh.is_horizontal(),
+            maximum_value=self.confh.get_maximum_value(),
         )
         self.language = LanguageBar(orientation_pos=self.confh.is_horizontal())
         self.tray = SystemTrayBar(

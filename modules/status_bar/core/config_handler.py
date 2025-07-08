@@ -182,9 +182,11 @@ class ConfigHandler:
 
     def get_clock(self) -> int:
         i = self._get_options("clock", 12)
-        return int(i)
 
+        if isinstance(i, int):
+            return i
 
-# ch = ConfigHandler()
-#
-# ch.generate_default_config()
+        if isinstance(i, str) and i.isdigit():
+            return int(i)
+
+        return 12  # fallback
