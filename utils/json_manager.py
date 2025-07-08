@@ -53,11 +53,25 @@ class JsonManager:
         return {}
 
     def update(self, path: Path, key: str, new_value: Any):
+        data = self.get_data(path)
+        keys = key.split(".")
+
+        d = data
+        for k in keys[:-1]:
+            if k not in d or not isinstance(d[k], dict):
+                d[k] = {}
+            d = d[k]
+
+        d[keys[-1]] = new_value
+        self.write(path, data)
+
+    def update_textually(self, path: Path, key: str, new_value: Any):
         val_pattern = r'(?:".*?"|\d+\.?\d*|true|false|null)'
         pattern = re.compile(
             rf'(["\']{re.escape(key)}["\']\s*:\s*){val_pattern}', re.IGNORECASE
         )
         text = path.read_text(encoding="utf-8")
+
         new_val = (
             f'"{new_value}"'
             if isinstance(new_value, str)
@@ -65,8 +79,11 @@ class JsonManager:
             if new_value is None
             else str(new_value).lower()
         )
+
         new_text, count = pattern.subn(rf"\1{new_val}", text)
+
         if count == 0:
             insert = f'  "{key}": {new_val},\n'
             new_text = re.sub(r"\}\s*$", insert + "}", new_text, count=1)
+
         path.write_text(new_text, encoding="utf-8")

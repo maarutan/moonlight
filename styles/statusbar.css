@@ -3,6 +3,11 @@
   /* border: #0054f0 solid 1px; */
 }
 
+* {
+  font-family: FiraCode nerd font;
+  font-size: 17px;
+}
+
 #workspaces-num button {
   color: white;
   padding: 2 4;

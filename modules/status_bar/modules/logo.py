@@ -17,7 +17,7 @@ class Logo(Button):
         type_: str = Types.TEXT,
         content: str = "",
         image_path: str = "",
-        max_size: int = 24,
+        image_size: int = 24,
     ):
         self._type = type_
         image_widget = None
@@ -27,8 +27,8 @@ class Logo(Button):
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
                     filename=image_path,
-                    width=max_size,
-                    height=max_size,
+                    width=image_size,
+                    height=image_size,
                     preserve_aspect_ratio=True,
                 )
                 image_widget = Gtk.Image.new_from_pixbuf(pixbuf)

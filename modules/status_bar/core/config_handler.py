@@ -91,6 +91,13 @@ class ConfigHandler:
             return str(i)
         return ""
 
+    def get_logo_size(self) -> int:
+        i = self._get_options("logo", "")
+        if isinstance(i, dict):
+            i = i.get("image_size", 24)
+            return int(i)
+        return 24
+
     def get_logo_type(self) -> str:
         i = self._get_options("logo", "")
         if isinstance(i, dict):
@@ -134,6 +141,23 @@ class ConfigHandler:
             i = i.get("spacing", 8)
             return int(i)
         return 8
+
+    "~~ Memory ~~"
+
+    def get_memory_format(self) -> str:
+        i = self._get_options("memory", {})
+        dflt = "{used:0.1f}G/{total:0.1f}G"
+        if isinstance(i, dict):
+            i = i.get("format")
+            return str(i)
+        return dflt
+
+    def get_memory_interval(self) -> int:
+        i = self._get_options("memory", {})
+        if isinstance(i, dict):
+            i = i.get("interval", 2)
+            return int(i)
+        return 2
 
 
 # ch = ConfigHandler()

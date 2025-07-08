@@ -1,8 +1,15 @@
-from .data import CONFIG_FILE, STATUS_BAR_DIR, STATUS_BAR_CONFIG, APP_NAME
+from .data import (
+    APP_NAME,
+    CONFIG_FILE,
+    STATUS_BAR_DIR,
+    STATUS_BAR_CONFIG,
+    STATUS_BAR_LOCK_MODULES,
+)
 
 __all__ = [
     "APP_NAME",
     "CONFIG_FILE",
     "STATUS_BAR_DIR",
     "STATUS_BAR_CONFIG",
+    "STATUS_BAR_LOCK_MODULES",
 ]

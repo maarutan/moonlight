@@ -3,6 +3,7 @@ from ..modules.logo import Logo
 from ..modules.language import LanguageBar
 from ..modules.workspace import WorkspacesBar
 from ..modules.systemtray import SystemTrayBar
+from ..modules.memory import Memory
 from fabric.widgets.datetime import DateTime
 from dataclasses import dataclass
 import gi
@@ -28,6 +29,7 @@ class ModulesHandler(Modules):
             content=self.confh.get_logo(),
             image_path=self.confh.get_logo_path(),
             type_=self.confh.get_logo_type(),
+            image_size=self.confh.get_logo_size(),
         )
 
         self.date_time = DateTime()
@@ -38,6 +40,10 @@ class ModulesHandler(Modules):
             refresh_interval=self.confh.get_tray_refresh_interval(),
             spacing=self.confh.get_tray_spacing(),
         )
+        self.memory = Memory(
+            interval=self.confh.get_memory_interval(),
+            fmt=self.confh.get_memory_format(),
+        )
 
         super().__init__(
             modules={
@@ -46,6 +52,7 @@ class ModulesHandler(Modules):
                 "language": self.language,
                 "clock": self.date_time,
                 "tray": self.tray,
+                "memory": self.memory,
             }
         )
 
