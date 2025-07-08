@@ -1,0 +1,15 @@
+[project]
+name = "moonlight"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fabric",
+    "json-with-comments>=1.2.10",
+    "jsoncparser>=1.1.0",
+    "psutil>=7.0.0",
+]
+
+[tool.uv.sources]
+fabric = { git = "https://github.com/Fabric-Development/fabric.git" }
