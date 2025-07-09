@@ -3,17 +3,16 @@
 from fabric import Application
 from fabric.utils import get_relative_path
 
-from modules import StatusBar, ConfigHandler
+from modules import StatusBar, ActivateLinux
 from config import APP_NAME
 
-
-c = ConfigHandler()
-c.generate_default_config()
 bar = StatusBar()
+activate_linux = ActivateLinux()
 
 app = Application(
     f"{APP_NAME}",
     bar,
+    activate_linux,
 )
 
 

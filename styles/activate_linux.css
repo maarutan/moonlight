@@ -1,0 +1,15 @@
+#activate-linux {
+  background: none;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+#activate-linux-title {
+  font-size: 25px;
+  font-weight: normal;
+}
+
+#activate-linux-desc {
+  font-size: 19px;
+  font-weight: normal;
+  color: #aaa;
+}
