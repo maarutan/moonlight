@@ -4,6 +4,28 @@
   /* background: none; */
   /* border: #0054f0 solid 1px; */
 }
+#bar-corner {
+  background: black;
+}
+
+/* #corner-left, */
+/* #corner-right { */
+/*   position: relative; */
+/*   border-radius: 20px; */
+/*   background-color: #3498db; */
+/* } */
+/**/
+/* #corner-left, */
+/* #corner-right ::before { */
+/*   content: ""; */
+/*   position: absolute; */
+/*   top: 10px; */
+/*   left: 10px; */
+/*   width: 50px; */
+/*   height: 50px; */
+/*   background-color: white; */
+/*   border-radius: 50%; */
+/* } */
 
 * {
   font-family: FiraCode nerd font;
