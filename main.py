@@ -4,6 +4,7 @@ from fabric import Application
 from fabric.utils import get_relative_path
 
 from modules import StatusBar, ActivateLinux
+
 from config import APP_NAME
 
 bar = StatusBar()
