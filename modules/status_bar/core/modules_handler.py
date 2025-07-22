@@ -46,6 +46,9 @@ class ModulesHandler(Modules):
             workspaces_numbering=self.confh.get_workspaces_numbering(),
             orientation_pos=self.confh.is_horizontal(),
             maximum_value=self.confh.get_maximum_value(),
+            magic_icon=self.confh.get_magic_icons(),
+            enable_buttons_factory=self.confh.get_enable_buttons_factory(),
+            enable_magic=self.confh.get_enable_magic(),
         )
         self.language = LanguageBar(orientation_pos=self.confh.is_horizontal())
         self.tray = SystemTrayBar(
@@ -83,7 +86,6 @@ class ModulesHandler(Modules):
         return modules
 
     def modules_start_handler(self) -> list:
-        print(self._modules_position_handler(self.modules_start))
         return self._modules_position_handler(self.modules_start)
 
     def modules_center_handler(self) -> list:

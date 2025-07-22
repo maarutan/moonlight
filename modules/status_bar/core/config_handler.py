@@ -50,6 +50,12 @@ class ConfigHandler:
         else:
             return "left, top, right"
 
+    def get_corners(self) -> str:
+        i = self._get_options("corners", 0)
+        if isinstance(i, str):
+            return str(i)
+        return "0"
+
     def is_horizontal(self) -> bool:
         position = self.get_position()
         horizontal_positions = ["left, top, right", "left, bottom, right"]
@@ -79,6 +85,30 @@ class ConfigHandler:
         default_values = self.get_maximum_value()
         return [str(i) for i in range(1, default_values + 1)]
 
+    def get_magic_icons(self) -> str:
+        data = self._get_options("workspaces", {})
+        if isinstance(data, dict):
+            val = data.get("magic-icons")
+            if isinstance(val, str):
+                return val
+        return "✨"
+
+    def get_enable_buttons_factory(self) -> bool:
+        data = self._get_options("workspaces", {})
+        if isinstance(data, dict):
+            val = data.get("enable-buttons_factory")
+            if isinstance(val, bool):
+                return val
+        return True
+
+    def get_enable_magic(self) -> bool:
+        data = self._get_options("workspaces", {})
+        if isinstance(data, dict):
+            val = data.get("magic-view")
+            if isinstance(val, bool):
+                return val
+        return True
+
     def get_layer(self) -> str:
         i = self._get_options("layer", "top")
         return str(i)
@@ -86,6 +116,15 @@ class ConfigHandler:
     def get_margin(self) -> str:
         i = self._get_options("margin", "0, 0, 0, 0")
         return str(i)
+
+    def get_position_keyword(self) -> str:
+        mapping = {
+            "left, top, right": "top",
+            "left, bottom, right": "bottom",
+            "top, left, bottom": "left",
+            "top, right, bottom": "right",
+        }
+        return mapping.get(self.get_position(), "top")
 
     "~~ Logo ~~"
 
@@ -99,14 +138,14 @@ class ConfigHandler:
     def get_logo_path(self) -> str:
         i = self._get_options("logo", "")
         if isinstance(i, dict):
-            i = i.get("image_path", "")
+            i = i.get("image-path", "")
             return str(i)
         return ""
 
     def get_logo_size(self) -> int:
         i = self._get_options("logo", "")
         if isinstance(i, dict):
-            i = i.get("image_size", 24)
+            i = i.get("image-size", 24)
             return int(i)
         return 24
 

@@ -93,40 +93,23 @@ class Memory(Box):
             used = self.parse_size(parts[2])
             free = self.parse_size(parts[3])
 
-            if self.format == "used":
-                text = (
-                    f"{self.icon} {used:.1f} GB"
-                    if self.orientation_pos
-                    else f"{self.icon}\n{used:.1f}"
-                )
+            match self.format:
+                case "used":
+                    values = [f"{used:.1f}"]
+                case "free":
+                    values = [f"{free:.1f}"]
+                case "used/total":
+                    values = [f"{used:.1f}", f"{total:.1f}"]
+                case "total/used":
+                    values = [f"{total:.1f}", f"{used:.1f}"]
+                case _:
+                    values = [f"{used:.1f}", f"{free:.1f}"]
 
-            elif self.format == "free":
-                text = (
-                    f"{self.icon} {free:.1f} GB"
-                    if self.orientation_pos
-                    else f"{self.icon}\n{free:.1f}"
-                )
-
-            elif self.format == "used/total":
-                text = (
-                    f"{self.icon} {used:.1f}/{total:.1f}"
-                    if self.orientation_pos
-                    else f"{self.icon}\n{used:.1f}\n{total:.1f}"
-                )
-
-            elif self.format == "total/used":
-                text = (
-                    f"{self.icon} {total:.1f}/{used:.1f}"
-                    if self.orientation_pos
-                    else f"{self.icon}\n{total:.1f}\n{used:.1f}"
-                )
-
-            else:  # fallback
-                text = (
-                    f"{self.icon} {used:.1f}/{free:.1f}"
-                    if self.orientation_pos
-                    else f"{self.icon}\n{used:.1f}\n{free:.1f}"
-                )
+            text = (
+                f"{self.icon} {'/'.join(values)}"
+                if self.orientation_pos
+                else f"{self.icon}\n" + "\n".join(values)
+            )
 
             self._label.set_text(text)
 
