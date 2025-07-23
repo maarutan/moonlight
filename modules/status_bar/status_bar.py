@@ -2,7 +2,6 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.centerbox import CenterBox
 from .core.config_handler import ConfigHandler
 from .core.modules_handler import ModulesHandler
-from .modules.corners import NotchedBar
 
 
 class StatusBar(Window):
@@ -30,5 +29,4 @@ class StatusBar(Window):
                 center_children=self.modules.modules_center_handler(),
                 end_children=self.modules.modules_end_handler(),
             ),
-            # NotchedBar(self.confh.get_position(), self.confh.get_layer()),
         ]

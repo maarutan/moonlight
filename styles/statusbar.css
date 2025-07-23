@@ -1,13 +1,11 @@
 #StatusBar {
-  border-radius: 0;
   box-shadow: 0 0 10px #000;
   /* background: none; */
   /* border: #0054f0 solid 1px; */
 }
-#bar-corner {
+#corners {
   background: black;
 }
-
 /* #corner-left, */
 /* #corner-right { */
 /*   position: relative; */

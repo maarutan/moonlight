@@ -42,6 +42,7 @@ class ModulesHandler(Modules):
         )
 
         self.date_time = DateTime()
+
         self.workspaces = WorkspacesBar(
             workspaces_numbering=self.confh.get_workspaces_numbering(),
             orientation_pos=self.confh.is_horizontal(),
@@ -51,6 +52,7 @@ class ModulesHandler(Modules):
             enable_magic=self.confh.get_enable_magic(),
         )
         self.language = LanguageBar(orientation_pos=self.confh.is_horizontal())
+
         self.tray = SystemTrayBar(
             icon_size=self.confh.get_tray_icon_size(),
             refresh_interval=self.confh.get_tray_refresh_interval(),

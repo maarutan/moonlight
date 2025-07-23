@@ -10,11 +10,7 @@ from config import APP_NAME
 bar = StatusBar()
 activate_linux = ActivateLinux()
 
-app = Application(
-    f"{APP_NAME}",
-    bar,
-    activate_linux,
-)
+app = Application(f"{APP_NAME}", bar, activate_linux)
 
 
 def set_css():
