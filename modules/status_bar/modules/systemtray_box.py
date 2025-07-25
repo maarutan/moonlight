@@ -1,0 +1,183 @@
+from typing import Callable
+from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.widgets.box import Box
+from fabric.widgets.button import Button
+from fabric.widgets.label import Label
+from .systemtray import SystemTray
+from gi.repository import Gtk, GdkPixbuf, Gdk  # type:ignore
+from fabric.widgets.grid import Grid
+
+
+class TrayBox(Window):
+    def __init__(
+        self,
+        position: str,
+        bar_position: str,
+        do_click_handler: Callable,
+    ):
+        self.position = position
+        self.bar_position = bar_position
+        self.do_click_handler = do_click_handler
+        super().__init__(
+            name="tray-box-container",
+            layer="top",
+            anchor=position,
+            exclusivity="auto",
+            all_visible=True,
+            h_align="fill",
+            v_align="fill",
+            child=self._make_content(),
+            margin=self.margin_handler(),
+        )
+
+    def _make_content(self):
+        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+
+        content = Grid(name="tray-box", all_visible=True)
+        tray = SystemTray()
+
+        content.attach(tray, 0, 1, 1, 1)
+        content.set_row_spacing(10)
+
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
+        scrolled.set_overlay_scrolling(False)
+        scrolled.add_with_viewport(content)
+        # scrolled.set_min_content_width(230)
+        scrolled.set_min_content_height(100)
+        content.set_size_request(190, 190)
+
+        main_box.pack_start(scrolled, True, True, 0)
+
+        close_button = Gtk.Button(label="hide")
+        close_button.connect("clicked", self._on_close_clicked)
+        main_box.pack_start(close_button, False, False, 0)
+
+        return main_box
+
+    def _on_close_clicked(self, button=None, *args):
+        if self.do_click_handler:
+            self.do_click_handler()
+        self.hide()
+
+    def margin_handler(self) -> str:
+        pos = self.position
+        barpos = self.bar_position
+
+        if barpos == "top":
+            if pos == "top right":
+                return "30 220 0 0"
+            elif pos == "top":
+                return "30 0 0 0"
+            elif pos == "top left":
+                return "30 0 0 220"
+
+        elif barpos == "left":
+            if pos == "top left":
+                return "120 30 0 0"
+            elif pos == "center left":
+                return "0 0 0 30"
+            elif pos == "bottom left":
+                return "0 0 120 30"
+
+        elif barpos == "right":
+            if pos == "top right":
+                return "120 30 0 0"
+            elif pos == "center right":
+                return "0 0 0 30"
+            elif pos == "bottom right":
+                return "0 30 120  0"
+
+        elif barpos == "bottom":
+            if pos == "bottom left":
+                return "0 0 30 120"
+            elif pos == "bottom":
+                return "0 0 30 0"
+            elif pos == "bottom right":
+                return "0 120 30  0"
+
+        return "0 0 0 0"
+
+
+class TrayButtonHandler(Box):
+    def __init__(
+        self,
+        tray_box_position: str,
+        bar_position: str,
+        orientation_pos: bool = True,
+    ):
+        super().__init__(
+            name="tray-handler-container",
+            orientation="h" if orientation_pos else "v",
+        )
+
+        self.button = Button(
+            name="tray-handler-button", on_clicked=self.do_clicked, label=""
+        )
+
+        inner = Box(name="tray-handler-inner", all_visible=True)
+        inner.add(self.button)
+        self.add(inner)
+
+        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
+        self.connect("button-press-event", self._on_box_click)
+
+        self.tray = TrayBox(
+            position=tray_box_position,
+            bar_position=bar_position,
+            do_click_handler=self.do_clicked,
+        )
+        self.tray.hide()
+
+    def _on_box_click(self, widget, event):
+        self.button.emit("clicked")
+        return True
+
+    def do_clicked(self, button=None, *args):
+        current = self.button.get_label()
+        self.button.set_label("" if current == "" else "")
+
+        if self.tray.get_visible():
+            self.tray.hide()
+        else:
+            self.tray.show_all()
+
+        return True
+
+
+class SystemTrayHandler(Box):
+    def __init__(
+        self,
+        tray_box_position: str,
+        bar_position: str,
+        orientation_pos: bool = True,
+        pixel_size: int = 20,
+        refresh_interval: int = 1,
+        grid: bool = True,
+        spacing: int = 8,
+    ):
+        self.grid = grid
+        self.orientation_pos = orientation_pos
+        self.tray_box_position = tray_box_position
+        self.bar_position = bar_position
+        self.pixel_size = pixel_size
+        self.refresh_interval = refresh_interval
+        self.spacing = spacing
+
+        super().__init__(name="systemtray-container", children=self._make_content())
+
+    def _make_content(self) -> TrayButtonHandler | SystemTray:
+        if self.grid:
+            return TrayButtonHandler(
+                tray_box_position=self.tray_box_position,
+                orientation_pos=self.orientation_pos,
+                bar_position=self.bar_position,
+            )
+        else:
+            return SystemTray(
+                orientation_pos=self.orientation_pos,
+                pixel_size=self.pixel_size,
+                refresh_interval=self.refresh_interval,
+                grid=self.grid,
+                spacing=self.spacing,
+            )

@@ -1,4 +1,5 @@
 import subprocess, json
+from typing import Literal
 from fabric.hyprland.service import HyprlandEvent
 from fabric.hyprland.widgets import Language, get_hyprland_connection
 from fabric.widgets.box import Box
@@ -17,7 +18,15 @@ def get_keyboard_devices():
 
 
 class LanguageBar(Box):
-    def __init__(self, orientation_pos: bool = True):
+    def __init__(
+        self,
+        orientation_pos: bool = True,
+        number_letters: int = 2,
+        register: Literal["upper", "u", "lower", "l"] = "l",
+    ):
+        self.number_letters = number_letters
+        self.register = register
+
         self.orientation_pos = orientation_pos
         self._lang_label = Label(name="lang-label")
 
@@ -58,4 +67,9 @@ class LanguageBar(Box):
             else Language().get_label()
         )
         self.set_tooltip_text(lang)
-        self._lang_label.set_label(lang[:2].upper())
+
+        self._lang_label.set_label(
+            lang[: self.number_letters].upper()
+            if self.register in ["upper", "u"]
+            else lang[: self.number_letters].lower()
+        )
