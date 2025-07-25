@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 from utils import JsonManager as jsonc
 from utils import FileManager
 from .default_config import configuration
@@ -193,6 +194,13 @@ class ConfigHandler:
             return int(i)
         return 8
 
+    def get_tray_box(self) -> bool:
+        i = self._get_options("tray", {})
+        if isinstance(i, dict):
+            i = i.get("tray-box", False)
+            return bool(i)
+        return False
+
     "~~ Memory ~~"
 
     def get_memory_format(self) -> str:
@@ -229,3 +237,66 @@ class ConfigHandler:
             return int(i)
 
         return 12  # fallback
+
+    "~~ language ~~"
+
+    def get_language_number_letters(self) -> int:
+        i = self._get_options("language", {})
+        if isinstance(i, dict):
+            i = i.get("number_letters", 2)
+            return i
+        return 2
+
+    def get_language_register(self) -> Literal["upper", "u", "l", "lower"]:
+        i = self._get_options("language", {})
+        if isinstance(i, dict):
+            i = i.get("register", "lower")
+            return i
+        return "lower"
+
+    "~~ Tray Box ~~"
+
+    def get_bar_position_for_tray_box(self) -> str:
+        position = self._get_options("position", "top")
+        if isinstance(position, str):
+            return position
+        return "top"
+
+    def tray_box_position_handler(self) -> str:
+        barpos = self.get_bar_position_for_tray_box()
+        start = self.get_modules_start()
+        center = self.get_modules_center()
+        end = self.get_modules_end()
+
+        if barpos == "top":
+            if "tray" in start:
+                return "top left"
+            elif "tray" in center:
+                return "top"
+            elif "tray" in end:
+                return "top right"
+
+        elif barpos == "left":
+            if "tray" in start:
+                return "top left"
+            elif "tray" in center:
+                return "center left"
+            elif "tray" in end:
+                return "bottom left"
+
+        elif barpos == "right":
+            if "tray" in start:
+                return "top right"
+            elif "tray" in center:
+                return "center right"
+            elif "tray" in end:
+                return "bottom right"
+
+        if barpos == "bottom":
+            if "tray" in start:
+                return "bottom left"
+            elif "tray" in center:
+                return "bottom"
+            elif "tray" in end:
+                return "bottom right"
+        return "top"
