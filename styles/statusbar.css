@@ -1,11 +1,71 @@
 #StatusBar {
   box-shadow: 0 0 10px #000;
-  /* background: none; */
+  /* background: #1e1e2e; */
+  background: transparent;
   /* border: #0054f0 solid 1px; */
 }
-#corners {
-  background: black;
+
+#tray-box-container {
+  border-radius: 8px;
 }
+
+#tray-box {
+  padding: 10px;
+}
+
+#corner {
+  background: #1e1e2e;
+  border-radius: 0;
+}
+
+#corner-container {
+  min-width: 20px;
+  min-height: 20px;
+}
+
+#button-corner {
+  border-radius: 0px;
+  min-width: 20px;
+  min-height: 20px;
+}
+
+#bar-modules-start {
+  border: solid 0.2px white;
+  padding: 7px;
+  margin: 5px 0;
+  transition: 0.5s;
+  margin-left: 10px;
+  margin-right: 50px;
+  border-radius: 10px;
+  /* background: rgba(0, 0, 0, 0.6);  */
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.12);
+}
+
+#bar-modules-center {
+  border-radius: 0 0 30px 30px;
+  /* min-width: 200px; */
+  padding: 0 10;
+  background-color: #1e1e2e;
+  transition: 0.4s;
+  border-bottom: solid 0.2px white;
+  /* border-left: solid 0.2px white; */
+  /* border-right: solid 0.2px white; */
+}
+
+#bar-modules-end {
+  border: solid 0.2px white;
+  padding: 7px;
+  margin: 5px 0;
+  margin-right: 10px;
+  transition: 0.5s;
+  /* margin: 10px 10px 5px 0; */
+  border-radius: 10px;
+  /* background: rgba(0, 0, 0, 0.6);  */
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.12);
+}
+
 /* #corner-left, */
 /* #corner-right { */
 /*   position: relative; */
