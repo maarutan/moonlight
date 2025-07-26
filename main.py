@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-from time import sleep
 from fabric import Application
 from fabric.utils import get_relative_path
 
-from modules import ScreenCorners, StatusBar, ActivateLinux
-
+from modules import ScreenCorners, ActivateLinux, StatusBar
 from config import APP_NAME
 
 corners = ScreenCorners()
@@ -37,4 +35,4 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(e)
+        print(f"[ERROR] {e}")

@@ -15,7 +15,7 @@
 
 #corner {
   background: #1e1e2e;
-  border-radius: 0;
+  border-radius: 0px;
 }
 
 #corner-container {
@@ -45,7 +45,7 @@
 #bar-modules-center {
   border-radius: 0 0 30px 30px;
   /* min-width: 200px; */
-  padding: 0 10;
+  padding: 0 10px;
   background-color: #1e1e2e;
   transition: 0.4s;
   border-bottom: solid 0.2px white;
@@ -92,7 +92,7 @@
 
 #workspaces-num button {
   color: white;
-  padding: 2 4;
+  padding: 2px 4px;
   /* font-size: 14px; */
   transition:
     background-color 0.3s ease,

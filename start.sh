@@ -1,4 +1,9 @@
+#!/usr/bin/env bash
+
 currentdir=$(dirname "$0")
+execute="$currentdir"/main.py
 
 source "$currentdir"/.venv/bin/activate
-python3 "$currentdir"/main.py
+
+chmod +x "$execute"
+python -u "$execute"

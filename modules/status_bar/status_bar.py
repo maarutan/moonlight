@@ -15,14 +15,6 @@ class StatusBar(Window):
             orientation="h" if self.confh.is_horizontal() else "v",
         )
 
-        # [
-        # CenterBox(
-        #     start_children=self.modules.modules_start_handler(),
-        #     center_children=self.modules.modules_center_handler(),
-        #     end_children=self.modules.modules_end_handler(),
-        # ),
-        # ]
-
         self.bar_content.start_children = [
             self.modules.modules_start_handler(),
             # MyCorner("top-left", self.confh.is_horizontal()),
@@ -51,5 +43,3 @@ class StatusBar(Window):
             child=self.bar_content,
             **kwargs,
         )
-
-        # self.children = self.bar_content

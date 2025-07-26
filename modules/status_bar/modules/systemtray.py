@@ -49,7 +49,7 @@ class SystemTray(Box):
         self.watcher = Gray.Watcher()
         self.watcher.connect("item-added", self.on_watcher_item_added)
 
-        GLib.timeout_add_seconds(self.refresh_interval, self._refresh_all_items)
+        # GLib.timeout_add_seconds(self.refresh_interval, self._refresh_all_items)
 
     def set_visible(self, visible: bool):
         self.enabled = visible
@@ -59,25 +59,33 @@ class SystemTray(Box):
         has = len(self.get_children()) > 0 or len(self.buttons_by_id) > 0
         super().set_visible(self.enabled and has)
 
-    def _get_item_pixbuf(self, item: Gray.Item) -> GdkPixbuf.Pixbuf:
+    def _get_item_pixbuf(self, item: Gray.Item) -> GdkPixbuf.Pixbuf | None:
         try:
             pm = Gray.get_pixmap_for_pixmaps(item.get_icon_pixmaps(), self.pixel_size)
             if pm:
                 return pm.as_pixbuf(self.pixel_size, GdkPixbuf.InterpType.HYPER)
 
             name = item.get_icon_name()
-            theme = Gtk.IconTheme.new()
+            if not name:
+                logger.debug("Item has no icon name; skipping icon rendering.")
+                return None
+
+            theme = Gtk.IconTheme.get_default()
             path = item.get_icon_theme_path()
             if path:
                 theme.prepend_search_path(path)
-            return theme.load_icon(
-                name, self.pixel_size, Gtk.IconLookupFlags.FORCE_SIZE
-            )
-        except GLib.Error as e:
-            logger.debug(f"Icon load error {e}")
-            return Gtk.IconTheme.get_default().load_icon(
-                "image-missing", self.pixel_size, Gtk.IconLookupFlags.FORCE_SIZE
-            )
+
+            if theme.has_icon(name):
+                return theme.load_icon(
+                    name, self.pixel_size, Gtk.IconLookupFlags.FORCE_SIZE
+                )
+            else:
+                logger.debug(f"Icon theme does not have icon: {name}")
+                return None
+
+        except Exception as e:
+            logger.debug(f"Icon load error: {e}")
+            return None
 
     def _refresh_item_ui(self, identifier: str, item: Gray.Item, button: Gtk.Button):
         pixbuf = self._get_item_pixbuf(item)
@@ -116,6 +124,9 @@ class SystemTray(Box):
             del self.items_by_id[identifier]
 
         btn = self.do_bake_item_button(item)
+        if not btn:
+            return
+
         self.buttons_by_id[identifier] = btn
         self.items_by_id[identifier] = item
 
@@ -169,11 +180,17 @@ class SystemTray(Box):
 
             self._update_visibility()
 
-    def do_bake_item_button(self, item: Gray.Item) -> Gtk.Button:
+    def do_bake_item_button(self, item: Gray.Item) -> Gtk.Button | None:
+        pixbuf = self._get_item_pixbuf(item)
+        if not pixbuf:
+            logger.debug("Skipping button creation due to missing pixbuf.")
+            return None
+
         btn = Gtk.Button()
         btn.connect("button-press-event", lambda b, e: self.on_button_click(b, item, e))
-        img = Gtk.Image.new_from_pixbuf(self._get_item_pixbuf(item))
+        img = Gtk.Image.new_from_pixbuf(pixbuf)
         btn.set_image(img)
+
         tip = (
             item.get_tooltip_text()
             if hasattr(item, "get_tooltip_text")
