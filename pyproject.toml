@@ -7,7 +7,6 @@ requires-python = ">=3.13"
 dependencies = [
     "fabric",
     "psutil>=7.0.0",
-    "python-fontconfig>=0.6.1",
 ]
 
 [tool.uv.sources]

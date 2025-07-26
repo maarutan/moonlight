@@ -54,14 +54,12 @@ source = { virtual = "." }
 dependencies = [
     { name = "fabric" },
     { name = "psutil" },
-    { name = "python-fontconfig" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "fabric", git = "https://github.com/Fabric-Development/fabric.git" },
     { name = "psutil", specifier = ">=7.0.0" },
-    { name = "python-fontconfig", specifier = ">=0.6.1" },
 ]
 
 [[package]]
@@ -100,12 +98,6 @@ dependencies = [
     { name = "pycairo" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/2b/58/d34e67a79631177e3c08e7d02b5165147f590171f2cae6769502af5f7f7e/pygobject-3.50.0.tar.gz", hash = "sha256:4500ad3dbf331773d8dedf7212544c999a76fc96b63a91b3dcac1e5925a1d103", size = 1080367, upload-time = "2024-09-12T12:05:22.579Z" }
-
-[[package]]
-name = "python-fontconfig"
-version = "0.6.1"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/47/ec/f73ba44bcd04a9dc6c2284991db3acc4f00bef0e40defe860161f357613b/python_fontconfig-0.6.1.tar.gz", hash = "sha256:aa46b82a4b175bd2cf9fe1ab9b29e0de4cab8702041bb504a550de29f5fcf733", size = 110164, upload-time = "2025-07-16T11:44:13.862Z" }
 
 [[package]]
 name = "win32-setctime"
