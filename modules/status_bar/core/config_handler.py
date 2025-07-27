@@ -300,3 +300,40 @@ class ConfigHandler:
             elif "tray" in end:
                 return "bottom right"
         return "top"
+
+    "~~ title ~~"
+
+    def get_truncation_title(self) -> bool:
+        i = self._get_options("title", {})
+        if isinstance(i, dict):
+            i = i.get("truncate", False)
+            return bool(i)
+        return False
+
+    def get_truncation_size_title(self) -> int:
+        i = self._get_options("title", {})
+        if isinstance(i, dict):
+            i = i.get("truncate-size", 80)
+            return int(i)
+        return 80
+
+    def get_title_map(self) -> list:
+        i = self._get_options("title", {})
+        if isinstance(i, dict):
+            i = i.get("map", [])
+            return i
+        return []
+
+    def get_enable_icon(self) -> bool:
+        i = self._get_options("title", {})
+        if isinstance(i, dict):
+            i = i.get("icon_enable", False)
+            return bool(i)
+        return False
+
+    def get_vertical_title_length(self) -> int:
+        i = self._get_options("title", {})
+        if isinstance(i, dict):
+            i = i.get("vertical-length", 6)
+            return int(i)
+        return 6

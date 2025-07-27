@@ -45,7 +45,14 @@ class ModulesHandler(Modules):
             format=self.confh.get_clock(),
             orientation_pos=self.confh.is_horizontal(),
         )
-        self.title = WindowTitleWidget()
+        self.title = WindowTitleWidget(
+            orientation_pos=self.confh.is_horizontal(),
+            truncation=self.confh.get_truncation_title(),
+            truncation_size=self.confh.get_truncation_size_title(),
+            title_map=self.confh.get_title_map(),
+            vertical_title_length=self.confh.get_vertical_title_length(),
+            enable_icon=self.confh.get_enable_icon(),
+        )
 
         self.date_time = DateTime()
 
