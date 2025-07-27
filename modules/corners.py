@@ -71,7 +71,7 @@ class ScreenCorners(Window):
                 v_expand=False,
                 h_align="center",
                 v_align="center",
-                size=60,
+                size=37,
             ),
         )
 

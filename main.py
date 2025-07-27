@@ -3,12 +3,13 @@
 from fabric import Application
 from fabric.utils import get_relative_path
 
-from modules import ScreenCorners, ActivateLinux, StatusBar
+from modules import ScreenCorners, ActivateLinux, StatusBar, NotificationPopup
 from config import APP_NAME
 
 corners = ScreenCorners()
 activate_linux = ActivateLinux()
 bar = StatusBar()
+# notification = NotificationPopup()
 
 corners.set_visible(True)
 app = Application(
@@ -16,6 +17,7 @@ app = Application(
     corners,
     activate_linux,
     bar,
+    # notification,
 )
 
 

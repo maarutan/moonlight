@@ -1,4 +1,4 @@
-from gi.repository import GLib
+from gi.repository import GLib  # type: ignore
 
 WINDOW_TITLE_MAP = [
     # Original Entries

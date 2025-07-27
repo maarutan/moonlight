@@ -5,6 +5,15 @@
   /* border: #0054f0 solid 1px; */
 }
 
+#title-icons {
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 16px;
+  color: #ff5733;
+  /* background-color: #ff5733; */
+  margin-right: 5px;
+}
+
 #tray-box-container {
   border-radius: 8px;
 }
@@ -35,7 +44,6 @@
   margin: 5px 0;
   transition: 0.5s;
   margin-left: 10px;
-  margin-right: 50px;
   border-radius: 10px;
   /* background: rgba(0, 0, 0, 0.6);  */
   background-color: #1e1e2e;

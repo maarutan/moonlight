@@ -87,3 +87,21 @@ class JsonManager:
             new_text = re.sub(r"\}\s*$", insert + "}", new_text, count=1)
 
         path.write_text(new_text, encoding="utf-8")
+
+    def append(self, path: Path, key: str, value: Any):
+        data = self.get_data(path)
+        keys = key.split(".")
+
+        d = data
+        for k in keys[:-1]:
+            if k not in d or not isinstance(d[k], dict):
+                d[k] = {}
+            d = d[k]
+
+        last_key = keys[-1]
+
+        if last_key not in d or not isinstance(d[last_key], list):
+            d[last_key] = []
+
+        d[last_key].append(value)
+        self.write(path, data)

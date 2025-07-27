@@ -20,9 +20,9 @@ class StatusBar(Window):
             # MyCorner("top-left", self.confh.is_horizontal()),
         ]
         self.bar_content.center_children = [
-            MyCorner("top-right", self.confh.is_horizontal()),
+            # MyCorner("top-right", self.confh.is_horizontal()),
             self.modules.modules_center_handler(),
-            MyCorner("top-left", self.confh.is_horizontal()),
+            # MyCorner("top-left", self.confh.is_horizontal()),
         ]
         self.bar_content.end_children = [
             # MyCorner("top-right", self.confh.is_horizontal()),
