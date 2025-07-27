@@ -1,26 +1,38 @@
-import re
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.utils import FormattedString, truncate
-from fabric.widgets.box import Box
-
 from utils import WINDOW_TITLE_MAP
+from fabric.widgets.box import Box
+from typing import Optional
+import unicodedata
+import re
 
 
 class WindowTitleWidget(Box):
     """A widget that displays the title of the active window."""
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        orientation_pos: bool = False,
+        truncation: bool = True,
+        truncation_size: int = 80,
+        title_map: Optional[list] = None,
+        vertical_title_length: int = 6,
+        enable_icon: bool = True,
+        **kwargs,
+    ):
+        self.orientation_pos = orientation_pos
+        self.truncation = truncation
+        self.truncation_size = truncation_size
+        self.title_map = title_map or []
+        self.enable_icon = enable_icon
+        self.vertical_title_length = vertical_title_length
+
+        self.merged_titles = self.title_map + WINDOW_TITLE_MAP
+
         super().__init__(name="window-box", **kwargs)
 
-        self.config = {
-            "truncation": True,
-            "truncation_size": 80,
-            "title_map": [],
-            "enable_icon": True,
-        }
-
         self.box = Box()
-        self.children = (self.box,)
+        self.children = self.box
 
         self.window = ActiveWindow(
             name="window",
@@ -30,27 +42,47 @@ class WindowTitleWidget(Box):
             ),
         )
 
-        self.box.children = (self.window,)
+        self.box.children = self.window
+
+    def trim_visual(self, text: str, max_width: int) -> str:
+        result = ""
+        current_width = 0
+        for char in text:
+            if unicodedata.east_asian_width(char) in ("F", "W"):
+                char_width = 2
+            else:
+                char_width = 1
+
+            if current_width + char_width > max_width:
+                break
+
+            result += char
+            current_width += char_width
+
+        return result
 
     def get_title(self, win_title, win_class):
-        win_title = (
-            truncate(win_title, self.config["truncation_size"])
-            if self.config["truncation"]
-            else win_title
-        )
+        if self.truncation:
+            win_title = truncate(win_title, self.truncation_size)
 
-        merged_titles = self.config["title_map"] + WINDOW_TITLE_MAP
+        win_class_lower = win_class.lower()
 
         matched_window = next(
-            (wt for wt in merged_titles if re.search(wt[0], win_class.lower())),
+            (wt for wt in self.merged_titles if re.search(wt[0], win_class_lower)),
             None,
         )
 
-        if matched_window is None:
-            return f"  {win_class.lower()}"
+        if not matched_window:
+            return f"  {win_class_lower}"
 
-        return (
-            f"{matched_window[1]}  {matched_window[2]}"
-            if self.config["enable_icon"]
-            else f"{matched_window[2]}"
-        )
+        title = matched_window[2]
+        icon = matched_window[1]
+
+        if not self.enable_icon:
+            return title
+
+        if self.orientation_pos:
+            return f"{icon} {title}"
+        else:
+            title = self.trim_visual(title, self.vertical_title_length)
+            return f" {icon}\n{title}."
