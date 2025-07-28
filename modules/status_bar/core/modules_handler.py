@@ -12,7 +12,8 @@ from ..modules.workspace import WorkspacesBar
 
 from ..modules.systemtray_box import SystemTrayHandler
 from ..modules.memory import Memory
-from ..modules.title import WindowTitleWidget
+from ..modules.cava import SpectrumRender
+from ..modules.title import SmartTitleWidget, WindowTitleWidget
 from ..modules.recording_indicator import RecordingIndicator
 
 gi.require_version("Gtk", "3.0")
@@ -40,6 +41,7 @@ class ModulesHandler(Modules):
             image_size=self.confh.get_logo_size(),
         )
         # self.recording_indicator = RecordingIndicator()
+        self.cava = SmartTitleWidget()
 
         self.clock = Clock(
             format=self.confh.get_clock(),
@@ -53,6 +55,8 @@ class ModulesHandler(Modules):
             vertical_title_length=self.confh.get_vertical_title_length(),
             enable_icon=self.confh.get_enable_icon(),
         )
+
+        # self.title_player = SmartTitleWidget()
 
         self.date_time = DateTime()
 
@@ -95,6 +99,8 @@ class ModulesHandler(Modules):
                 "tray": self.tray,
                 "memory": self.memory,
                 "title": self.title,
+                "cava": self.cava,
+                # "title_player": self.title_player,
             }
         )
 

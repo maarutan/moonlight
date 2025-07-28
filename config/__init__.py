@@ -4,6 +4,7 @@ from .data import (
     STATUS_BAR_DIR,
     STATUS_BAR_CONFIG,
     STATUS_BAR_LOCK_MODULES,
+    CAVA_CONFIG,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "STATUS_BAR_DIR",
     "STATUS_BAR_CONFIG",
     "STATUS_BAR_LOCK_MODULES",
+    "CAVA_CONFIG",
 ]

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+CURRENT_DIR = Path(__file__).parent
+
 "===== ~~ App ~~ ====="
 APP_NAME = "moonlight"
 APP_NAME_CAP = "MoonLight"
@@ -17,3 +19,7 @@ CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 STATUS_BAR_DIR = APP_CONFIG_DIR / "Status_Bar"
 STATUS_BAR_CONFIG = STATUS_BAR_DIR / "config.jsonc"
 STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
+
+
+"===== ~~ cava config ~~ ====="
+CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
