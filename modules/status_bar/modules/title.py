@@ -1,4 +1,5 @@
 from fabric.widgets.button import Button
+from fabric.widgets.eventbox import EventBox
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.hyprland.widgets import ActiveWindow
 from fabric.utils import FormattedString, GLib, Gdk, Gtk, truncate  # type: ignore
@@ -6,7 +7,7 @@ from utils import WINDOW_TITLE_MAP
 from fabric.widgets.box import Box
 from typing import Optional
 from services import PlayerManager
-from .cava import SpectrumRender
+from .cava import Cava, SpectrumRender
 from fabric.widgets.label import Label
 import unicodedata
 from fabric.widgets.grid import Grid
@@ -226,21 +227,14 @@ class SmartTitleWidget(Box):
     def __init__(self, **kwargs):
         super().__init__(name="window-box", **kwargs)
 
-        self.cava_play = SpectrumRender().get_spectrum_box()
+        self.cava = SpectrumRender()
         self.player = PlayerManager()
         self.title = WindowTitleWidget()
         self.popup = PlayerHierarchyPopup()
         self.merged_titles = WINDOW_TITLE_MAP
         self.player_popup_state = False
-        self._hover_count = 0
 
-        # Подписываемся на события наведения мыши
-        self.add_events(
-            Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
-        )
-        self.connect("enter-notify-event", self._on_mouse_enter)
-        self.connect("leave-notify-event", self._on_mouse_leave)
-
+        self._hover_inside = False
         self.icon = next(
             (
                 wt
@@ -251,29 +245,34 @@ class SmartTitleWidget(Box):
         )[1]
 
         self.title_box = Box(children=[self.title])
-        self.popup_button = self._create_popup_button()
         self.player_icon_label = Label(name="player-icon", label=f" {self.icon} ")
+        self.popup_button = self._create_popup_button()
 
-        self.player_box = Box(children=[self.player_icon_label, self.popup_button])
-        self.player_container = Box(children=[self.player_box, self.cava_play])
+        self.dynamic_inner = Box(children=[self.player_icon_label, self.popup_button])
+        GLib.idle_add(self.popup_button.hide)
+
+        self.hover_area = EventBox(
+            events=["enter-notify", "leave-notify"],
+            child=self.dynamic_inner,
+        )
+        self.hover_area.connect("enter-notify-event", self._on_mouse_enter)
+        self.hover_area.connect("leave-notify-event", self._on_mouse_leave)
+
+        self.player_box = Box(children=[self.hover_area])
+        self.player_container = Box(
+            show_all=True, children=[self.player_box, self.cava.get_spectrum_box()]
+        )
 
         self.main_container = Box()
-        self.children = [self.main_container]
+        self.children = self.main_container
 
         self._is_playing = None
         self._last_state = None
 
         self.player.add_status_callback(self._update_children)
-        self.popup.on_player_changed = self._on_player_changed
+        self.popup.on_player_changed = self._on_player_changed  # type: ignore
 
-        # Чтобы не мигала кнопка, отслеживаем enter/leave на всех ключевых виджетах
-        for w in [self, self.player_box, self.popup_button]:
-            w.add_events(
-                Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
-            )
-            w.connect("enter-notify-event", self._on_mouse_enter)
-            w.connect("leave-notify-event", self._on_mouse_leave)
-
+        self.popup_button.hide()
         self._update_children()
         GLib.timeout_add_seconds(1, self._update_children)
 
@@ -288,34 +287,30 @@ class SmartTitleWidget(Box):
             else:
                 self.popup.hide()
 
-        btn = Button(
+        return Button(
             name="player-popup-button",
             label="",
             on_clicked=toggle_popup,
         )
 
-        btn.set_visible(False)  # Скрываем кнопку изначально
-        self.popup_button = btn
-        return btn
+    def _on_mouse_enter(self, *_):
+        self._hover_inside = True
+        self.popup_button.show()
 
-    def _on_mouse_enter(self, widget, event):
-        self._hover_count = max(self._hover_count + 1, 1)
-        if self.popup_button:
-            self.popup_button.set_visible(True)  # Показываем кнопку при наведении
+    def _on_mouse_leave(self, *_):
+        # используем GLib.timeout, чтобы дать шанс нажать
+        def delayed_hide():
+            if not self._hover_inside and not self.player_popup_state:
+                self.popup_button.hide()
+            return False
 
-    def _on_mouse_leave(self, widget, event):
-        self._hover_count = max(self._hover_count - 1, 0)
-        # Скрываем кнопку, если мышь ушла с всех контролируемых виджетов и popup не открыт
-        if self._hover_count == 0 and self.popup_button and not self.player_popup_state:
-            self.popup_button.set_visible(False)
+        self._hover_inside = False
+        GLib.timeout_add(200, delayed_hide)
 
     def _update_popup_button_icon(self):
         icon = "" if self.player_popup_state else ""
-
-        self.popup_button.set_visible(False)
-        if self.popup_button:
-            self.popup_button.set_label(icon)
-            self.popup_button.queue_draw()
+        self.popup_button.set_label(icon)
+        self.popup_button.queue_draw()
 
     def _on_player_changed(self, pid):
         icon = next(
@@ -324,6 +319,7 @@ class SmartTitleWidget(Box):
         self.player_icon_label.set_text(f" {icon} ")
 
     def _update_children(self, *_):
+        self.player._refresh_players()
         playing = self.player.is_any_playing()
         playing_dict = self.player._get_playing_players()
 
@@ -349,7 +345,10 @@ class SmartTitleWidget(Box):
                     self.popup.set_selected_player(first_pid)
 
         self.player_icon_label.set_text(f" {icon} ")
+        self.main_container.show_all()
+        self.popup_button.hide()
         self.main_container.children = [
             self.player_container if playing else self.title_box
         ]
+
         return True

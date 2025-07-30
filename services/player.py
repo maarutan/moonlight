@@ -78,6 +78,32 @@ class PlayerManager:
                 return True
         return False
 
+    def _refresh_players(self):
+        try:
+            current_names = set(Playerctl.list_players())
+        except Exception:
+            current_names = set()
+
+        existing_names = set(self.players.keys())
+
+        removed = existing_names - current_names
+        for name in removed:
+            player = self.players.pop(name, None)
+            if player is not None:
+                try:
+                    player.disconnect_by_func(self._on_playback_status)
+                except Exception:
+                    pass
+
+        added = current_names - existing_names
+        for name in added:
+            try:
+                player = Playerctl.Player.new_from_name(name)
+                player.connect("playback-status", self._on_playback_status)
+                self.players[name] = player
+            except Exception:
+                pass
+
 
 if __name__ == "__main__":
     PlayerManager()

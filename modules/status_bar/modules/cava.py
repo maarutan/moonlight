@@ -257,15 +257,19 @@ class Spectrum:
 class SpectrumRender:
     def __init__(self, mode=None, **kwargs):
         super().__init__(**kwargs)
-        self.mode = mode
-
         self.draw = Spectrum()
         self.cava = Cava(self)
         self.cava.start()
 
     def get_spectrum_box(self):
         # Get the spectrum box
-        box = Overlay(name="cavalcade", h_align="center", v_align="center")
+        box = Overlay(
+            name="cavalcade",
+            h_align="center",
+            v_align="center",
+            visible=True,
+            all_visible=True,
+        )
         box.set_size_request(180, 40)
         box.add_overlay(self.draw.area)
         return box
