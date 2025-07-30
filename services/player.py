@@ -6,15 +6,15 @@ from gi.repository import Playerctl  # type: ignore
 
 
 class PlayerManager:
-    # def __init__(self) -> None:
-    # # print(json.dumps(self._get_playing_players().values(), indent=3))
-    # print(self._get_playing_players().values())
+    def __init__(self) -> None:
+        self.players = {}
+        self.callbacks = []
+        self._init_players()
 
     def _get_playing_players(self) -> dict:
         try:
             names = Playerctl.list_players()
-        except Exception as e:
-            print(f"❌ Error getting players: {e}")
+        except Exception:
             return {}
 
         result = {"players": {}}
@@ -53,11 +53,30 @@ class PlayerManager:
                         "duration": round(length_sec, 2),
                     },
                 }
-
-            except Exception as e:
-                print(f"⚠️ Error processing player {name}: {e}")
+            except Exception:
+                return {}
 
         return result
+
+    def _init_players(self):
+        names = Playerctl.list_players()
+        for name in names:
+            player = Playerctl.Player.new_from_name(name)
+            player.connect("playback-status", self._on_playback_status)
+            self.players[name] = player
+
+    def _on_playback_status(self, player, status):
+        for cb in self.callbacks:
+            cb()
+
+    def add_status_callback(self, callback):
+        self.callbacks.append(callback)
+
+    def is_any_playing(self):
+        for player in self.players.values():
+            if player.props.playback_status == Playerctl.PlaybackStatus.PLAYING:
+                return True
+        return False
 
 
 if __name__ == "__main__":

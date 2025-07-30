@@ -6,7 +6,8 @@
 #player-hierarchy-popup {
   border-radius: 10px;
 }
-#player-popup-title {
+#player-icon {
+  font-size: 23px;
 }
 #player-card {
   padding: 20px;

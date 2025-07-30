@@ -41,7 +41,7 @@ class ModulesHandler(Modules):
             image_size=self.confh.get_logo_size(),
         )
         # self.recording_indicator = RecordingIndicator()
-        self.cava = SmartTitleWidget()
+        # self.cava = SpectrumRender().get_spectrum_box()
 
         self.clock = Clock(
             format=self.confh.get_clock(),
@@ -56,7 +56,7 @@ class ModulesHandler(Modules):
             enable_icon=self.confh.get_enable_icon(),
         )
 
-        # self.title_player = SmartTitleWidget()
+        self.title_player = SmartTitleWidget()
 
         self.date_time = DateTime()
 
@@ -99,8 +99,8 @@ class ModulesHandler(Modules):
                 "tray": self.tray,
                 "memory": self.memory,
                 "title": self.title,
-                "cava": self.cava,
-                # "title_player": self.title_player,
+                # "cava": self.cava,
+                "title_player": self.title_player,
             }
         )
 

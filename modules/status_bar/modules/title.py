@@ -1,8 +1,7 @@
-from functools import partial
 from fabric.widgets.button import Button
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.hyprland.widgets import ActiveWindow
-from fabric.utils import FormattedString, GLib, Gtk, truncate  # type: ignore
+from fabric.utils import FormattedString, GLib, Gdk, Gtk, truncate  # type: ignore
 from utils import WINDOW_TITLE_MAP
 from fabric.widgets.box import Box
 from typing import Optional
@@ -19,7 +18,7 @@ class WindowTitleWidget(Box):
 
     def __init__(
         self,
-        orientation_pos: bool = False,
+        orientation_pos: bool = True,
         truncation: bool = True,
         truncation_size: int = 80,
         title_map: Optional[list] = None,
@@ -92,20 +91,6 @@ class WindowTitleWidget(Box):
             return f" {icon}\n{title}."
 
 
-class SmartTitleWidget(Box):
-    def __init__(self, **kwargs):
-        super().__init__(name="window-box", **kwargs)
-        self.player = PlayerManager()
-        self.cava_play = SpectrumRender().get_spectrum_box()
-        self.title = WindowTitleWidget()
-        PlayerHierarchyPopup()
-
-        # if self._is_played():
-        # self.children = Box(children=[self.title, self.cava_play])
-        # else:
-        #     self.children = Box(children=self.title)
-
-
 class PlayerHierarchyPopup(Window):
     def __init__(self):
         super().__init__(
@@ -119,8 +104,29 @@ class PlayerHierarchyPopup(Window):
         )
         self.players = PlayerManager()
         self.merged_titles = WINDOW_TITLE_MAP
+        self._last_hidden_box = None
+        self.selected_player_id = ""
+        self._box_by_pid = {}  # сохраняем соответствие pid → box
+        self.on_player_changed = None
+        self.children = [self._make_hierarchy()]
+        GLib.timeout_add_seconds(1, self._refresh_hierarchy)
 
-        self.children = self._make_hierarchy()
+    def _refresh_hierarchy(self):
+        self.children = [self._make_hierarchy()]
+        return True
+
+    def set_selected_player(self, pid: str):
+        print(">>> set_selected_player called with pid:", pid)
+        self.selected_player_id = pid
+        box = self._box_by_pid.get(pid)
+        if box:
+            if self._last_hidden_box and self._last_hidden_box is not box:
+                self._last_hidden_box.set_visible(True)
+            box.set_visible(False)
+            self._last_hidden_box = box
+        if self.on_player_changed:
+            print(">>> calling on_player_changed")
+            self.on_player_changed(pid)
 
     def _make_hierarchy(self) -> Grid:
         grid = Grid(
@@ -131,123 +137,219 @@ class PlayerHierarchyPopup(Window):
             row_homogeneous=True,
         )
 
-        _base = dict(self.players._get_playing_players())
-        __ordered_players = []
-        __ordered_players_box = []
-        __retry = []
-        __retry_box = []
-        _clicked = False
+        self._box_by_pid.clear()
 
-        def __get_new_base(pid, box):
-            full = self.players._get_playing_players().values()
-            for k, v in _base.items():
-                v.pop(pid, None)
+        def __update(pid, box):
+            self.selected_player_id = pid
+            if self._last_hidden_box and self._last_hidden_box is not box:
+                self._last_hidden_box.set_visible(True)
+            box.set_visible(False)
+            self._last_hidden_box = box
 
-            if (not __ordered_players or __ordered_players[0] is None) and (
-                not __ordered_players_box or __ordered_players_box[0] is None
-            ):
-                __ordered_players.append(pid)
-                __ordered_players_box.append(box)
-            else:
-                removed_box_id = __ordered_players[0]
-                if removed_box_id != pid:
-                    for i in full:
-                        for k, v in i.items():
-                            if k == removed_box_id:
-                                __retry.append(k)
-                                break
+            if self.on_player_changed:
+                self.on_player_changed(pid)
 
-                    for i in full:
-                        for k, v in i.items():
-                            if k == __retry[0]:
-                                __retry_box.append(dict({k: v}))
-
-            for player_box in __ordered_players_box:
-                grid.attach(player_box, col, row, 1, 1)
-                grid.show_all()
-
-        def __update(pid, box) -> bool:
-            __get_new_base(pid, box)
-
-            try:
-                if __retry_box[0]:
-                    for key, value in __retry_box[0].items():
-                        for k, v in _base.items():
-                            v[key] = value
-                        break
-            except:
-                pass
-
-            grid.remove(box)
             return True
-
-        def _players_handler():
-            if _clicked:
-                return _base
-            else:
-                return self.players._get_playing_players().values()
-
-        players = _players_handler()
-
-        col_count = 1
-        index = col_count
 
         def __make_on_clicked(pid, box):
             return lambda *_: __update(pid, box)
 
-        for player_group in players:
-            for player_id, player_data in player_group.items():
-                title = player_data["title"]
-                artist = player_data["artist"]
+        col_count = 1
+        idx = 0
+        playing = self.players._get_playing_players()
 
+        for group in playing.values():
+            for pid, pdata in group.items():
                 icon = next(
-                    (wt for wt in self.merged_titles if re.search(wt[0], player_id)),
-                    "",
+                    (wt for wt in self.merged_titles if re.search(wt[0], pid)),
+                    (None, ""),
+                )[1]
+                box = Box(
+                    name="player-card", orientation=Gtk.Orientation.VERTICAL, spacing=4
                 )
+                self._box_by_pid[pid] = box
 
-                player_box = Box(
-                    name="player-card",
-                    orientation=Gtk.Orientation.VERTICAL,
-                    spacing=4,
-                )
-
-                player_box.children = [
+                box.children = [
                     Box(
                         name="player-popup-icon-container",
                         children=[
                             Label(
                                 h_align="start",
                                 name="player-popup-icon",
-                                label=f"{icon[1]} ",
+                                label=f"{icon} ",
                             ),
-                            Label(
-                                h_align="start",
-                                name="player-popup-id",
-                                label=player_id,
-                            ),
+                            Label(h_align="start", name="player-popup-id", label=pid),
                         ],
                     ),
                     Label(
                         name="player-popup-title",
-                        label=title[:50] + "..." if len(title) > 10 else title,
+                        label=pdata["title"][:50]
+                        + ("..." if len(pdata["title"]) > 50 else ""),
                         h_align="start",
                     ),
                     Label(
                         name="player-popup-artist",
-                        label=artist,
+                        label=pdata["artist"],
                         h_align="start",
                     ),
                     Button(
                         name="player-popup-button",
                         label="Choice 🚀",
-                        on_clicked=__make_on_clicked(player_id, player_box),
+                        on_clicked=__make_on_clicked(pid, box),
                     ),
                 ]
 
-                row = index // col_count
-                col = index % col_count
+                # Прячем box, если он был выбран ранее
+                if pid == self.selected_player_id:
+                    box.set_visible(False)
+                    self._last_hidden_box = box
 
-                grid.attach(player_box, col, row, 1, 1)
-                index += 1
+                row = idx // col_count
+                col = idx % col_count
+                grid.attach(box, col, row, 1, 1)
+                idx += 1
+
+        # Если нет сохранённого выбора — выбираем первый попавшийся
+        if not self.selected_player_id and self._box_by_pid:
+            first_pid = next(iter(self._box_by_pid))
+            self.selected_player_id = first_pid
+            box = self._box_by_pid[first_pid]
+            box.set_visible(False)
+            self._last_hidden_box = box
+            if self.on_player_changed:
+                self.on_player_changed(first_pid)
 
         return grid
+
+
+class SmartTitleWidget(Box):
+    def __init__(self, **kwargs):
+        super().__init__(name="window-box", **kwargs)
+
+        self.cava_play = SpectrumRender().get_spectrum_box()
+        self.player = PlayerManager()
+        self.title = WindowTitleWidget()
+        self.popup = PlayerHierarchyPopup()
+        self.merged_titles = WINDOW_TITLE_MAP
+        self.player_popup_state = False
+        self._hover_count = 0
+
+        # Подписываемся на события наведения мыши
+        self.add_events(
+            Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
+        )
+        self.connect("enter-notify-event", self._on_mouse_enter)
+        self.connect("leave-notify-event", self._on_mouse_leave)
+
+        self.icon = next(
+            (
+                wt
+                for wt in self.merged_titles
+                if re.search(wt[0], self.popup.selected_player_id)
+            ),
+            (None, ""),
+        )[1]
+
+        self.title_box = Box(children=[self.title])
+        self.popup_button = self._create_popup_button()
+        self.player_icon_label = Label(name="player-icon", label=f" {self.icon} ")
+
+        self.player_box = Box(children=[self.player_icon_label, self.popup_button])
+        self.player_container = Box(children=[self.player_box, self.cava_play])
+
+        self.main_container = Box()
+        self.children = [self.main_container]
+
+        self._is_playing = None
+        self._last_state = None
+
+        self.player.add_status_callback(self._update_children)
+        self.popup.on_player_changed = self._on_player_changed
+
+        # Чтобы не мигала кнопка, отслеживаем enter/leave на всех ключевых виджетах
+        for w in [self, self.player_box, self.popup_button]:
+            w.add_events(
+                Gdk.EventMask.ENTER_NOTIFY_MASK | Gdk.EventMask.LEAVE_NOTIFY_MASK
+            )
+            w.connect("enter-notify-event", self._on_mouse_enter)
+            w.connect("leave-notify-event", self._on_mouse_leave)
+
+        self._update_children()
+        GLib.timeout_add_seconds(1, self._update_children)
+
+    def _create_popup_button(self):
+        self.popup.hide()
+
+        def toggle_popup(_):
+            self.player_popup_state = not self.player_popup_state
+            self._update_popup_button_icon()
+            if self.player_popup_state:
+                self.popup.show_all()
+            else:
+                self.popup.hide()
+
+        btn = Button(
+            name="player-popup-button",
+            label="",
+            on_clicked=toggle_popup,
+        )
+
+        btn.set_visible(False)  # Скрываем кнопку изначально
+        self.popup_button = btn
+        return btn
+
+    def _on_mouse_enter(self, widget, event):
+        self._hover_count = max(self._hover_count + 1, 1)
+        if self.popup_button:
+            self.popup_button.set_visible(True)  # Показываем кнопку при наведении
+
+    def _on_mouse_leave(self, widget, event):
+        self._hover_count = max(self._hover_count - 1, 0)
+        # Скрываем кнопку, если мышь ушла с всех контролируемых виджетов и popup не открыт
+        if self._hover_count == 0 and self.popup_button and not self.player_popup_state:
+            self.popup_button.set_visible(False)
+
+    def _update_popup_button_icon(self):
+        icon = "" if self.player_popup_state else ""
+
+        self.popup_button.set_visible(False)
+        if self.popup_button:
+            self.popup_button.set_label(icon)
+            self.popup_button.queue_draw()
+
+    def _on_player_changed(self, pid):
+        icon = next(
+            (wt for wt in self.merged_titles if re.search(wt[0], pid)), (None, "")
+        )[1]
+        self.player_icon_label.set_text(f" {icon} ")
+
+    def _update_children(self, *_):
+        playing = self.player.is_any_playing()
+        playing_dict = self.player._get_playing_players()
+
+        current_pids = set(pid for group in playing_dict.values() for pid in group)
+        pid = self.popup.selected_player_id or ""
+        icon = next(
+            (wt for wt in self.merged_titles if re.search(wt[0], pid)), (None, "")
+        )[1]
+
+        new_state = (playing, pid, icon)
+        if new_state == self._last_state:
+            return True
+        self._last_state = new_state
+
+        self._is_playing = playing
+
+        if playing:
+            if self.popup.selected_player_id not in current_pids:
+                first_group = next(iter(playing_dict.values()), {})
+                first_pid = next(iter(first_group), "")
+                if first_pid:
+                    self.popup._refresh_hierarchy()
+                    self.popup.set_selected_player(first_pid)
+
+        self.player_icon_label.set_text(f" {icon} ")
+        self.main_container.children = [
+            self.player_container if playing else self.title_box
+        ]
+        return True
