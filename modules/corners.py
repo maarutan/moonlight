@@ -2,7 +2,7 @@ from fabric.widgets.shapes import Corner
 from typing import Literal
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
-from .status_bar.core.config_handler import ConfigHandler
+from .status_bar.core._config_handler import ConfigHandler
 
 
 class MyCorner(Box):
