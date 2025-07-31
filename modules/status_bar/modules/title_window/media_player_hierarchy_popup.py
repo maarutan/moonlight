@@ -1,0 +1,142 @@
+# player_hierarchy_popup.py
+
+from utils import WINDOW_TITLE_MAP
+from services import PlayerManager
+import re
+
+
+from fabric.widgets.box import Box
+from fabric.widgets.label import Label
+from fabric.widgets.grid import Grid
+from fabric.widgets.button import Button
+from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.utils import GLib, Gtk  # type: ignore
+
+
+class PlayerHierarchyPopup(Window):
+    def __init__(self):
+        super().__init__(
+            name="player-hierarchy-popup",
+            anchor="top center",
+            title="Player Hierarchy",
+            exclusivity="none",
+            layer="top",
+            h_align="fill",
+            v_align="fill",
+        )
+        self.players = PlayerManager()
+        self.merged_titles = WINDOW_TITLE_MAP
+        self._last_hidden_box = None
+        self.selected_player_id = ""
+        self._box_by_pid = {}
+        self.on_player_changed = None
+        self.children = [self._make_hierarchy()]
+        GLib.timeout_add_seconds(1, self._refresh_hierarchy)
+
+    def _refresh_hierarchy(self):
+        self.children = [self._make_hierarchy()]
+        return True
+
+    def set_selected_player(self, pid: str):
+        print(">>> set_selected_player called with pid:", pid)
+        self.selected_player_id = pid
+        box = self._box_by_pid.get(pid)
+        if box:
+            if self._last_hidden_box and self._last_hidden_box is not box:
+                self._last_hidden_box.set_visible(True)
+            box.set_visible(False)
+            self._last_hidden_box = box
+        if self.on_player_changed:
+            print(">>> calling on_player_changed")
+            self.on_player_changed(pid)
+
+    def _make_hierarchy(self) -> Grid:
+        grid = Grid(
+            name="player-hierarchy-grid",
+            row_spacing=12,
+            column_spacing=12,
+            column_homogeneous=True,
+            row_homogeneous=True,
+        )
+
+        self._box_by_pid.clear()
+
+        def __update(pid, box):
+            self.selected_player_id = pid
+            if self._last_hidden_box and self._last_hidden_box is not box:
+                self._last_hidden_box.set_visible(True)
+            box.set_visible(False)
+            self._last_hidden_box = box
+
+            if self.on_player_changed:
+                self.on_player_changed(pid)
+
+            return True
+
+        def __make_on_clicked(pid, box):
+            return lambda *_: __update(pid, box)
+
+        col_count = 1
+        idx = 0
+        playing = self.players._get_playing_players()
+
+        for group in playing.values():
+            for pid, pdata in group.items():
+                icon = next(
+                    (wt for wt in self.merged_titles if re.search(wt[0], pid)),
+                    (None, ""),
+                )[1]
+                box = Box(
+                    name="player-card", orientation=Gtk.Orientation.VERTICAL, spacing=4
+                )
+                self._box_by_pid[pid] = box
+
+                box.children = [
+                    Box(
+                        name="player-popup-icon-container",
+                        children=[
+                            Label(
+                                h_align="start",
+                                name="player-popup-icon",
+                                label=f"{icon} ",
+                            ),
+                            Label(h_align="start", name="player-popup-id", label=pid),
+                        ],
+                    ),
+                    Label(
+                        name="player-popup-title",
+                        label=pdata["title"][:50]
+                        + ("..." if len(pdata["title"]) > 50 else ""),
+                        h_align="start",
+                    ),
+                    Label(
+                        name="player-popup-artist",
+                        label=pdata["artist"],
+                        h_align="start",
+                    ),
+                    Button(
+                        name="player-popup-button",
+                        label="Choice 🚀",
+                        on_clicked=__make_on_clicked(pid, box),
+                    ),
+                ]
+
+                if pid == self.selected_player_id:
+                    box.set_visible(False)
+                    self._last_hidden_box = box
+
+                row = idx // col_count
+                col = idx % col_count
+                grid.attach(box, col, row, 1, 1)
+                idx += 1
+
+        if not self.selected_player_id and self._box_by_pid:
+            first_pid = next(iter(self._box_by_pid))
+            self.selected_player_id = first_pid
+            box = self._box_by_pid[first_pid]
+            box.set_visible(False)
+            self._last_hidden_box = box
+            if self.on_player_changed:
+                self.on_player_changed(first_pid)
+
+        return grid
