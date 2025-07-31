@@ -7,7 +7,7 @@ from gi.repository import Playerctl  # type: ignore
 
 class PlayerManager:
     def __init__(self) -> None:
-        self.players = {}
+        self.players: dict[str, Playerctl.Player] = {}
         self.callbacks = []
         self._init_players()
 
@@ -54,16 +54,20 @@ class PlayerManager:
                     },
                 }
             except Exception:
-                return {}
+                continue
 
         return result
 
     def _init_players(self):
         names = Playerctl.list_players()
         for name in names:
-            player = Playerctl.Player.new_from_name(name)
-            player.connect("playback-status", self._on_playback_status)
-            self.players[name] = player
+            try:
+                player = Playerctl.Player.new_from_name(name)
+                player.connect("playback-status", self._on_playback_status)
+                # ключ по player_name (короткому)
+                self.players[player.props.player_name] = player
+            except Exception as e:
+                print(f"[Init Error] {name}: {e}")
 
     def _on_playback_status(self, player, status):
         for cb in self.callbacks:
@@ -72,11 +76,42 @@ class PlayerManager:
     def add_status_callback(self, callback):
         self.callbacks.append(callback)
 
-    def is_any_playing(self):
-        for player in self.players.values():
+    def is_any_playing(self) -> bool:
+        return any(
+            player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
+            for player in self.players.values()
+        )
+
+    def pause_player(self, name: str):
+        player = self.players.get(name)
+        if player:
+            try:
+                player.pause()
+                print(f"Поставлен на паузу: {name}")
+            except Exception as e:
+                print(f"Ошибка при попытке поставить на паузу '{name}': {e}")
+        else:
+            print(f"Плеер '{name}' не найден.")
+
+    def play_player(self, name: str):
+        player = self.players.get(name)
+        if player:
+            try:
+                player.play()
+                print(f"Воспроизведение: {name}")
+            except Exception as e:
+                print(f"Ошибка при попытке воспроизвести '{name}': {e}")
+        else:
+            print(f"Плеер '{name}' не найден.")
+
+    def pause_all(self):
+        for name, player in self.players.items():
             if player.props.playback_status == Playerctl.PlaybackStatus.PLAYING:
-                return True
-        return False
+                try:
+                    player.pause()
+                    print(f"[Pause] {name}")
+                except Exception as e:
+                    print(f"[Pause Error] {name}: {e}")
 
     def _refresh_players(self):
         try:
@@ -85,8 +120,8 @@ class PlayerManager:
             current_names = set()
 
         existing_names = set(self.players.keys())
-
         removed = existing_names - current_names
+
         for name in removed:
             player = self.players.pop(name, None)
             if player is not None:
@@ -100,10 +135,20 @@ class PlayerManager:
             try:
                 player = Playerctl.Player.new_from_name(name)
                 player.connect("playback-status", self._on_playback_status)
-                self.players[name] = player
+                self.players[player.props.player_name] = player
             except Exception:
                 pass
 
 
-if __name__ == "__main__":
-    PlayerManager()
+# if __name__ == "__main__":
+#     manager = PlayerManager()
+#
+#     print("🎵 Активные плееры:")
+#     for pname in manager.players:
+#         print(" •", pname)
+#
+#     print("\n▶️ Приостанавливаю воспроизведение...")
+#     manager.pause_player("spotify")
+#
+#     print("\n📊 Статус:")
+#     print(json.dumps(manager._get_playing_players(), indent=2))

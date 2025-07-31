@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from fabric import Application
 from fabric.utils import get_relative_path
 
