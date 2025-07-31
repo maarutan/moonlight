@@ -9,7 +9,7 @@ from config import STATUS_BAR_LOCK_MODULES
 from utils import JsonManager
 
 
-class Memory(Box):
+class MemoryRAM(Box):
     def __init__(
         self,
         interval: int = 2,

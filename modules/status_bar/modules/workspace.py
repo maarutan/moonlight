@@ -1,11 +1,12 @@
-from fabric.hyprland.widgets import WorkspaceButton, Workspaces, ActiveWindow
+from fabric.hyprland.widgets import WorkspaceButton, ActiveWindow
+from fabric.hyprland.widgets import Workspaces as HWorkspaces
 from fabric.utils import exec_shell_command_async
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from loguru import logger
 
 
-class WorkspacesBar(Box):
+class Workspaces(Box):
     def __init__(
         self,
         workspaces_numbering=None,
@@ -37,7 +38,7 @@ class WorkspacesBar(Box):
                 return magic_icon
             return base_label
 
-        workspaces = Workspaces(
+        workspaces = HWorkspaces(
             name="workspaces",
             invert_scroll=True,
             empty_scroll=True,
@@ -86,7 +87,7 @@ class WorkspacesBar(Box):
             for i in range(1, maximum_value + 1)
         ]
 
-        workspaces_num = Workspaces(
+        workspaces_num = HWorkspaces(
             name="workspaces-num",
             invert_scroll=True,
             empty_scroll=True,

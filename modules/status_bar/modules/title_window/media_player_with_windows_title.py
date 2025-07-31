@@ -15,18 +15,27 @@ from fabric.widgets.box import Box
 from fabric.utils import GLib  # type: ignore
 
 
-class SmartTitleWidget(Box):
-    def __init__(self, **kwargs):
-        super().__init__(name="window-box", **kwargs)
-
-        self.cava = SpectrumRender()
+class MPWitWindowsTitle(Box):
+    def __init__(
+        self,
+        title: WindowsTitle,
+        orientation_pos: bool = True,
+        **kwargs,
+    ):
+        self.orientation_pos = orientation_pos
+        self.cava = SpectrumRender(self.orientation_pos)
         self.player = PlayerManager()
-        self.title = WindowsTitle()
+        self.title = title
         self.popup = PlayerHierarchyPopup()
         self.merged_titles = WINDOW_TITLE_MAP
         self.player_popup_state = False
-
         self._hover_inside = False
+
+        super().__init__(
+            name="window-box",
+            orientation="h" if self.orientation_pos else "v",
+            **kwargs,
+        )
         self.icon = next(
             (
                 wt
@@ -40,7 +49,10 @@ class SmartTitleWidget(Box):
         self.player_icon_label = Label(name="player-icon", label=f" {self.icon} ")
         self.popup_button = self._create_popup_button()
 
-        self.dynamic_inner = Box(children=[self.player_icon_label, self.popup_button])
+        self.dynamic_inner = Box(
+            orientation="h" if self.orientation_pos else "v",
+            children=[self.player_icon_label, self.popup_button],
+        )
         GLib.idle_add(self.popup_button.hide)
 
         self.hover_area = EventBox(
@@ -50,12 +62,19 @@ class SmartTitleWidget(Box):
         self.hover_area.connect("enter-notify-event", self._on_mouse_enter)
         self.hover_area.connect("leave-notify-event", self._on_mouse_leave)
 
-        self.player_box = Box(children=[self.hover_area])
+        self.player_box = Box(
+            orientation="h" if self.orientation_pos else "v",
+            children=[self.hover_area],
+        )
         self.player_container = Box(
-            show_all=True, children=[self.player_box, self.cava.get_spectrum_box()]
+            orientation="h" if self.orientation_pos else "v",
+            show_all=True,
+            children=[self.player_box, self.cava.get_spectrum_box()],
         )
 
-        self.main_container = Box()
+        self.main_container = Box(
+            orientation="h" if self.orientation_pos else "v",
+        )
         self.children = self.main_container
 
         self._is_playing = None

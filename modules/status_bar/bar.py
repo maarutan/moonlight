@@ -1,0 +1,52 @@
+# ┌─┐┌┬┐┌─┐┌┬┐┬ ┬┌─┐  ┌┐ ┌─┐┬─┐
+# └─┐ │ ├─┤ │ │ │└─┐  ├┴┐├─┤├┬┘
+# └─┘ ┴ ┴ ┴ ┴ └─┘└─┘  └─┘┴ ┴┴└─
+# --------------------------------------------------------------------------
+# Copyright (c) 2025 maarutan. \ Marat Arzymatov All Rights Reserved.
+
+from .core.module_handler import ModulesHandler
+from .core._config_handler import ConfigHandler
+
+from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.widgets.centerbox import CenterBox
+
+
+class StatusBar(Window):
+    def __init__(self, **kwargs):
+        self.confh = ConfigHandler()
+        self.modules = ModulesHandler()
+        self.bar_content = self._create_bar_content()
+
+        super().__init__(
+            style=None,
+            visible=True,
+            name="moon-bar",
+            all_visible=True,
+            title="moon-bar",
+            exclusivity="auto",
+            child=self.bar_content,
+            style_classes="moon-bar",
+            anchor=self.confh.get_position(),
+            margin=self.confh.get_margin(),
+            layer=self.confh.get_layer(),
+            **kwargs,
+        )
+
+    def _create_bar_content(self) -> CenterBox:
+        box = CenterBox(
+            name="center-bar",
+            orientation="h" if self.confh.is_horizontal() else "v",
+        )
+        box.start_children = self._get_start_children()
+        box.center_children = self._get_center_children()
+        box.end_children = self._get_end_children()
+        return box
+
+    def _get_start_children(self) -> list:
+        return [self.modules.modules_start_handler()]
+
+    def _get_center_children(self) -> list:
+        return [self.modules.modules_center_handler()]
+
+    def _get_end_children(self) -> list:
+        return [self.modules.modules_end_handler()]

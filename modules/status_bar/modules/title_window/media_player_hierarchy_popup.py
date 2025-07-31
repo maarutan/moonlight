@@ -1,16 +1,18 @@
 # player_hierarchy_popup.py
 
+from loguru import logger
 from utils import WINDOW_TITLE_MAP
 from services import PlayerManager
+
 import re
-
-
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.grid import Grid
 from fabric.widgets.button import Button
 from fabric.widgets.wayland import WaylandWindow as Window
-from fabric.utils import GLib, Gtk  # type: ignore
+from fabric.utils import GLib, GdkPixbuf, Gtk  # type: ignore
+from fabric.widgets.centerbox import CenterBox
+from utils import GetPreviewPath
 
 
 class PlayerHierarchyPopup(Window):
@@ -24,17 +26,22 @@ class PlayerHierarchyPopup(Window):
             h_align="fill",
             v_align="fill",
         )
+        self.selected_player_id = ""
+
         self.players = PlayerManager()
         self.merged_titles = WINDOW_TITLE_MAP
+        self.preview_resolver = GetPreviewPath()
         self._last_hidden_box = None
-        self.selected_player_id = ""
         self._box_by_pid = {}
         self.on_player_changed = None
         self.children = [self._make_hierarchy()]
         GLib.timeout_add_seconds(1, self._refresh_hierarchy)
 
     def _refresh_hierarchy(self):
-        self.children = [self._make_hierarchy()]
+        self.children = CenterBox(
+            start_children=[self._make_player()],
+            end_children=[self._make_hierarchy()],
+        )
         return True
 
     def set_selected_player(self, pid: str):
@@ -49,6 +56,102 @@ class PlayerHierarchyPopup(Window):
         if self.on_player_changed:
             print(">>> calling on_player_changed")
             self.on_player_changed(pid)
+
+    def _make_player(self):
+        block = Box(
+            name="player-card",
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=4,
+        )
+
+        icon = next(
+            (
+                wt
+                for wt in self.merged_titles
+                if re.search(wt[0], self.selected_player_id)
+            ),
+            (None, ""),
+        )[1]
+
+        current_select = Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=2,
+            h_align="start",
+            children=[
+                Label(
+                    name="player-popup-icon",
+                    label=f"player: {icon} {self.selected_player_id}",
+                    # xalign=0.0,
+                ),
+            ],
+        )
+
+        art_url: str | None = None
+
+        for pid_list in self.players._get_playing_players().values():
+            for k, v in pid_list.items():
+                if k == self.selected_player_id:
+                    art_url = v.get("art_url", "")
+
+        preview_box = Box()
+
+        if art_url:
+            resolved_path = self.preview_resolver.validator(art_url)
+
+            if resolved_path and resolved_path.exists():
+                try:
+                    pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+                        filename=str(resolved_path),
+                        width=250,
+                        height=250,
+                        preserve_aspect_ratio=True,
+                    )
+                    image_widget = Gtk.Image.new_from_pixbuf(pixbuf)
+                    preview_box.children = preview_box.children + [image_widget]
+                except Exception as e:
+                    logger.warning(f"[PlayerPopup] Failed to load image: {e}")
+
+        player_control = CenterBox()
+        pause_button = False
+
+        def _toggle_pause(button):
+            if self.players.pause_player(self.selected_player_id):
+                self.players.play_player(self.selected_player_id)
+                button.label = ""
+            else:
+                self.players.pause_player(self.selected_player_id)
+                button.label = ""
+
+        pause_button = Button(
+            name="player-popup-pause-button",
+            label="",  # default
+            on_clicked=_toggle_pause,
+        )
+
+        back_button = Button(
+            name="player-back",
+            label="",
+            on_clicked=lambda *_: self.set_selected_player(""),
+        )
+        pause_button = Button(name="player-pause", label="", on_clicked=_toggle_pause)
+        forward_button = Button(
+            name="player-forward",
+            label="",
+            on_clicked=lambda *_: self.set_selected_player("next"),
+        )
+
+        player_control.start_children = [back_button]
+        player_control.center_children = [pause_button]
+        player_control.end_children = [forward_button]
+
+        block.children = [
+            preview_box,
+            current_select,
+            player_control,
+        ]
+        block.show_all()
+
+        return block
 
     def _make_hierarchy(self) -> Grid:
         grid = Grid(

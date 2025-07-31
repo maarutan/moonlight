@@ -10,7 +10,10 @@ from gi.repository import Gdk  # type: ignore
 
 class TrayButtonHandler(Box):
     def __init__(
-        self, tray_box_position: str, bar_position: str, orientation_pos: bool = True
+        self,
+        tray_box_position: str,
+        bar_position: str,
+        orientation_pos: bool = True,
     ):
         super().__init__(
             name="tray-handler-container", orientation="h" if orientation_pos else "v"

@@ -1,4 +1,8 @@
-configuration = """{
+from enum import Enum
+
+
+class Configuration(Enum):
+    DEFAULT = """{
   "layer":    "top",
   "position": "top", 
   "margin": "10 50 10 50",

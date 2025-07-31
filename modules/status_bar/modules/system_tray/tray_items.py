@@ -5,7 +5,7 @@ import logging
 
 from fabric.widgets.box import Box
 from fabric.widgets.grid import Grid
-from gi.repository import Gdk, GdkPixbuf, GLib, Gray, Gtk  # type: ignore
+from gi.repository import Gdk, GdkPixbuf, Gray, Gtk  # type: ignore
 
 logger = logging.getLogger(__name__)
 

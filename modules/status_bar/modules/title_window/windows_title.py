@@ -29,22 +29,22 @@ class WindowsTitle(Box):
         self.title_map = title_map or []
         self.enable_icon = enable_icon
         self.vertical_title_length = vertical_title_length
-
         self.merged_titles = self.title_map + WINDOW_TITLE_MAP
-
         super().__init__(name="window-box", **kwargs)
 
         self.children = Box(
-            children=ActiveWindow(
-                name="window",
-                formatter=FormattedString(
-                    "{ get_title(win_title, win_class) }",
-                    get_title=self.get_title,
-                ),
-            )
+            children=[
+                ActiveWindow(
+                    name="window",
+                    formatter=FormattedString(
+                        "{ get_title(win_title, win_class) }",
+                        get_title=self._get_title,
+                    ),
+                )
+            ]
         )
 
-    def trim_visual(self, text: str, max_width: int) -> str:
+    def _trim_visual(self, text: str, max_width: int) -> str:
         result = ""
         current_width = 0
         for char in text:
@@ -61,7 +61,7 @@ class WindowsTitle(Box):
 
         return result
 
-    def get_title(self, win_title, win_class):
+    def _get_title(self, win_title, win_class):
         if self.truncation:
             win_title = truncate(win_title, self.truncation_size)
 
@@ -73,7 +73,15 @@ class WindowsTitle(Box):
         )
 
         if not matched_window:
-            return f"  {win_class_lower}"
+            not_matched_window_icon = ""
+            not_matched_window = win_class_lower
+            if self.orientation_pos:
+                return f"{not_matched_window_icon} {not_matched_window}"
+            else:
+                not_matched_window = self._trim_visual(
+                    not_matched_window, self.vertical_title_length
+                )
+                return f" {not_matched_window_icon}\n{not_matched_window}."
 
         title = matched_window[2]
         icon = matched_window[1]
@@ -84,5 +92,5 @@ class WindowsTitle(Box):
         if self.orientation_pos:
             return f"{icon} {title}"
         else:
-            title = self.trim_visual(title, self.vertical_title_length)
+            title = self._trim_visual(title, self.vertical_title_length)
             return f" {icon}\n{title}."

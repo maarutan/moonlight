@@ -1,4 +1,4 @@
-from .system_tray_base import TrayItems
+from .tray_items import TrayItems
 from typing import Callable
 
 from fabric.widgets.wayland import WaylandWindow as Window
@@ -8,13 +8,18 @@ from gi.repository import Gtk, Gdk, GLib  # type:ignore
 
 
 class TrayBox(Window):
-    def __init__(self, position: str, bar_position: str, do_click_handler: Callable):
+    def __init__(
+        self,
+        position: str,
+        bar_position: str,
+        do_click_handler: Callable,
+    ):
         self.position = position
         self.bar_position = bar_position
         self.do_click_handler = do_click_handler
         super().__init__(
             name="tray-box-container",
-            layer="top",
+            layer="overlay",
             anchor=position,
             exclusivity="auto",
             all_visible=True,

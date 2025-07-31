@@ -1,12 +1,13 @@
-from pathlib import Path
-from typing import Literal
-from utils import JsonManager as jsonc
-from utils import FileManager
-from .default_config import configuration
+from ..cfg.default_config import Configuration
 from config import (
     STATUS_BAR_DIR,
     STATUS_BAR_CONFIG,
 )
+
+from pathlib import Path
+from typing import Literal
+from utils import JsonManager as jsonc
+from utils import FileManager
 
 
 class ConfigHandler:
@@ -15,12 +16,14 @@ class ConfigHandler:
         self.fm = FileManager()
         self.path = Path(STATUS_BAR_CONFIG)
         self.fm.if_not_exists_create(STATUS_BAR_DIR)
+        self.cfg = Configuration
+        self.generate_default_config()
 
     "~~ Config ~~"
 
     def generate_default_config(self) -> None:
         if self.fm.read(self.path) in [None, ""]:
-            self.fm.write(self.path, configuration)
+            self.fm.write(self.path, self.cfg.DEFAULT.value)
 
     "~~ Options ~~"
 
@@ -174,28 +177,28 @@ class ConfigHandler:
     "~~ Tray ~~"
 
     def get_tray_icon_size(self) -> int:
-        i = self._get_options("tray", {})
+        i = self._get_options("system-tray", {})
         if isinstance(i, dict):
             i = i.get("icon-size", 24)
             return int(i)
         return 24
 
     def get_tray_refresh_interval(self) -> int:
-        i = self._get_options("tray", {})
+        i = self._get_options("system-tray", {})
         if isinstance(i, dict):
             i = i.get("refresh-interval", 1)
             return int(i)
         return 1
 
     def get_tray_spacing(self) -> int:
-        i = self._get_options("tray", {})
+        i = self._get_options("system-tray", {})
         if isinstance(i, dict):
             i = i.get("spacing", 8)
             return int(i)
         return 8
 
     def get_tray_box(self) -> bool:
-        i = self._get_options("tray", {})
+        i = self._get_options("system-tray", {})
         if isinstance(i, dict):
             i = i.get("tray-box", False)
             return bool(i)
@@ -264,40 +267,41 @@ class ConfigHandler:
 
     def tray_box_position_handler(self) -> str:
         barpos = self.get_bar_position_for_tray_box()
+
         start = self.get_modules_start()
         center = self.get_modules_center()
         end = self.get_modules_end()
 
         if barpos == "top":
-            if "tray" in start:
+            if "system-tray" in start:
                 return "top left"
-            elif "tray" in center:
+            elif "system-tray" in center:
                 return "top"
-            elif "tray" in end:
+            elif "system-tray" in end:
                 return "top right"
 
         elif barpos == "left":
-            if "tray" in start:
+            if "system-tray" in start:
                 return "top left"
-            elif "tray" in center:
+            elif "system-tray" in center:
                 return "center left"
-            elif "tray" in end:
+            elif "system-tray" in end:
                 return "bottom left"
 
         elif barpos == "right":
-            if "tray" in start:
+            if "system-tray" in start:
                 return "top right"
-            elif "tray" in center:
+            elif "system-tray" in center:
                 return "center right"
-            elif "tray" in end:
+            elif "system-tray" in end:
                 return "bottom right"
 
         if barpos == "bottom":
-            if "tray" in start:
+            if "system-tray" in start:
                 return "bottom left"
-            elif "tray" in center:
+            elif "system-tray" in center:
                 return "bottom"
-            elif "tray" in end:
+            elif "system-tray" in end:
                 return "bottom right"
         return "top"
 
