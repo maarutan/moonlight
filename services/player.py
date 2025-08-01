@@ -1,5 +1,8 @@
 import gi
 import json
+import subprocess
+
+from loguru import logger
 
 gi.require_version("Playerctl", "2.0")
 from gi.repository import Playerctl  # type: ignore
@@ -87,22 +90,22 @@ class PlayerManager:
         if player:
             try:
                 player.pause()
-                print(f"Поставлен на паузу: {name}")
+                logger.debug(f"[ Player ] Paused: {name}")
             except Exception as e:
-                print(f"Ошибка при попытке поставить на паузу '{name}': {e}")
+                logger.warning(f"[ Player ] Error pausing '{name}': {e}")
         else:
-            print(f"Плеер '{name}' не найден.")
+            logger.warning(f"[ Player ] '{name}' not found.")
 
     def play_player(self, name: str):
         player = self.players.get(name)
         if player:
             try:
                 player.play()
-                print(f"Воспроизведение: {name}")
+                logger.debug(f"[ Player ] Played: {name}")
             except Exception as e:
-                print(f"Ошибка при попытке воспроизвести '{name}': {e}")
+                logger.warning(f"[ Player ] Error playing '{name}': {e}")
         else:
-            print(f"Плеер '{name}' не найден.")
+            logger.warning(f"[ Player ] '{name}' not found.")
 
     def pause_all(self):
         for name, player in self.players.items():
@@ -139,16 +142,45 @@ class PlayerManager:
             except Exception:
                 pass
 
+    def is_playing(self) -> bool:
+        return any(
+            player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
+            for player in self.players.values()
+        )
 
-# if __name__ == "__main__":
-#     manager = PlayerManager()
-#
-#     print("🎵 Активные плееры:")
-#     for pname in manager.players:
-#         print(" •", pname)
-#
-#     print("\n▶️ Приостанавливаю воспроизведение...")
-#     manager.pause_player("spotify")
-#
-#     print("\n📊 Статус:")
-#     print(json.dumps(manager._get_playing_players(), indent=2))
+    def next_player(self, name: str):
+        try:
+            player = Playerctl.Player.new_from_name(Playerctl.PlayerName(name))
+            player.next()
+            logger.debug(f"[Player] Skipped to next track on '{name}'")
+        except Exception as e:
+            logger.warning(f"[Player] Failed to skip next on '{name}': {e}")
+
+    def prev_player(self, name: str):
+        try:
+            player = Playerctl.Player.new_from_name(Playerctl.PlayerName(name))
+            player.previous()
+            logger.debug(f"[Player] Returned to previous track on '{name}'")
+        except Exception as e:
+            logger.warning(f"[Player] Failed to skip previous on '{name}': {e}")
+
+    def _seek_player(self, name: str, seconds: int):
+        try:
+            subprocess.run(
+                [
+                    "playerctl",
+                    "-p",
+                    name,
+                    "position",
+                    f"{abs(seconds)}{'+' if seconds > 0 else '-'}",
+                ]
+            )
+            logger.debug(f"[Hack] Seek: {seconds} seconds → {name}")
+        except Exception as e:
+            logger.warning(f"[Hack] Failed to seek : {e}")
+
+    def player_forward_seconds(self, name: str, seconds: int = 30):
+        self._seek_player(name, +seconds)
+
+    def player_backward_seconds(self, name: str, seconds: int = 30):
+        self._seek_player(name, -seconds)

@@ -152,7 +152,7 @@ class MPWitWindowsTitle(Box):
                 first_pid = next(iter(first_group), "")
                 if first_pid:
                     self.popup._refresh_hierarchy()
-                    self.popup.set_selected_player(first_pid)
+                    self.popup._set_selected_player(first_pid)
 
         self.player_icon_label.set_text(f" {icon} ")
         self.main_container.show_all()
