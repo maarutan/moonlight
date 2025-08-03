@@ -5,6 +5,8 @@ from shutil import rmtree
 from random import randint
 from loguru import logger
 from pathlib import Path
+from config import PLACEHOLDER_IMAGE
+from threading import Thread
 
 
 class GetPreviewPath:
@@ -14,24 +16,61 @@ class GetPreviewPath:
             rmtree(self.tmp_path)
         self.tmp_path.mkdir(exist_ok=True, parents=True)
 
-    def validator(self, path: str) -> Path | None:
+        self.loading_files = set()
+
+    def validator(self, path: str) -> Path:
         try:
             if path.startswith("http://") or path.startswith("https://"):
-                return self._get_if_url(path)
+                filename = path.split("/")[-1] or "preview.png"
+                path_img = self.tmp_path / filename
+
+                # Если файл загружен — вернуть
+                if path_img.exists():
+                    return path_img.resolve()
+
+                # Если уже в загрузке — вернуть плейсхолдер
+                if filename in self.loading_files:
+                    return Path(PLACEHOLDER_IMAGE)
+
+                # Запускаем загрузку в фоне
+                self.loading_files.add(filename)
+                Thread(
+                    target=self._download_url,
+                    args=(path, path_img, filename),
+                    daemon=True,
+                ).start()
+
+                return Path(PLACEHOLDER_IMAGE)
+
+            elif path == "":
+                return Path(PLACEHOLDER_IMAGE)
             else:
-                return self._get_if_local(path)
+                return self._get_if_local(path) or Path(PLACEHOLDER_IMAGE)
+
         except Exception as e:
             logger.error(f"Error getting preview from '{path}': {e}")
-            return None
+            return Path(PLACEHOLDER_IMAGE)
+
+    def _download_url(self, url: str, path_img: Path, filename: str) -> None:
+        try:
+            response = requests.get(url, timeout=5)
+            if response.status_code == 200:
+                with open(path_img, "wb") as f:
+                    f.write(response.content)
+                logger.info(f"Downloaded preview from {url}")
+            else:
+                logger.warning(f"Non-200 response ({response.status_code}) for: {url}")
+        except Exception as e:
+            logger.error(f"Error downloading preview from URL '{url}': {e}")
+        finally:
+            self.loading_files.discard(filename)
 
     def _get_if_url(self, url: str) -> Path | None:
-        # Используем имя файла из URL или фиксированное, чтобы кэшировать по URL
         filename = url.split("/")[-1]
         if not filename:
             filename = "preview.png"
         path_img = self.tmp_path / filename
 
-        # Если уже есть файл, сразу возвращаем
         if path_img.exists():
             return path_img.resolve()
 

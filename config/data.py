@@ -23,3 +23,7 @@ STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
 
 "===== ~~ cava config ~~ ====="
 CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
+
+"===== ~~ player config ~~ ====="
+PLACEHOLDER_IMAGE = CURRENT_DIR.parent / "assets" / "player" / "placeholder.png"
+GHOST_IMAGE = CURRENT_DIR.parent / "assets" / "empty" / "ghost.png"

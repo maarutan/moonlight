@@ -2,21 +2,83 @@
   font-size: 16px;
   transition: 0.5s;
 }
-
 #player-hierarchy-popup {
   border-radius: 10px;
 }
+
+#player-popup-icon {
+  padding: 10 0 0 0px;
+}
+#player-popup-current-select-icon {
+  padding: 10 0 0 0px;
+}
+
+#player-popup-player-name {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+#player-popup-current-select {
+  font-size: 18px;
+  font-weight: bolder;
+}
+#player-popup-current-select-title {
+  font-size: 14px;
+  font-weight: bolder;
+  margin-top: 18px;
+}
+
+#player-popup-progress :nth-child(1) {
+  padding: 10 20px;
+  border-radius: 15px;
+}
+#player-popup-progress :nth-child(2) {
+  padding: 4px;
+  border-radius: 15px;
+}
+
+#player-popup-progress :nth-child(0) {
+  padding: 10px;
+}
+
+#player-control {
+  padding: 20px 40px;
+}
+
 #player-icon {
   font-size: 23px;
 }
 #player-card {
-  padding: 20px;
-  border: #0054f0 solid 1px;
+  border: rgba(255, 255, 255, 0.2) solid 0.5px;
+  background: #1e1e2e;
+  padding: 20px 30px;
   border-radius: 10px;
 }
 #player-popup-icon-container :nth-child(1) {
   /* background-color: #000; */
   font-size: 40px;
+}
+
+#player-popup-icon-container :nth-child(3) {
+  /* background-color: #000; */
+  font-size: 40px;
+}
+#player-popup-preview {
+  border-radius: 40px;
+}
+player-popup-progressbar {
+  padding: 10px;
+}
+
+#vertical-line {
+  margin: 130 20px;
+  border-right: rgba(255, 255, 255, 0.5) solid 1px;
+}
+
+#horizontal-line {
+  min-height: 1px;
+  margin: 0 90px;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 #player-popup-icon-container :nth-child(2) {

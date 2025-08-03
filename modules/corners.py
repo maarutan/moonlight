@@ -29,7 +29,7 @@ class MyCorner(Box):
 
 class ScreenCorners(Window):
     def __init__(self, orientation_pos: bool = True):
-        self.confh = ConfigHandler()
+        self.cfg = ConfigHandler()
         super().__init__(
             layer="top",
             anchor="top left bottom right",
@@ -76,7 +76,7 @@ class ScreenCorners(Window):
         )
 
     def exclusivity_handler(self) -> Literal["normal", "none"]:
-        bar_margin = " ".join(self.confh.get_margin().strip().split())
+        bar_margin = " ".join(self.cfg.bar.margin().strip().split())
 
         if bar_margin in ("0px 0px 0px 0px", "0 0 0 0"):
             return "none"

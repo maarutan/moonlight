@@ -52,6 +52,18 @@ class JsonManager:
             return self.read(path)
         return {}
 
+    def get_with_dot_data(self, path: Path, key: str) -> Any:
+        data = self.get_data(path)
+        keys = key.split(".")
+
+        d = data
+        for i, k in enumerate(keys):
+            if not isinstance(d, dict) or k not in d:
+                return None
+            d = d[k]
+
+        return d
+
     def update(self, path: Path, key: str, new_value: Any):
         data = self.get_data(path)
         keys = key.split(".")

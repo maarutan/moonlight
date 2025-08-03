@@ -1,6 +1,7 @@
 import gi
 import json
 import subprocess
+from time import sleep
 
 from loguru import logger
 
@@ -13,6 +14,8 @@ class PlayerManager:
         self.players: dict[str, Playerctl.Player] = {}
         self.callbacks = []
         self._init_players()
+        # print(self._get_playing_players())
+        # print(self.players)
 
     def _get_playing_players(self) -> dict:
         try:
@@ -116,6 +119,20 @@ class PlayerManager:
                 except Exception as e:
                     print(f"[Pause Error] {name}: {e}")
 
+    def pause_all_except(self, exclude_names):
+        for name, player in self.players.items():
+            if (
+                player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
+                and name not in exclude_names
+            ):
+                try:
+                    player.pause()
+                    print(f"[Pause] {name}")
+                except Exception as e:
+                    print(f"[Pause Error] {name}: {e}")
+            else:
+                self.play_player(name)
+
     def _refresh_players(self):
         try:
             current_names = set(Playerctl.list_players())
@@ -148,21 +165,33 @@ class PlayerManager:
             for player in self.players.values()
         )
 
-    def next_player(self, name: str):
+    def next_for(self, name: str):
         try:
-            player = Playerctl.Player.new_from_name(Playerctl.PlayerName(name))
-            player.next()
-            logger.debug(f"[Player] Skipped to next track on '{name}'")
-        except Exception as e:
-            logger.warning(f"[Player] Failed to skip next on '{name}': {e}")
+            pname = Playerctl.PlayerName(name)
+            player = Playerctl.Player.new_from_name(pname)
+        except Exception as exc:
+            logger.warning(f"[Player] No such player-name: «{name}», exc: {exc}")
+            return
 
-    def prev_player(self, name: str):
         try:
-            player = Playerctl.Player.new_from_name(Playerctl.PlayerName(name))
+            player.next()
+            logger.debug(f"[Player] Skipped to previous on «{name}»")
+        except Exception as exc:
+            logger.warning(f"[Player] Could not skip previous on «{name}»: {exc}")
+
+    def prev_for(self, name: str):
+        try:
+            pname = Playerctl.PlayerName(name)
+            player = Playerctl.Player.new_from_name(pname)
+        except Exception as exc:
+            logger.warning(f"[Player] No such player-name: «{name}», exc: {exc}")
+            return
+
+        try:
             player.previous()
-            logger.debug(f"[Player] Returned to previous track on '{name}'")
-        except Exception as e:
-            logger.warning(f"[Player] Failed to skip previous on '{name}': {e}")
+            logger.debug(f"[Player] Skipped to previous on «{name}»")
+        except Exception as exc:
+            logger.warning(f"[Player] Could not skip previous on «{name}»: {exc}")
 
     def _seek_player(self, name: str, seconds: int):
         try:
@@ -179,8 +208,51 @@ class PlayerManager:
         except Exception as e:
             logger.warning(f"[Hack] Failed to seek : {e}")
 
-    def player_forward_seconds(self, name: str, seconds: int = 30):
+    def player_forward_seconds(self, name: str, seconds: int = 5):
         self._seek_player(name, +seconds)
 
-    def player_backward_seconds(self, name: str, seconds: int = 30):
+    def player_backward_seconds(self, name: str, seconds: int = 5):
         self._seek_player(name, -seconds)
+
+    def get_progress(self, name: str) -> tuple[float, float]:
+        self._refresh_players()
+        player = self.players.get(name)
+        if (
+            not player
+            or player.props.playback_status != Playerctl.PlaybackStatus.PLAYING
+        ):
+            return 0.0, 1.0
+
+        pos_us = player.props.position or 0
+        meta = dict(player.props.metadata)
+        length_us = meta.get("mpris:length") or 0
+
+        pos = min(
+            max(pos_us / 1e6, 0.0), (length_us / 1e6) if length_us else float("inf")
+        )
+        length = (length_us / 1e6) if length_us else max(pos, 1.0)
+        return pos, length
+
+    def seek_to(self, name: str, microseconds: int) -> None:
+        player = self.players.get(name)
+        if not player:
+            logger.warning(f"[Player] Player '{name}' not found for seek_to.")
+            return
+
+        try:
+            # Получаем track_id из метаданных, нужно для set_position
+            track_id = player.props.metadata.get("mpris:trackid")
+            if not track_id:
+                logger.warning(f"[Player] track_id not found for player '{name}'.")
+                return
+
+            player.set_position(track_id, microseconds)
+            logger.debug(f"[Player] Seeked to {microseconds} µs in player '{name}'.")
+        except Exception as e:
+            logger.warning(f"[Player] Failed to seek player '{name}': {e}")
+
+    def get_options(self, name: str, key: str, default=""):
+        for player in self._get_playing_players().values():
+            for k, v in player.items():
+                if k == name:
+                    return v.get(key, default)

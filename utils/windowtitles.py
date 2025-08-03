@@ -24,6 +24,8 @@ WINDOW_TITLE_MAP = [
     ["thorium", "󰖟", "Thorium"],
     ["tor-browser", "", "Tor Browser"],
     ["floorp", "󰈹", "Floorp"],
+    # Recordings
+    ["obs", "", "OBS Studio"],
     # Terminals
     ["gnome-terminal", "", "GNOME Terminal"],
     ["kitty", "󰄛", "Kitty Terminal"],
