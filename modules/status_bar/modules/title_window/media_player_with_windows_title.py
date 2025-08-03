@@ -12,7 +12,7 @@ from fabric.widgets.eventbox import EventBox
 from fabric.widgets.button import Button
 from fabric.widgets.label import Label
 from fabric.widgets.box import Box
-from fabric.utils import GLib  # type: ignore
+from fabric.utils import GLib, Gdk  # type: ignore
 
 
 class MPWitWindowsTitle(Box):
@@ -30,6 +30,7 @@ class MPWitWindowsTitle(Box):
         self.merged_titles = WINDOW_TITLE_MAP
         self.player_popup_state = False
         self._hover_inside = False
+        self._popup_hover = False
 
         super().__init__(
             name="window-box",
@@ -44,6 +45,9 @@ class MPWitWindowsTitle(Box):
             ),
             (None, ""),
         )[1]
+
+        self.popup.connect("enter-notify-event", self._on_popup_enter)
+        self.popup.connect("leave-notify-event", self._on_popup_leave)
 
         self.title_box = Box(children=[self.title])
         self.player_icon_label = Label(name="player-icon", label=f" {self.icon} ")
@@ -76,6 +80,7 @@ class MPWitWindowsTitle(Box):
             orientation="h" if self.orientation_pos else "v",
         )
         self.children = self.main_container
+        self.main_container.show_all()
 
         self._is_playing = None
         self._last_state = None
@@ -93,6 +98,7 @@ class MPWitWindowsTitle(Box):
         def toggle_popup(_):
             self.player_popup_state = not self.player_popup_state
             self._update_popup_button_icon()
+
             if self.player_popup_state:
                 self.popup.show_all()
             else:
@@ -116,6 +122,28 @@ class MPWitWindowsTitle(Box):
 
         self._hover_inside = False
         GLib.timeout_add(200, delayed_hide)
+
+    def _on_popup_enter(self, *_):
+        self._popup_hover = True
+        self.popup.show()
+
+    def _on_popup_leave(self, widget, event: Gdk.EventCrossing):
+        if event.detail == Gdk.NotifyType.INFERIOR:
+            return False
+
+        self.popup.hide()
+        self.popup_button.hide()
+
+        def delayed_hide():
+            if not self._hover_inside and not self._popup_hover:
+                self.player_popup_state = False
+                self._update_popup_button_icon()
+                self.popup.hide()
+            return False
+
+        self._popup_hover = False
+        GLib.timeout_add(200, delayed_hide)
+        return True
 
     def _update_popup_button_icon(self):
         icon = "" if self.player_popup_state else ""
@@ -146,16 +174,17 @@ class MPWitWindowsTitle(Box):
 
         self._is_playing = playing
 
+        self.main_container.show_all()
+
         if playing:
             if self.popup.selected_player_id not in current_pids:
                 first_group = next(iter(playing_dict.values()), {})
                 first_pid = next(iter(first_group), "")
                 if first_pid:
-                    self.popup._refresh_hierarchy()
+                    self.popup._refresh_all()
                     self.popup._set_selected_player(first_pid)
 
         self.player_icon_label.set_text(f" {icon} ")
-        self.main_container.show_all()
         self.popup_button.hide()
         self.main_container.children = [
             self.player_container if playing else self.title_box
