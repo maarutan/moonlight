@@ -13,7 +13,7 @@ from fabric.widgets.centerbox import CenterBox
 
 class StatusBar(Window):
     def __init__(self, **kwargs):
-        self.confh = ConfigHandler()
+        self.cfg = ConfigHandler()
         self.modules = ModulesHandler()
         self.bar_content = self._create_bar_content()
 
@@ -26,16 +26,16 @@ class StatusBar(Window):
             exclusivity="auto",
             child=self.bar_content,
             style_classes="moon-bar",
-            anchor=self.confh.get_position(),
-            margin=self.confh.get_margin(),
-            layer=self.confh.get_layer(),
+            anchor=self.cfg.bar.position(),
+            margin=self.cfg.bar.margin(),
+            layer=self.cfg.bar.layer(),
             **kwargs,
         )
 
     def _create_bar_content(self) -> CenterBox:
         box = CenterBox(
             name="center-bar",
-            orientation="h" if self.confh.is_horizontal() else "v",
+            orientation="h" if self.cfg.bar.is_horizontal() else "v",
         )
         box.start_children = self._get_start_children()
         box.center_children = self._get_center_children()
