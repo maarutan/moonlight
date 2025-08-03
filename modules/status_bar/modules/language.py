@@ -21,14 +21,14 @@ def get_keyboard_devices():
 class Language(Box):
     def __init__(
         self,
-        orientation_pos: bool = True,
+        is_horizontal: bool = True,
         number_letters: int = 2,
         register: Literal["upper", "u", "lower", "l"] = "l",
     ):
         self.number_letters = number_letters
         self.register = register
 
-        self.orientation_pos = orientation_pos
+        self.orientation_pos = is_horizontal
         self._lang_label = Label(name="lang-label")
 
         self.button = Button(

@@ -15,13 +15,13 @@ class Types:
 class Logo(Box):
     def __init__(
         self,
-        type_: str = Types.TEXT,
+        type: str = Types.TEXT,
         content: str = "",
         image_path: str = "",
         image_size: int = 24,
-        orientation_pos: bool = True,
+        is_horizontal: bool = True,
     ):
-        self._type = type_
+        self._type = type
         self.image_widget = None
 
         if image_path:
@@ -50,7 +50,7 @@ class Logo(Box):
 
         super().__init__(
             name="logo-container",
-            orientation="h" if orientation_pos else "v",
+            orientation="h" if is_horizontal else "v",
             children=self.button,
         )
 

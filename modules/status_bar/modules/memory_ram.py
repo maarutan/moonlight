@@ -14,13 +14,13 @@ class MemoryRAM(Box):
         self,
         interval: int = 2,
         format: str = "used/total",
-        orientation_pos: bool = True,
+        is_horizontal: bool = True,
         icon: str = "",
     ):
         self.interval = interval
         self.format = format
         self.icon = icon
-        self.orientation_pos = orientation_pos
+        self.orientation_pos = is_horizontal
         self.json = JsonManager()
 
         self._label = Label(name="memory-label", text="–")

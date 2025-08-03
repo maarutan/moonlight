@@ -1,37 +1,35 @@
 from fabric.hyprland.widgets import WorkspaceButton, ActiveWindow
 from fabric.hyprland.widgets import Workspaces as HWorkspaces
-from fabric.utils import exec_shell_command_async
 from fabric.widgets.box import Box
-from fabric.widgets.label import Label
 from loguru import logger
 
 
 class Workspaces(Box):
     def __init__(
         self,
-        workspaces_numbering=None,
-        maximum_value: int = 10,
-        orientation_pos: bool = True,
+        numbering_workpieces=None,
+        max_visible_workspaces: int = 10,
+        is_horizontal: bool = True,
         magic_icon: str = "✨",
-        enable_magic: bool = False,
+        magic_enable: bool = False,
         enable_buttons_factory: bool = True,
     ):
-        if workspaces_numbering is None:
-            workspaces_numbering = []
+        if numbering_workpieces is None:
+            numbering_workpieces = []
 
         super().__init__(
             name="workspaces-container",
-            orientation="h" if orientation_pos else "v",
+            orientation="h" if is_horizontal else "v",
         )
 
         def get_label(i):
             base_label = (
                 (
-                    workspaces_numbering[i - 1]
-                    if i - 1 < len(workspaces_numbering)
+                    numbering_workpieces[i - 1]
+                    if i - 1 < len(numbering_workpieces)
                     else str(i)
                 )
-                if workspaces_numbering
+                if numbering_workpieces
                 else str(i)
             )
             if i < 0:
@@ -43,7 +41,7 @@ class Workspaces(Box):
             invert_scroll=True,
             empty_scroll=True,
             v_align="fill",
-            orientation="h" if orientation_pos else "v",
+            orientation="h" if is_horizontal else "v",
             spacing=0,
             buttons=[
                 WorkspaceButton(
@@ -55,16 +53,18 @@ class Workspaces(Box):
                     label=None,
                     style_classes=["buttons-workspace"],
                 )
-                for i in range(1, maximum_value + 1)
+                for i in range(1, max_visible_workspaces + 1)
             ],
         )
 
-        max_active = ActiveWindow() if callable(ActiveWindow) else maximum_value
+        max_active = (
+            ActiveWindow() if callable(ActiveWindow) else max_visible_workspaces
+        )
         if not isinstance(max_active, int) or max_active <= 0:
-            max_active = maximum_value
+            max_active = max_visible_workspaces
 
         def custom_buttons_factory(i: int):
-            if i < 0 and enable_magic:
+            if i < 0 and magic_enable:
                 return WorkspaceButton(
                     id=i,
                     label=magic_icon,
@@ -84,7 +84,7 @@ class Workspaces(Box):
                 label=get_label(i),
                 # style_classes=["buttons-workspace"],
             )
-            for i in range(1, maximum_value + 1)
+            for i in range(1, max_visible_workspaces + 1)
         ]
 
         workspaces_num = HWorkspaces(
@@ -92,9 +92,9 @@ class Workspaces(Box):
             invert_scroll=True,
             empty_scroll=True,
             v_align="fill",
-            orientation="h" if orientation_pos else "v",
+            orientation="h" if is_horizontal else "v",
             spacing=0,
             buttons=buttons,
             buttons_factory=custom_buttons_factory,
         )
-        self.children = [workspaces_num if workspaces_numbering else workspaces]
+        self.children = [workspaces_num if numbering_workpieces else workspaces]
