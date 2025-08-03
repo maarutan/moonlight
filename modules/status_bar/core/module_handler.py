@@ -1,4 +1,4 @@
-from .preparation_of_modules import init_modules
+from .prep_modules import init_modules
 from ._config_handler import ConfigHandler
 
 import gi
@@ -17,13 +17,13 @@ class Modules:
 
 class ModulesHandler(Modules):
     def __init__(self):
-        self.confh = ConfigHandler()
+        self.cfg = ConfigHandler()
 
-        self.modules_start = self.confh.get_modules_start()
-        self.modules_center = self.confh.get_modules_center()
-        self.modules_end = self.confh.get_modules_end()
+        self.modules_start = self.cfg.modules.get_modules_start()
+        self.modules_center = self.cfg.modules.get_modules_center()
+        self.modules_end = self.cfg.modules.get_modules_end()
 
-        built_modules = init_modules(self.confh)
+        built_modules = init_modules(self.cfg)
 
         super().__init__(modules=built_modules)
         self.__dict__.update(built_modules)
@@ -44,7 +44,7 @@ class ModulesHandler(Modules):
     def _build_box(self, name: str, keys: list[str]) -> Box:
         return Box(
             name=name,
-            orientation="h" if self.confh.is_horizontal() else "v",
+            orientation="h" if self.cfg.bar.is_horizontal() else "v",
             children=self._modules_position_handler(keys),
         )
 
