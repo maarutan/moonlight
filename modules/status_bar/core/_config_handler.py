@@ -9,6 +9,7 @@ from .prep_cfg import (
     WindowsTitleCfg,
     LanguageCfg,
     ClockCfg,
+    MediaPlayerWindowsTitleCfg,
 )
 from config import (
     STATUS_BAR_DIR,
@@ -39,14 +40,15 @@ class ConfigHandler:
         self.windows_title = WindowsTitleCfg(self)
         self.language = LanguageCfg(self)
         self.clock = ClockCfg(self)
+        self.media_player_windows_title = MediaPlayerWindowsTitleCfg(self)
 
-    "~~ Config ~~"
+    # Config
 
     def generate_default_config(self) -> None:
         if self.fm.read(self.path) in [None, ""]:
             self.fm.write(self.path, self.cfg.DEFAULT.value)
 
-    "~~ Options ~~"
+    # Options
 
     def _get_options(
         self,
@@ -54,7 +56,7 @@ class ConfigHandler:
         default: str | int | bool | dict | list | None = None,
     ) -> str | int | bool | dict | list | None:
         data = self.jsonc.read(self.path)
-        return data.get(key, default)
+        return data.get(key, default) if data else default
 
     def _get_nested(self, *keys, default=None):
         data = self._get_options(keys[0], {})

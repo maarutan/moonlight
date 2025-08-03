@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from config.data import GHOST_IMAGE
+# from config.data import GHOST_IMAGE
 
 if TYPE_CHECKING:
     from ..media_player_hierarchy_popup import PlayerHierarchyPopup
@@ -15,19 +15,23 @@ from fabric.widgets.grid import Grid
 from fabric.widgets.button import Button
 
 
-def _make_hierarchy(self: "PlayerHierarchyPopup") -> Gtk.ScrolledWindow:
+def _make_hierarchy_for_select(self: "PlayerHierarchyPopup") -> Gtk.ScrolledWindow:
     grid = Grid(
         name="player-hierarchy-grid",
         row_spacing=12,
         column_spacing=12,
         column_homogeneous=True,
         row_homogeneous=True,
-        style=f"""
-            background-image: url('{Path(GHOST_IMAGE)}');
-            background-size: 200px;
-            background-repeat: no-repeat;
-            background-position: center;
-                """,
+        style=(
+            f"""
+    background-image: url('{self.background_path}');
+    background-size: {self.ghost_size}px;
+    background-repeat: no-repeat;
+    background-position: center;
+    """
+            if self.if_empty_ghost_will_come_out
+            else ""
+        ),
     )
 
     self._box_by_pid.clear()
@@ -37,7 +41,9 @@ def _make_hierarchy(self: "PlayerHierarchyPopup") -> Gtk.ScrolledWindow:
 
         if self.on_player_changed:
             self.on_player_changed(pid)
-        self.players.pause_all_except(pid)
+
+        if self.single_active_player:
+            self.players.pause_all_except(pid)
 
         for p, b in self._box_by_pid.items():
             pin_label = b.get_children()[0].get_children()[2]  # player-popup-pin_sign

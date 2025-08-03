@@ -12,6 +12,7 @@ DOT_CONFIG = HOME / ".config"
 HYPR_CONFIG_DIR = DOT_CONFIG / "hypr"
 APP_CONFIG_DIR = HYPR_CONFIG_DIR / APP_NAME
 CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
+ASSETS = CURRENT_DIR.parent / "assets"
 
 
 "===== ~~ Status Bar ~~ ====="
@@ -25,5 +26,5 @@ STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
 CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
 
 "===== ~~ player config ~~ ====="
-PLACEHOLDER_IMAGE = CURRENT_DIR.parent / "assets" / "player" / "placeholder.png"
-GHOST_IMAGE = CURRENT_DIR.parent / "assets" / "empty" / "ghost.png"
+PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
+GHOST_IMAGE = ASSETS / "empty" / "ghost.png"

@@ -7,6 +7,7 @@ from .memory_ram import MemoryRamCfg
 from .windows_title import WindowsTitleCfg
 from .language import LanguageCfg
 from .clock import ClockCfg
+from .media_player_windows_title import MediaPlayerWindowsTitleCfg
 
 __all__ = [
     "StatusBarCfg",
@@ -18,4 +19,5 @@ __all__ = [
     "WindowsTitleCfg",
     "MemoryRamCfg",
     "LogoCfg",
+    "MediaPlayerWindowsTitleCfg",
 ]

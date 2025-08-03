@@ -19,14 +19,24 @@ class MPWitWindowsTitle(Box):
     def __init__(
         self,
         title: WindowsTitle,
-        orientation_pos: bool = True,
+        background_path: str,
+        is_horizontal: bool = True,
+        ghost_size: int = 200,
+        single_active_player: bool = True,
+        if_empty_ghost_will_come_out: bool = True,
         **kwargs,
     ):
-        self.orientation_pos = orientation_pos
-        self.cava = SpectrumRender(self.orientation_pos)
+        self.is_horizontal = is_horizontal
+        self.cava = SpectrumRender(self.is_horizontal)
         self.player = PlayerManager()
         self.title = title
-        self.popup = PlayerHierarchyPopup()
+
+        self.popup = PlayerHierarchyPopup(
+            ghost_size=ghost_size,
+            single_active_player=single_active_player,
+            if_empty_ghost_will_come_out=if_empty_ghost_will_come_out,
+            background_path=background_path,
+        )
         self.merged_titles = WINDOW_TITLE_MAP
         self.player_popup_state = False
         self._hover_inside = False
@@ -34,7 +44,7 @@ class MPWitWindowsTitle(Box):
 
         super().__init__(
             name="window-box",
-            orientation="h" if self.orientation_pos else "v",
+            orientation="h" if self.is_horizontal else "v",
             **kwargs,
         )
         self.icon = next(
@@ -54,7 +64,7 @@ class MPWitWindowsTitle(Box):
         self.popup_button = self._create_popup_button()
 
         self.dynamic_inner = Box(
-            orientation="h" if self.orientation_pos else "v",
+            orientation="h" if self.is_horizontal else "v",
             children=[self.player_icon_label, self.popup_button],
         )
         GLib.idle_add(self.popup_button.hide)
@@ -67,17 +77,17 @@ class MPWitWindowsTitle(Box):
         self.hover_area.connect("leave-notify-event", self._on_mouse_leave)
 
         self.player_box = Box(
-            orientation="h" if self.orientation_pos else "v",
+            orientation="h" if self.is_horizontal else "v",
             children=[self.hover_area],
         )
         self.player_container = Box(
-            orientation="h" if self.orientation_pos else "v",
+            orientation="h" if self.is_horizontal else "v",
             show_all=True,
             children=[self.player_box, self.cava.get_spectrum_box()],
         )
 
         self.main_container = Box(
-            orientation="h" if self.orientation_pos else "v",
+            orientation="h" if self.is_horizontal else "v",
         )
         self.children = self.main_container
         self.main_container.show_all()

@@ -1,11 +1,10 @@
 # player_hierarchy_popup.py
 
-from os import name
 
 from fabric.widgets.box import Box
 from utils.json_manager import JsonManager
-from .components_media_player.player import _make_selected_player_view
-from .components_media_player.hierarchy import _make_hierarchy
+from .components_media_player.player import _make_media_player
+from .components_media_player.hierarchy import _make_hierarchy_for_select
 
 from loguru import logger
 from utils import WINDOW_TITLE_MAP
@@ -19,7 +18,13 @@ from config import STATUS_BAR_LOCK_MODULES
 
 
 class PlayerHierarchyPopup(Window):
-    def __init__(self):
+    def __init__(
+        self,
+        background_path: str,
+        ghost_size: int = 200,
+        single_active_player: bool = True,
+        if_empty_ghost_will_come_out: bool = True,
+    ):
         super().__init__(
             name="player-hierarchy-popup",
             anchor="top center",
@@ -29,6 +34,12 @@ class PlayerHierarchyPopup(Window):
             h_align="fill",
             v_align="fill",
         )
+
+        self.ghost_size = ghost_size
+        self.single_active_player = single_active_player
+        self.if_empty_ghost_will_come_out = if_empty_ghost_will_come_out
+        self.background_path = background_path
+
         self.selected_player_id = ""
         self.art_url_base = []
         self.json = JsonManager()
@@ -47,9 +58,9 @@ class PlayerHierarchyPopup(Window):
 
     def _refresh_all(self):
         self.children = CenterBox(
-            start_children=[_make_selected_player_view(self)],
+            start_children=[_make_media_player(self)],
             center_children=[Box(name="vertical-line", orientation="v")],
-            end_children=[_make_hierarchy(self)],
+            end_children=[_make_hierarchy_for_select(self)],
         )
         return True
 

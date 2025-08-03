@@ -5,15 +5,18 @@ from .data import (
     STATUS_BAR_DIR,
     STATUS_BAR_CONFIG,
     GHOST_IMAGE,
+    HOME,
     STATUS_BAR_LOCK_MODULES,
     CAVA_CONFIG,
+    ASSETS,
 )
 
 __all__ = [
     "APP_NAME",
     "CONFIG_FILE",
     "STATUS_BAR_DIR",
-    "STATUS_BAR_CONFIG",
+    "ASSETS",
+    "HOMESTATUS_BAR_CONFIG",
     "STATUS_BAR_LOCK_MODULES",
     "GHOST_IMAGE",
     "PLACEHOLDER_IMAGE",

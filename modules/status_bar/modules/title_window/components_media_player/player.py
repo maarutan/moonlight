@@ -17,7 +17,7 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.eventbox import EventBox
 
 
-def _make_selected_player_view(self: "PlayerHierarchyPopup"):
+def _make_media_player(self: "PlayerHierarchyPopup"):
     block = Box(
         name="player-card",
         orientation=Gtk.Orientation.VERTICAL,
