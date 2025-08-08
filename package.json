@@ -1,0 +1,27 @@
+{
+  "name": "moonlight",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.py",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maarutan/moonlight.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/maarutan/moonlight/issues"
+  },
+  "homepage": "https://github.com/maarutan/moonlight#readme",
+  "devDependencies": {
+    "sass": "^1.90.0"
+  }
+}
