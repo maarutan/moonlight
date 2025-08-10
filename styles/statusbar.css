@@ -1,11 +1,10 @@
 * {
   font-size: 16px;
-  transition: 0.5s;
+  /* transition: 0.5s; */
 }
 #player-hierarchy-popup {
   border-radius: 10px;
 }
-
 #player-popup-icon {
   padding: 10 0 0 0px;
 }
@@ -21,6 +20,14 @@
 #player-popup-current-select {
   font-size: 18px;
   font-weight: bolder;
+}
+#player-popup-button {
+  transition: 0.5s;
+}
+#player-popup-button:hover {
+  animation: 0.5s;
+  border-radius: 20px;
+  transition: 0.5s;
 }
 #player-popup-current-select-title {
   font-size: 14px;
@@ -90,7 +97,7 @@ player-popup-progressbar {
 #moon-bar {
   box-shadow: 0 0 10px #000;
   /* background: #1e1e2e; */
-  background: transparent;
+  /* background: transparent; */
   /* border: #0054f0 solid 1px; */
 }
 
@@ -178,49 +185,43 @@ player-popup-progressbar {
 /*   font-size: 17px; */
 /* } */
 
-#workspaces-num button {
+#workspaces-container button {
   color: white;
   padding: 1px 2px;
-  /* font-size: 14px; */
+  border-radius: 0;
   transition:
     background-color 0.3s ease,
     border-bottom-color 0.3s ease;
 }
 
-#workspaces-num button.buttons-workspace {
-  background-color: #444;
-  border-radius: 0px;
-}
-
-#workspaces-num button {
-  border-radius: 0px;
-}
-/* #workspaces-num { */
-/*   padding: 0 0 0 50; */
-/* } */
-
-#workspaces-num button:not(.empty) {
-  /* font-weight: bold; */
-  /* background-color: #8888ff; */
-  border-bottom: 1px solid #fff; /* Черная линия */
-}
-
-#workspaces-num button.active {
+/* Активная кнопка */
+#workspaces-container button.active {
   background-color: #888;
   border: none;
 }
 
-/* #workspaces button:nth-child(1):not(.empty) { */
-/*   background-color: #ff5733; */
-/* } */
-/**/
-/* #workspaces button:nth-child(2):not(.empty) { */
-/*   background-color: #33ff57; */
-/* } */
-/**/
-/* #workspaces button:nth-child(3):not(.empty) { */
-/*   background-color: #3357ff; */
-/* } */
+/* Непустые кнопки — линия снизу */
+#workspaces-container button:not(.empty) {
+  border-bottom: 1px solid #fff;
+}
+
+/* 🎯 Дополнительные шаблоны для цветовой кастомизации рабочих пространств:
+#workspaces-container button:nth-child(1):not(.empty) {
+  background-color: #ff5733;
+}
+#workspaces-container button:nth-child(2):not(.empty) {
+  background-color: #33ff57;
+}
+#workspaces-container button:nth-child(3):not(.empty) {
+  background-color: #3357ff;
+}
+*/
+
+/* Контейнерные отступы (по желанию)
+#workspaces-container {
+  padding-left: 50px;
+}
+*/
 #logo-label {
   font-size: 20px;
 }

@@ -8,7 +8,7 @@ from .components_media_player.hierarchy import _make_hierarchy_for_select
 
 from loguru import logger
 from utils import WINDOW_TITLE_MAP
-from services import PlayerManager
+from services import MprisPlayerManager, MprisPlayer
 
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.utils import GLib  # type: ignore
@@ -21,6 +21,8 @@ class PlayerHierarchyPopup(Window):
     def __init__(
         self,
         background_path: str,
+        # mpris_player: MprisPlayer,
+        active_players: dict = {},
         ghost_size: int = 200,
         single_active_player: bool = True,
         if_empty_ghost_will_come_out: bool = True,
@@ -35,18 +37,33 @@ class PlayerHierarchyPopup(Window):
             v_align="fill",
         )
 
+        self.mpris_manager = MprisPlayerManager()  # <- вот сюда
+        self.players = self.mpris_manager.players  # теперь можно брать
+        self.active_players = active_players
+        # print(active_players)
+
+        for p in self.players:  # type: ignore
+            self.mp = MprisPlayer(p)
+        # self.mp = mpris_player
+
+        self.selected_player_id = self.mp.player_name
+        self.selected_title = self.mp.title
+        self.selected_artist = self.mp.artist
+        self.selected_album = self.mp.album
+        self.selected_preview_image = self.mp.arturl
+
         self.ghost_size = ghost_size
         self.single_active_player = single_active_player
         self.if_empty_ghost_will_come_out = if_empty_ghost_will_come_out
         self.background_path = background_path
 
-        self.selected_player_id = ""
         self.art_url_base = []
         self.json = JsonManager()
         self.status_bar_lock_modules = STATUS_BAR_LOCK_MODULES
 
-        self.players = PlayerManager()
-        self._is_paused = True if self.players.is_playing() else False
+        self.mpris_manager = MprisPlayerManager()
+
+        # self._is_paused = True if self.players.is_playing() else False
 
         self.merged_titles = WINDOW_TITLE_MAP
         self.preview_resolver = GetPreviewPath()
@@ -54,7 +71,7 @@ class PlayerHierarchyPopup(Window):
         self._box_by_pid = {}
         self.on_player_changed = None
 
-        GLib.timeout_add_seconds(2.5, self._refresh_all)
+        GLib.timeout_add_seconds(1, self._refresh_all)
 
     def _refresh_all(self):
         self.children = CenterBox(
@@ -62,19 +79,4 @@ class PlayerHierarchyPopup(Window):
             center_children=[Box(name="vertical-line", orientation="v")],
             end_children=[_make_hierarchy_for_select(self)],
         )
-        return True
-
-    def _set_selected_player(self, pid: str):
-        print(">>> set_selected_player called with pid:", pid)
-        self.selected_player_id = pid
-        box = self._box_by_pid.get(pid)
-        if box:
-            if self._last_hidden_box and self._last_hidden_box is not box:
-                self._last_hidden_box.set_visible(True)
-            box.set_visible(False)
-            self._last_hidden_box = box
-        if self.on_player_changed:
-            print(">>> calling on_player_changed")
-            self.on_player_changed(pid)
-
         return True

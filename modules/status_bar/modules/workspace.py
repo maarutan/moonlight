@@ -1,7 +1,9 @@
-from fabric.hyprland.widgets import WorkspaceButton, ActiveWindow
+from fabric.hyprland.widgets import WorkspaceButton
 from fabric.hyprland.widgets import Workspaces as HWorkspaces
 from fabric.widgets.box import Box
-from loguru import logger
+
+import gi
+from gi.repository import Gdk  # type: ignore
 
 
 class Workspaces(Box):
@@ -17,84 +19,80 @@ class Workspaces(Box):
         if numbering_workpieces is None:
             numbering_workpieces = []
 
-        super().__init__(
-            name="workspaces-container",
-            orientation="h" if is_horizontal else "v",
-        )
-
-        def get_label(i):
-            base_label = (
-                (
-                    numbering_workpieces[i - 1]
-                    if i - 1 < len(numbering_workpieces)
-                    else str(i)
-                )
-                if numbering_workpieces
-                else str(i)
-            )
+        def get_label(i: int) -> str:
             if i < 0:
                 return magic_icon
-            return base_label
+            return (
+                numbering_workpieces[i - 1]
+                if i - 1 < len(numbering_workpieces)
+                else str(i)
+            )
 
-        workspaces = HWorkspaces(
-            name="workspaces",
-            invert_scroll=True,
-            empty_scroll=True,
-            v_align="fill",
-            orientation="h" if is_horizontal else "v",
-            spacing=0,
-            buttons=[
-                WorkspaceButton(
-                    h_expand=False,
-                    v_expand=False,
-                    h_align="center",
-                    v_align="center",
-                    id=i,
-                    label=None,
-                    style_classes=["buttons-workspace"],
-                )
-                for i in range(1, max_visible_workspaces + 1)
-            ],
-        )
-
-        max_active = (
-            ActiveWindow() if callable(ActiveWindow) else max_visible_workspaces
-        )
-        if not isinstance(max_active, int) or max_active <= 0:
-            max_active = max_visible_workspaces
+        def set_pointer_cursor(widget):
+            gdk_window = widget.get_window()
+            if gdk_window:
+                display = Gdk.Display.get_default()
+                cursor = Gdk.Cursor.new_from_name(display, "pointer")
+                gdk_window.set_cursor(cursor)
 
         def custom_buttons_factory(i: int):
             if i < 0 and magic_enable:
-                return WorkspaceButton(
+                btn = WorkspaceButton(
                     id=i,
                     label=magic_icon,
                     style_classes=["magic-workspace"],
+                    orientation="h" if is_horizontal else "v",
+                    v_align="fill",
+                    h_align="fill",
+                    v_expand=True,
+                    h_expand=True,
                 )
             elif i >= 1 and enable_buttons_factory:
-                return WorkspaceButton(
+                btn = WorkspaceButton(
                     id=i,
+                    v_expand=True,
+                    h_expand=True,
+                    v_align="fill",
+                    h_align="fill",
                     label=str(i),
-                    # style_classes=["buttons-workspace"],
+                    style_classes=["buttons-workspace"],
                 )
-            return None
+            else:
+                return None
+            btn.connect("realize", lambda w: set_pointer_cursor(w))
+            return btn
 
-        buttons = [
-            WorkspaceButton(
+        buttons = []
+        for i in range(1, max_visible_workspaces + 1):
+            btn = WorkspaceButton(
+                v_align="fill",
+                h_align="fill",
                 id=i,
                 label=get_label(i),
-                # style_classes=["buttons-workspace"],
+                style_classes=["buttons-workspace"],
             )
-            for i in range(1, max_visible_workspaces + 1)
-        ]
+            btn.connect("realize", lambda w: set_pointer_cursor(w))
+            buttons.append(btn)
 
-        workspaces_num = HWorkspaces(
-            name="workspaces-num",
+        super().__init__(
+            name="statusbar-workspaces-container",
+            orientation="h" if is_horizontal else "v",
+            v_align="fill",
+            h_align="fill",
+        )
+
+        workspaces_widget = HWorkspaces(
+            name="statusbar-workspaces-text",
             invert_scroll=True,
             empty_scroll=True,
             v_align="fill",
+            h_align="fill",
+            v_expand=True,
+            h_expand=True,
             orientation="h" if is_horizontal else "v",
             spacing=0,
-            buttons=buttons,
-            buttons_factory=custom_buttons_factory,
+            buttons=buttons if numbering_workpieces else None,
+            buttons_factory=custom_buttons_factory if enable_buttons_factory else None,
         )
-        self.children = [workspaces_num if numbering_workpieces else workspaces]
+
+        self.children = [workspaces_widget]

@@ -1,20 +1,15 @@
-import time
-from fabric.utils import GLib  # type: ignore
 from fabric.widgets.box import Box
-from fabric.widgets.button import Button
 from fabric.widgets.datetime import DateTime
-from fabric.widgets.label import Label
-from gi.repository import Gtk, Gdk  # type: ignore
 
 
 class Clock(Box):
     def __init__(
         self,
-        format: int = 242,  # 12-hour format with AM/PM
-        orientation_pos: bool = True,
+        format: int = 242,
+        is_horizontal: bool = True,
     ):
         self.format = format
-        self._orientation = orientation_pos
+        self.is_horizontal = is_horizontal
 
         if self.format == 12:
             time_format_horizontal = "%I:%M %p"
@@ -27,18 +22,18 @@ class Clock(Box):
             time_format_vertical = "%H\n%M\n%S"
 
         self.date_time = DateTime(
-            name="date-time",
+            name="statusbar-clock",
             formatters=[time_format_horizontal]
-            if self._orientation
+            if self.is_horizontal
             else [time_format_vertical],
-            h_align="center" if self._orientation else "fill",
+            h_align="center" if self.is_horizontal else "fill",
             v_align="center",
             h_expand=True,
             v_expand=True,
-            style_classes=["vertical"] if not self._orientation else [],
+            style_classes=["vertical"] if not self.is_horizontal else [],
         )
         super().__init__(
-            name="clock",
-            orientation="h" if self._orientation else "v",
+            name="statusbar-clock",
+            orientation="h" if self.is_horizontal else "v",
             children=self.date_time,
         )

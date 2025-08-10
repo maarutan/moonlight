@@ -1,12 +1,11 @@
-# media_player_with_windows_title.py
-
+from fabric.widgets.stack import Stack
 from .media_player_hierarchy_popup import PlayerHierarchyPopup
 from .windows_title import WindowsTitle
 from ..cava import SpectrumRender
 
 import re
 from utils import WINDOW_TITLE_MAP
-from services import PlayerManager
+from services import MprisPlayer, MprisPlayerManager
 
 from fabric.widgets.eventbox import EventBox
 from fabric.widgets.button import Button
@@ -28,16 +27,29 @@ class MPWitWindowsTitle(Box):
     ):
         self.is_horizontal = is_horizontal
         self.cava = SpectrumRender(self.is_horizontal)
-        self.player = PlayerManager()
         self.title = title
+
+        self.active_players = {}  # player_name -> MprisPlayer instance
+
+        self.mpm = MprisPlayerManager()
+        self.mpm.connect("player-appeared", self._on_player_appeared)
+        self.mpm.connect("player-vanished", self._on_player_vanished)
+
+        for player in self.mpm.players:  # type:ignore
+            self.mp = MprisPlayer(player)
+            self.player = self.mp.player_name
+            self._add_player(player)
 
         self.popup = PlayerHierarchyPopup(
             ghost_size=ghost_size,
             single_active_player=single_active_player,
             if_empty_ghost_will_come_out=if_empty_ghost_will_come_out,
             background_path=background_path,
+            active_players=self.active_players,
+            # mpris_player=self.mp,
         )
-        self.merged_titles = WINDOW_TITLE_MAP
+
+        self.merged_titles = WINDOW_TITLE_MAP or []
         self.player_popup_state = False
         self._hover_inside = False
         self._popup_hover = False
@@ -47,6 +59,18 @@ class MPWitWindowsTitle(Box):
             orientation="h" if self.is_horizontal else "v",
             **kwargs,
         )
+
+        self.popup.selected_player_id = next(iter(self.active_players), "")
+        self.playing = False
+        if (
+            self.popup.selected_player_id
+            and self.popup.selected_player_id in self.active_players
+        ):
+            self.playing = (
+                self.active_players[self.popup.selected_player_id].playback_status
+                == "playing"
+            )
+
         self.icon = next(
             (
                 wt
@@ -56,10 +80,6 @@ class MPWitWindowsTitle(Box):
             (None, ""),
         )[1]
 
-        self.popup.connect("enter-notify-event", self._on_popup_enter)
-        self.popup.connect("leave-notify-event", self._on_popup_leave)
-
-        self.title_box = Box(children=[self.title])
         self.player_icon_label = Label(name="player-icon", label=f" {self.icon} ")
         self.popup_button = self._create_popup_button()
 
@@ -67,7 +87,6 @@ class MPWitWindowsTitle(Box):
             orientation="h" if self.is_horizontal else "v",
             children=[self.player_icon_label, self.popup_button],
         )
-        GLib.idle_add(self.popup_button.hide)
 
         self.hover_area = EventBox(
             events=["enter-notify", "leave-notify"],
@@ -76,6 +95,9 @@ class MPWitWindowsTitle(Box):
         self.hover_area.connect("enter-notify-event", self._on_mouse_enter)
         self.hover_area.connect("leave-notify-event", self._on_mouse_leave)
 
+        self.popup.connect("enter-notify-event", self._on_popup_enter)
+        self.popup.connect("leave-notify-event", self._on_popup_leave)
+
         self.player_box = Box(
             orientation="h" if self.is_horizontal else "v",
             children=[self.hover_area],
@@ -83,7 +105,7 @@ class MPWitWindowsTitle(Box):
         self.player_container = Box(
             orientation="h" if self.is_horizontal else "v",
             show_all=True,
-            children=[self.player_box, self.cava.get_spectrum_box()],
+            children=[self.player_box, Stack(children=[self.cava.get_spectrum_box()])],
         )
 
         self.main_container = Box(
@@ -95,12 +117,29 @@ class MPWitWindowsTitle(Box):
         self._is_playing = None
         self._last_state = None
 
-        self.player.add_status_callback(self._update_children)
         self.popup.on_player_changed = self._on_player_changed  # type: ignore
 
-        self.popup_button.hide()
         self._update_children()
+        GLib.idle_add(self.popup_button.hide)
         GLib.timeout_add_seconds(1, self._update_children)
+
+    def _add_player(self, player):
+        mp = MprisPlayer(player)
+        self.active_players[mp.player_name] = mp
+        mp.connect("changed", self._on_player_changed)
+
+    def _remove_player(self, player_name):
+        mp = self.active_players.pop(player_name, None)
+        if mp:
+            mp.disconnect_by_func(self._on_player_changed)
+
+    def _on_player_appeared(self, manager, player):
+        self._add_player(player)
+        GLib.idle_add(self._update_children)
+
+    def _on_player_vanished(self, manager, player_name):
+        self._remove_player(player_name)
+        GLib.idle_add(self._update_children)
 
     def _create_popup_button(self):
         self.popup.hide()
@@ -160,22 +199,37 @@ class MPWitWindowsTitle(Box):
         self.popup_button.set_label(icon)
         self.popup_button.queue_draw()
 
-    def _on_player_changed(self, pid):
-        icon = next(
-            (wt for wt in self.merged_titles if re.search(wt[0], pid)), (None, "")
-        )[1]
-        self.player_icon_label.set_text(f" {icon} ")
+    def _on_player_changed(self, player, *args):
+        GLib.idle_add(self._update_children)
 
     def _update_children(self, *_):
-        self.player._refresh_players()
-        playing = self.player.is_any_playing()
-        playing_dict = self.player._get_playing_players()
+        playing_players = [
+            p for p in self.active_players.values() if p.playback_status == "playing"
+        ]
 
-        current_pids = set(pid for group in playing_dict.values() for pid in group)
-        pid = self.popup.selected_player_id or ""
+        if playing_players:
+            active = playing_players[0]
+            pid = active.player_name
+            playing = True
+        else:
+            pid = self.popup.selected_player_id
+            playing = False
+
         icon = next(
-            (wt for wt in self.merged_titles if re.search(wt[0], pid)), (None, "")
-        )[1]
+            (
+                wt[1]
+                for wt in self.merged_titles
+                if isinstance(wt, (list, tuple))
+                and len(wt) >= 2
+                and re.search(wt[0], pid)
+            ),
+            "",
+        )
+
+        matched_window = next(
+            (wt for wt in self.merged_titles if re.search(wt[0], pid)),
+            None,
+        )
 
         new_state = (playing, pid, icon)
         if new_state == self._last_state:
@@ -183,21 +237,20 @@ class MPWitWindowsTitle(Box):
         self._last_state = new_state
 
         self._is_playing = playing
+        self.player_icon_label.set_text(f" {icon} ")
+
+        # if (
+        #     not self._hover_inside
+        #     and not self._popup_hover
+        #     and not self.player_popup_state
+        # ):
+        #   self.popup_button.hide()
 
         self.main_container.show_all()
-
-        if playing:
-            if self.popup.selected_player_id not in current_pids:
-                first_group = next(iter(playing_dict.values()), {})
-                first_pid = next(iter(first_group), "")
-                if first_pid:
-                    self.popup._refresh_all()
-                    self.popup._set_selected_player(first_pid)
-
-        self.player_icon_label.set_text(f" {icon} ")
         self.popup_button.hide()
+
         self.main_container.children = [
-            self.player_container if playing else self.title_box
+            self.player_container if playing else getattr(self, "title_box", self.title)
         ]
 
         return True

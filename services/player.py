@@ -1,258 +1,285 @@
-import gi
-import json
-import subprocess
-from time import sleep
+# Standard library imports
+import contextlib
 
+# Third-party imports
+import gi
+from gi.repository import GLib  # type: ignore
 from loguru import logger
 
-gi.require_version("Playerctl", "2.0")
-from gi.repository import Playerctl  # type: ignore
+# Fabric imports
+from fabric.core.service import Property, Service, Signal
+from fabric.utils import bulk_connect
 
 
-class PlayerManager:
-    def __init__(self) -> None:
-        self.players: dict[str, Playerctl.Player] = {}
-        self.callbacks = []
-        self._init_players()
-        # print(self._get_playing_players())
-        # print(self.players)
+class PlayerctlImportError(ImportError):
+    """An error to raise when playerctl is not installed."""
 
-    def _get_playing_players(self) -> dict:
-        try:
-            names = Playerctl.list_players()
-        except Exception:
-            return {}
-
-        result = {"players": {}}
-
-        for name in names:
-            try:
-                player = Playerctl.Player.new_from_name(name)
-                if player.props.playback_status != Playerctl.PlaybackStatus.PLAYING:
-                    continue
-
-                metadata = dict(player.props.metadata)
-
-                title = metadata.get("xesam:title", "Unknown")
-                artist = metadata.get("xesam:artist", ["Unknown"])[0]
-                album = metadata.get("xesam:album", "Unknown")
-                url = metadata.get("xesam:url", None)
-                art_url = metadata.get("mpris:artUrl", None)
-                length_usec = metadata.get("mpris:length", 0)
-
-                position_usec = player.get_position()
-                position_sec = position_usec / 1_000_000
-                length_sec = length_usec / 1_000_000 if length_usec else 0
-
-                result["players"][player.props.player_name] = {
-                    "title": title,
-                    "artist": artist,
-                    "album": album,
-                    "url": url,
-                    "art_url": art_url,
-                    "positions": {
-                        "second": round(position_sec, 2),
-                        "minute": round(position_sec / 60, 2),
-                        "percent": round((position_sec / length_sec) * 100, 2)
-                        if length_sec
-                        else 0,
-                        "duration": round(length_sec, 2),
-                    },
-                }
-            except Exception:
-                continue
-
-        return result
-
-    def _init_players(self):
-        names = Playerctl.list_players()
-        for name in names:
-            try:
-                player = Playerctl.Player.new_from_name(name)
-                player.connect("playback-status", self._on_playback_status)
-                # ключ по player_name (короткому)
-                self.players[player.props.player_name] = player
-            except Exception as e:
-                print(f"[Init Error] {name}: {e}")
-
-    def _on_playback_status(self, player, status):
-        for cb in self.callbacks:
-            cb()
-
-    def add_status_callback(self, callback):
-        self.callbacks.append(callback)
-
-    def is_any_playing(self) -> bool:
-        return any(
-            player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
-            for player in self.players.values()
+    def __init__(self, *args):
+        super().__init__(
+            "Playerctl is not installed, please install it first",
+            *args,
         )
 
-    def pause_player(self, name: str):
-        player = self.players.get(name)
-        if player:
-            try:
-                player.pause()
-                logger.debug(f"[ Player ] Paused: {name}")
-            except Exception as e:
-                logger.warning(f"[ Player ] Error pausing '{name}': {e}")
-        else:
-            logger.warning(f"[ Player ] '{name}' not found.")
 
-    def play_player(self, name: str):
-        player = self.players.get(name)
-        if player:
-            try:
-                player.play()
-                logger.debug(f"[ Player ] Played: {name}")
-            except Exception as e:
-                logger.warning(f"[ Player ] Error playing '{name}': {e}")
-        else:
-            logger.warning(f"[ Player ] '{name}' not found.")
+# Try to import Playerctl, raise custom error if not available
+try:
+    gi.require_version("Playerctl", "2.0")
+    from gi.repository import Playerctl
+except ValueError:
+    raise PlayerctlImportError
 
-    def pause_all(self):
-        for name, player in self.players.items():
-            if player.props.playback_status == Playerctl.PlaybackStatus.PLAYING:
-                try:
-                    player.pause()
-                    print(f"[Pause] {name}")
-                except Exception as e:
-                    print(f"[Pause Error] {name}: {e}")
 
-    def pause_all_except(self, exclude_names):
-        for name, player in self.players.items():
-            if (
-                player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
-                and name not in exclude_names
-            ):
-                try:
-                    player.pause()
-                    print(f"[Pause] {name}")
-                except Exception as e:
-                    print(f"[Pause Error] {name}: {e}")
-            else:
-                self.play_player(name)
+class MprisPlayer(Service):
+    """A service to manage a mpris player."""
 
-    def _refresh_players(self):
-        try:
-            current_names = set(Playerctl.list_players())
-        except Exception:
-            current_names = set()
+    @Signal
+    def exit(self, value: bool) -> bool: ...
 
-        existing_names = set(self.players.keys())
-        removed = existing_names - current_names
+    @Signal
+    def changed(self) -> None: ...
 
-        for name in removed:
-            player = self.players.pop(name, None)
-            if player is not None:
-                try:
-                    player.disconnect_by_func(self._on_playback_status)
-                except Exception:
-                    pass
-
-        added = current_names - existing_names
-        for name in added:
-            try:
-                player = Playerctl.Player.new_from_name(name)
-                player.connect("playback-status", self._on_playback_status)
-                self.players[player.props.player_name] = player
-            except Exception:
-                pass
-
-    def is_playing(self) -> bool:
-        return any(
-            player.props.playback_status == Playerctl.PlaybackStatus.PLAYING
-            for player in self.players.values()
-        )
-
-    def next_for(self, name: str):
-        try:
-            pname = Playerctl.PlayerName(name)
-            player = Playerctl.Player.new_from_name(pname)
-        except Exception as exc:
-            logger.warning(f"[Player] No such player-name: «{name}», exc: {exc}")
-            return
-
-        try:
-            player.next()
-            logger.debug(f"[Player] Skipped to previous on «{name}»")
-        except Exception as exc:
-            logger.warning(f"[Player] Could not skip previous on «{name}»: {exc}")
-
-    def prev_for(self, name: str):
-        try:
-            pname = Playerctl.PlayerName(name)
-            player = Playerctl.Player.new_from_name(pname)
-        except Exception as exc:
-            logger.warning(f"[Player] No such player-name: «{name}», exc: {exc}")
-            return
-
-        try:
-            player.previous()
-            logger.debug(f"[Player] Skipped to previous on «{name}»")
-        except Exception as exc:
-            logger.warning(f"[Player] Could not skip previous on «{name}»: {exc}")
-
-    def _seek_player(self, name: str, seconds: int):
-        try:
-            subprocess.run(
-                [
-                    "playerctl",
-                    "-p",
-                    name,
-                    "position",
-                    f"{abs(seconds)}{'+' if seconds > 0 else '-'}",
-                ]
+    def __init__(
+        self,
+        player: Playerctl.Player,
+        **kwargs,
+    ):
+        self._signal_connectors: dict = {}
+        self._player: Playerctl.Player = player
+        super().__init__(**kwargs)
+        for sn in ["playback-status", "loop-status", "shuffle", "volume", "seeked"]:
+            self._signal_connectors[sn] = self._player.connect(
+                sn,
+                lambda *args, sn=sn: self.notifier(sn, args),
             )
-            logger.debug(f"[Hack] Seek: {seconds} seconds → {name}")
-        except Exception as e:
-            logger.warning(f"[Hack] Failed to seek : {e}")
 
-    def player_forward_seconds(self, name: str, seconds: int = 5):
-        self._seek_player(name, +seconds)
-
-    def player_backward_seconds(self, name: str, seconds: int = 5):
-        self._seek_player(name, -seconds)
-
-    def get_progress(self, name: str) -> tuple[float, float]:
-        self._refresh_players()
-        player = self.players.get(name)
-        if (
-            not player
-            or player.props.playback_status != Playerctl.PlaybackStatus.PLAYING
-        ):
-            return 0.0, 1.0
-
-        pos_us = player.props.position or 0
-        meta = dict(player.props.metadata)
-        length_us = meta.get("mpris:length") or 0
-
-        pos = min(
-            max(pos_us / 1e6, 0.0), (length_us / 1e6) if length_us else float("inf")
+        self._signal_connectors["exit"] = self._player.connect(
+            "exit",
+            self.on_player_exit,
         )
-        length = (length_us / 1e6) if length_us else max(pos, 1.0)
-        return pos, length
+        self._signal_connectors["metadata"] = self._player.connect(
+            "metadata",
+            lambda *args: self.update_status(),
+        )
+        GLib.idle_add(lambda *args: self.update_status_once())
 
-    def seek_to(self, name: str, microseconds: int) -> None:
-        player = self.players.get(name)
-        if not player:
-            logger.warning(f"[Player] Player '{name}' not found for seek_to.")
-            return
+    def update_status(self):
+        # schedule each notifier asynchronously.
+        def notify_property(prop):
+            if self.get_property(prop) is not None:
+                self.notifier(prop)
 
+        for prop in [
+            "metadata",
+            "title",
+            "artist",
+            "arturl",
+            "length",
+        ]:
+            GLib.idle_add(lambda p=prop: (notify_property(p), False))
+        for prop in [
+            "can-seek",
+            "can-pause",
+            "can-shuffle",
+            "can-go-next",
+            "can-go-previous",
+        ]:
+            GLib.idle_add(lambda p=prop: (self.notifier(p), False))
+
+    def update_status_once(self):
+        # schedule notifier calls for each property
+        def notify_all():
+            for prop in self.list_properties():  # type: ignore
+                self.notifier(prop.name)
+            return False
+
+        GLib.idle_add(notify_all, priority=GLib.PRIORITY_DEFAULT_IDLE)
+
+    def notifier(self, name: str, args=None):
+        def notify_and_emit():
+            self.notify(name)
+            self.emit("changed")
+            return False
+
+        GLib.idle_add(notify_and_emit, priority=GLib.PRIORITY_DEFAULT_IDLE)
+
+    def on_player_exit(self, player):
+        for id in list(self._signal_connectors.values()):
+            with contextlib.suppress(Exception):
+                self._player.disconnect(id)
+        del self._signal_connectors
+        GLib.idle_add(lambda: (self.emit("exit", True), False))
+        del self._player
+
+    def toggle_shuffle(self):
+        if self.can_shuffle:
+            # schedule the shuffle toggle in the GLib idle loop
+            GLib.idle_add(lambda: (setattr(self, "shuffle", not self.shuffle), False))
+        # else do nothing
+
+    def play_pause(self):
+        if self.can_pause:
+            GLib.idle_add(lambda: (self._player.play_pause(), False))
+
+    def next(self):
+        if self.can_go_next:
+            GLib.idle_add(lambda: (self._player.next(), False))
+
+    def previous(self):
+        if self.can_go_previous:
+            GLib.idle_add(lambda: (self._player.previous(), False))
+
+    # Properties
+    @Property(str, "readable")
+    def player_name(self) -> int:
+        return self._player.get_property("player-name")  # type: ignore
+
+    @Property(int, "read-write", default_value=0)
+    def position(self) -> int:
+        return self._player.get_property("position")  # type: ignore
+
+    @position.setter
+    def position(self, new_pos: int):
+        self._player.set_position(new_pos)
+
+    @Property(object, "readable")
+    def metadata(self) -> dict:
+        return self._player.get_property("metadata")  # type: ignore
+
+    @Property(str or None, "readable")
+    def arturl(self) -> str | None:
+        if "mpris:artUrl" in self.metadata.keys():  # type: ignore  # noqa: SIM118
+            return self.metadata["mpris:artUrl"]  # type: ignore
+        return None
+
+    @Property(str or None, "readable")
+    def length(self) -> str | None:
+        if "mpris:length" in self.metadata.keys():  # type: ignore  # noqa: SIM118
+            return self.metadata["mpris:length"]  # type: ignore
+        return None
+
+    @Property(str, "readable")
+    def artist(self) -> str:
+        artist = self._player.get_artist()  # type: ignore
+        if isinstance(artist, (list, tuple)):
+            return ", ".join(artist)
+        return artist
+
+    @Property(str, "readable")
+    def album(self) -> str:
+        return self._player.get_album()  # type: ignore
+
+    @Property(str, "readable")
+    def title(self) -> str:
+        if self._player is None:
+            return ""
+        title_data = self._player.get_title()
+        return title_data if isinstance(title_data, str) else ""
+
+    @Property(bool, "read-write", default_value=False)
+    def shuffle(self) -> bool:
+        return self._player.get_property("shuffle")  # type: ignore
+
+    @shuffle.setter
+    def shuffle(self, do_shuffle: bool):
+        self.notifier("shuffle")
+        return self._player.set_shuffle(do_shuffle)
+
+    @Property(str, "readable")
+    def playback_status(self) -> str:
+        return {
+            Playerctl.PlaybackStatus.PAUSED: "paused",
+            Playerctl.PlaybackStatus.PLAYING: "playing",
+            Playerctl.PlaybackStatus.STOPPED: "stopped",
+        }.get(self._player.get_property("playback_status"), "unknown")  # type: ignore
+
+    @Property(str, "read-write")
+    def loop_status(self) -> str:
+        return {
+            Playerctl.LoopStatus.NONE: "none",
+            Playerctl.LoopStatus.TRACK: "track",
+            Playerctl.LoopStatus.PLAYLIST: "playlist",
+        }.get(self._player.get_property("loop_status"), "unknown")  # type: ignore
+
+    @loop_status.setter
+    def loop_status(self, status: str):
+        loop_status = {
+            "none": Playerctl.LoopStatus.NONE,
+            "track": Playerctl.LoopStatus.TRACK,
+            "playlist": Playerctl.LoopStatus.PLAYLIST,
+        }.get(status)
+        self._player.set_loop_status(loop_status) if loop_status else None
+
+    @Property(bool, "readable", default_value=False)
+    def can_go_next(self) -> bool:
+        return self._player.get_property("can_go_next")  # type: ignore
+
+    @Property(bool, "readable", default_value=False)
+    def can_go_previous(self) -> bool:
+        return self._player.get_property("can_go_previous")  # type: ignore
+
+    @Property(bool, "readable", default_value=False)
+    def can_seek(self) -> bool:
+        return self._player.get_property("can_seek")  # type: ignore
+
+    @Property(bool, "readable", default_value=False)
+    def can_pause(self) -> bool:
+        return self._player.get_property("can_pause")  # type: ignore
+
+    @Property(bool, "readable", default_value=False)
+    def can_shuffle(self) -> bool:
         try:
-            # Получаем track_id из метаданных, нужно для set_position
-            track_id = player.props.metadata.get("mpris:trackid")
-            if not track_id:
-                logger.warning(f"[Player] track_id not found for player '{name}'.")
-                return
+            self._player.set_shuffle(self._player.get_property("shuffle"))
+            return True
+        except Exception:
+            return False
 
-            player.set_position(track_id, microseconds)
-            logger.debug(f"[Player] Seeked to {microseconds} µs in player '{name}'.")
-        except Exception as e:
-            logger.warning(f"[Player] Failed to seek player '{name}': {e}")
+    @Property(bool, "readable", default_value=False)
+    def can_loop(self) -> bool:
+        try:
+            self._player.set_shuffle(self._player.get_property("shuffle"))
+            return True
+        except Exception:
+            return False
 
-    def get_options(self, name: str, key: str, default=""):
-        for player in self._get_playing_players().values():
-            for k, v in player.items():
-                if k == name:
-                    return v.get(key, default)
+
+class MprisPlayerManager(Service):
+    """A service to manage mpris players."""
+
+    @Signal
+    def player_appeared(self, player: Playerctl.Player) -> Playerctl.Player: ...
+
+    @Signal
+    def player_vanished(self, player_name: str) -> str: ...
+
+    def __init__(
+        self,
+        **kwargs,
+    ):
+        self._manager = Playerctl.PlayerManager.new()
+        bulk_connect(
+            self._manager,
+            {
+                "name-appeared": self.on_name_appeard,
+                "name-vanished": self.on_name_vanished,
+            },
+        )
+        self.add_players()
+        super().__init__(**kwargs)
+
+    def on_name_appeard(self, manager, player_name: Playerctl.PlayerName):
+        logger.info(f"[MprisPlayer] {player_name.name} appeared")
+        new_player = Playerctl.Player.new_from_name(player_name)
+        manager.manage_player(new_player)
+        self.emit("player-appeared", new_player)  # type: ignore
+
+    def on_name_vanished(self, manager, player_name: Playerctl.PlayerName):
+        logger.info(f"[MprisPlayer] {player_name.name} vanished")
+        self.emit("player-vanished", player_name.name)  # type: ignore
+
+    def add_players(self):
+        for player in self._manager.get_property("player-names"):  # type: ignore
+            self._manager.manage_player(Playerctl.Player.new_from_name(player))  # type: ignore
+
+    @Property(object, "readable")
+    def players(self):
+        return self._manager.get_property("players")  # type: ignore

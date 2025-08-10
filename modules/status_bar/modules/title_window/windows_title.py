@@ -30,19 +30,21 @@ class WindowsTitle(Box):
         self.enable_icon = enable_icon
         self.vertical_title_length = vertical_title_length
         self.merged_titles = self.title_map + WINDOW_TITLE_MAP
-        super().__init__(name="window-box", **kwargs)
-
-        self.children = Box(
+        super().__init__(**kwargs)
+        box = Box(
+            name="statusbar-windows-title-container",
             children=[
                 ActiveWindow(
-                    name="window",
+                    name="statusbar-windows-title-box",
                     formatter=FormattedString(
                         "{ get_title(win_title, win_class) }",
                         get_title=self._get_title,
                     ),
                 )
-            ]
+            ],
         )
+
+        self.children = box
 
     def _trim_visual(self, text: str, max_width: int) -> str:
         result = ""

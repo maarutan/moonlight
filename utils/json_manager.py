@@ -37,10 +37,17 @@ class JsonManager:
 
         return output.getvalue()
 
+    def _remove_trailing_commas(self, s: str) -> str:
+        s = re.sub(r",(\s*[\]\}])", r"\1", s)
+        return s
+
     def read(self, path: Path) -> dict:
         with open(path, "r", encoding="utf-8") as f:
             raw = f.read()
+            if not raw.strip():
+                return {}
             clean = self._strip_comments(raw)
+            clean = self._remove_trailing_commas(clean)
             return json.loads(clean)
 
     def write(self, path: Path, data: dict, indent: int = 2) -> None:

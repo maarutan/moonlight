@@ -1,0 +1,17 @@
+certifi==2025.8.3
+charset-normalizer==3.4.2
+click==8.2.1
+fabric @ git+https://github.com/Fabric-Development/fabric.git@3ce7523c34f53fda615f8c425ff9de22e1d812cc
+idna==3.10
+iniconfig==2.1.0
+loguru==0.7.3
+packaging==25.0
+pluggy==1.6.0
+psutil==7.0.0
+py-spy==0.4.1
+pycairo==1.28.0
+pygments==2.19.2
+pygobject==3.50.0
+pytest==8.4.1
+requests==2.32.4
+urllib3==2.5.0

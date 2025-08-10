@@ -30,7 +30,7 @@ class TrayButtonHandler(Box):
             )
 
         self.button = Button(
-            name="tray-handler-button",
+            name="statusbar-tray-button",
             h_align="fill",
             v_align="fill",
             all_visible=True,

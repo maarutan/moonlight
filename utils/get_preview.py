@@ -1,38 +1,63 @@
 import subprocess
 import requests
 import tempfile
+import hashlib
 from shutil import rmtree
-from random import randint
 from loguru import logger
+import time
 from pathlib import Path
-from config import PLACEHOLDER_IMAGE
-from threading import Thread
+from config import PLACEHOLDER_IMAGE, APP_NAME
+from threading import Thread, Timer
 
 
 class GetPreviewPath:
     def __init__(self) -> None:
-        self.tmp_path = Path(tempfile.gettempdir()) / "moonlight"
-        if self.tmp_path.exists():
-            rmtree(self.tmp_path)
+        self.tmp_path = Path(tempfile.gettempdir()) / APP_NAME
+        # if self.tmp_path.exists():
+        # rmtree(self.tmp_path)
         self.tmp_path.mkdir(exist_ok=True, parents=True)
+        self.CLEANUP_INTERVAL = 60 * 60
+        self.MAX_FILE_AGE = 60 * 60 * 3
 
         self.loading_files = set()
+        self._start_cleanup_timer()
+
+    def _start_cleanup_timer(self):
+        def cleanup():
+            now = time.time()
+            deleted = 0
+
+            for file in self.tmp_path.iterdir():
+                if file.is_file():
+                    age = now - file.stat().st_mtime
+                    if age > self.MAX_FILE_AGE:
+                        try:
+                            file.unlink()
+                            deleted += 1
+                        except Exception as e:
+                            logger.warning(f"Failed to delete {file}: {e}")
+            if deleted:
+                logger.info(f"Cleaned up {deleted} old preview files")
+            Timer(self.CLEANUP_INTERVAL, cleanup).start()
+
+        Timer(self.CLEANUP_INTERVAL, cleanup).start()
+
+    def _get_filename_from_url(self, url: str) -> str:
+        hash_digest = hashlib.md5(url.encode("utf-8")).hexdigest()
+        return f"{hash_digest}.png"
 
     def validator(self, path: str) -> Path:
         try:
-            if path.startswith("http://") or path.startswith("https://"):
-                filename = path.split("/")[-1] or "preview.png"
+            if path.startswith(("http://", "https://")):
+                filename = self._get_filename_from_url(path)
                 path_img = self.tmp_path / filename
 
-                # Если файл загружен — вернуть
                 if path_img.exists():
                     return path_img.resolve()
 
-                # Если уже в загрузке — вернуть плейсхолдер
                 if filename in self.loading_files:
                     return Path(PLACEHOLDER_IMAGE)
 
-                # Запускаем загрузку в фоне
                 self.loading_files.add(filename)
                 Thread(
                     target=self._download_url,
@@ -53,6 +78,10 @@ class GetPreviewPath:
 
     def _download_url(self, url: str, path_img: Path, filename: str) -> None:
         try:
+            if path_img.exists():
+                logger.info(f"Preview already exists, skip download: {path_img}")
+                return
+
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
                 with open(path_img, "wb") as f:
@@ -98,7 +127,6 @@ class GetPreviewPath:
 
         target = self.tmp_path / source.name
 
-        # Если файл уже скопирован, не копируем снова
         if target.exists():
             return target.resolve()
 

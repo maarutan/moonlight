@@ -18,14 +18,11 @@ class StatusBar(Window):
         self.bar_content = self._create_bar_content()
 
         super().__init__(
-            style=None,
             visible=True,
-            name="moon-bar",
+            name="statusbar",
             all_visible=True,
-            title="moon-bar",
             exclusivity="auto",
             child=self.bar_content,
-            style_classes="moon-bar",
             anchor=self.cfg.bar.position(),
             margin=self.cfg.bar.margin(),
             layer=self.cfg.bar.layer(),

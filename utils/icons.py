@@ -1,147 +1,710 @@
-# Parameters
-font_family: str = "tabler-icons"
-font_weight: str = "normal"
-
-span: str = f"<span font-family='{font_family}' font-weight='{font_weight}'>"
-
-# Panels
-apps: str = "&#xf1fd;"
-dashboard: str = "&#xea87;"
-chat: str = "&#xf59f;"
-wallpapers: str = "&#xeb01;"
-windows: str = "&#xefe6;"
-
-# Bar
-colorpicker: str = "&#xebe6;"
-media: str = "&#xf00d;"
-arch: str = "&#xf08c7;"
-
-# Circles
-temp: str = "&#xeb38;"
-disk: str = "&#xea88;"
-battery: str = "&#xea38;"
-memory: str = "&#xfa97;"
-cpu: str = "&#xef8e;"
-swap: str = "&#xeb31;"
+# ruff: noqa: E501
 
 
-# Wallpapers
-add: str = "&#xeb0b;"
-sort: str = "&#xeb5a;"
-circle: str = "&#xf671;"
-check_box: str = "&#xf63d;"
-box: str = "&#xf59a;"
-scan: str = "&#xeb13;"
-scan_stop: str = "&#xed4a;"
-record: str = "&#xf692;"
-update: str = "&#xfa0a;"
-updated: str = "&#xf704;"
+text_icons = {
+    "ui": {
+        "window_close": "",
+        "question": "",
+        "headset": "󰋎",
+        "headphones": "󰋋",
+        "phone": "󰏲",
+        "watch": "",
+        "keyboard": "",
+        "mouse": "",
+        "tv": "",
+        "printer": "󰐪",
+        "camera": "",
+        "speakers": "󰓃",
+        "package": "",
+    },
+    "wifi": {
+        "connected": "󰤨",
+        "disconnected": "󰤩",
+        "connecting": "󰤪",
+        "disabled": "󰤭",
+        "generic": "󰤬",
+        "strength_0": "󰤯",
+        "strength_1": "󰤟",
+        "strength_2": "󰤢",
+        "strength_3": "󰤥",
+        "strength_4": "󰤨",
+    },
+    "mpris": {
+        "playing": "",
+        "paused": "",
+        "stopped": "",
+        "previous": "",
+        "next": "",
+        "shuffle": "",
+        "loop": "",
+    },
+    "trash": {
+        "full": "",
+        "empty": "",
+    },
+    "notifications": {
+        "noisy": "󰂜",
+        "full": "󰅸",
+        "silent": "󰪑",
+        "checked": "󱇥",
+    },
+    "chevron": {
+        "right": "",
+        "left": "",
+        "down": "",
+        "up": "",
+    },
+    "nightlight": {
+        "enabled": "󱩌",
+        "disabled": "󰛨",
+    },
+    "bluetooth": {"enabled": "󰂱", "disabled": "󰂲"},
+    "power": "",
+    "cpu": "",
+    "memory": "",
+    "storage": "󰋊",
+    "updates": "󱧘",
+    "thermometer": "",
+    "recorder": "󰻂",
+    "fallback": "",
+    "powerprofiles": {"power-saver": "󰌪", "performance": "󰓅", "balanced": "󰒂"},
+    "volume": {
+        "overamplified": "󰕾",
+        "high": "󰕾",
+        "medium": "󰖀",
+        "low": "󰕿",
+        "muted": "󰝟",
+    },
+    "microphone": {
+        "muted": "",
+        "low": "󰖁",
+        "medium": "󰖂",
+        "high": "",
+    },
+    "brightness": {
+        "off": "",  # lowest brightness
+        "low": "",
+        "medium": "",
+        "high": "",  # highest brightness
+    },
+    "distro": {
+        "deepin": "",
+        "fedora": "",
+        "arch": "",
+        "nixos": "",
+        "debian": "",
+        "opensuse-tumbleweed": "",
+        "ubuntu": "",
+        "endeavouros": "",
+        "manjaro": "",
+        "popos": "",
+        "garuda": "",
+        "zorin": "",
+        "mxlinux": "",
+        "arcolinux": "",
+        "gentoo": "",
+        "artix": "",
+        "centos": "",
+        "hyperbola": "",
+        "kubuntu": "",
+        "mandriva": "",
+        "xerolinux": "",
+        "parabola": "",
+        "void": "",
+        "linuxmint": "",
+        "archlabs": "",
+        "devuan": "",
+        "freebsd": "",
+        "openbsd": "",
+        "slackware": "",
+    },
+}
 
-# Chevrons
-chevron_up: str = "&#xea62;"
-chevron_down: str = "&#xea5f;"
-chevron_left: str = "&#xea60;"
-chevron_right: str = "&#xea61;"
+# sourced from wttr.in
+WEATHER_SYMBOL_WI_DAY = {
+    "Unknown": "",
+    "Cloudy": "",
+    "Fog": "",
+    "HeavyRain": "",
+    "HeavyShowers": "",
+    "HeavySnow": "",
+    "HeavySnowShowers": "",
+    "LightRain": "",
+    "LightShowers": "",
+    "LightSleet": "",
+    "LightSleetShowers": "",
+    "LightSnow": "",
+    "LightSnowShowers": "",
+    "PartlyCloudy": "",
+    "Sunny": "",
+    "ThunderyHeavyRain": "",
+    "ThunderyShowers": "",
+    "ThunderySnowShowers": "",
+    "VeryCloudy": "",
+}
 
-# Power
-lock: str = "&#xeae2;"
-suspend: str = "&#xece7;"
-logout: str = "&#xeba8;"
-reboot: str = "&#xeb13;"
-shutdown: str = "&#xeb0d;"
+WEATHER_SYMBOL_WI_NIGHT = {
+    "Unknown": "",
+    "Cloudy": "",
+    "Fog": "",
+    "HeavyRain": "",
+    "HeavyShowers": "",
+    "HeavySnow": "",
+    "HeavySnowShowers": "",
+    "LightRain": "",
+    "LightShowers": "",
+    "LightSleet": "",
+    "LightSleetShowers": "",
+    "LightSnow": "",
+    "LightSnowShowers": "",
+    "PartlyCloudy": "",
+    "Sunny": "",
+    "ThunderyHeavyRain": "",
+    "ThunderyShowers": "",
+    "ThunderySnowShowers": "",
+    "VeryCloudy": "",
+}
 
-# Power Manager
-power_saving: str = "&#xed4f;"
-power_balanced: str = "&#xfa77;"
-power_performance: str = "&#xec45;"
-charging: str = "&#xefef;"
-discharging: str = "&#xefe9;"
-alert: str = "&#xefb4;"
+weather_icons = {
+    "113": {
+        "description": "Sunny",
+        "icon": WEATHER_SYMBOL_WI_DAY["Sunny"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["Sunny"],
+        "image": "clear-day",
+        "image-night": "clear-night",
+        "quote": "It's a sunny day, gonna be fun! \nDon't go wandering all by yourself though",
+    },
+    "116": {
+        "description": "PartlyCloudy",
+        "icon": WEATHER_SYMBOL_WI_DAY["PartlyCloudy"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["PartlyCloudy"],
+        "image": "partly-cloudy-day",
+        "image-night": "partly-cloudy-night",
+        "quote": "It's  cloudy, sort of gloomy \nYou'd better get a book to read",
+    },
+    "119": {
+        "description": "Cloudy",
+        "icon": WEATHER_SYMBOL_WI_DAY["Cloudy"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["Cloudy"],
+        "image": "cloudy",
+        "image-night": "cloudy",
+        "quote": "It's  cloudy, sort of gloomy \nYou'd better get a book to read",
+    },
+    "122": {
+        "description": "VeryCloudy",
+        "icon": WEATHER_SYMBOL_WI_DAY["VeryCloudy"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["VeryCloudy"],
+        "image": "cloudy",
+        "image-night": "cloudy",
+        "quote": "It's  cloudy, sort of gloomy \nYou'd better get a book to read",
+    },
+    "143": {
+        "description": "Fog",
+        "icon": WEATHER_SYMBOL_WI_DAY["Fog"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["Fog"],
+        "image": "fog",
+        "image-night": "fog-night",
+        "quote": "Forecast says it's misty \nMake sure you don't get lost on your way",
+    },
+    "176": {
+        "description": "LightShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "179": {
+        "description": "LightSleetShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleetShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleetShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "182": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "185": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "200": {
+        "description": "ThunderyShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["ThunderyShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["ThunderyShowers"],
+        "image": "thunderstorms",
+        "image-night": "thunderstorms-night",
+        "quote": "There's storm for forecast today \nMake sure you don't get blown away",
+    },
+    "227": {
+        "description": "LightSnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "It's snowing, it's a great day! \nGet some ramen and watch as the snow falls",
+    },
+    "230": {
+        "description": "HeavySnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "It's gonna snow today \nYou'd better wear thick clothes and make a snowman as well!",
+    },
+    "248": {
+        "description": "Fog",
+        "icon": WEATHER_SYMBOL_WI_DAY["Fog"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["Fog"],
+        "image": "fog",
+        "image-night": "fog",
+        "quote": "Forecast says it's misty \nMake sure you don't get lost on your way",
+    },
+    "260": {
+        "description": "Fog",
+        "icon": WEATHER_SYMBOL_WI_DAY["Fog"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["Fog"],
+        "image": "fog",
+        "image-night": "fog-night",
+        "quote": "Forecast says it's misty \nMake sure you don't get lost on your way",
+    },
+    "263": {
+        "description": "LightShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "266": {
+        "description": "LightRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "When clouds cry, the earth drinks deep. A perfect day for promises to keep",
+    },
+    "281": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "284": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "No clear forecast? Create your own sun.",
+    },
+    "293": {
+        "description": "LightRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "When clouds cry, the earth drinks deep. A perfect day for promises to keep",
+    },
+    "296": {
+        "description": "LightRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "299": {
+        "description": "HeavyShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "When clouds cry, the earth drinks deep. A perfect day for promises to keep",
+    },
+    "302": {
+        "description": "HeavyRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "Grey skies, cozy vibes. A gentle day, where calm truly thrives",
+    },
+    "305": {
+        "description": "HeavyShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "The world is washing clean. A perfect excuse for dreams unseen",
+    },
+    "308": {
+        "description": "HeavyRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "When clouds cry, the earth drinks deep. A perfect day for promises to keep",
+    },
+    "311": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Weather's a wild card; make today count.",
+    },
+    "314": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "317": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Skies are undecided, but your day's a canvas.",
+    },
+    "320": {
+        "description": "LightSnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Soft snow falling, hushes the ground. A peaceful silence all around.",
+    },
+    "323": {
+        "description": "LightSnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSnowShowers"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Let the chill of snow invigorate your day. A fresh, crisp start in a magical way",
+    },
+    "326": {
+        "description": "LightSnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSnowShowers"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Snow-covered trees, a breathtaking sight. Step into the beauty of pure, white light.",
+    },
+    "329": {
+        "description": "HeavySnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "A blanket of snow, fresh and serene. Step outside, feel the crisp, winter scene.",
+    },
+    "332": {
+        "description": "HeavySnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "The silent descent of snow. A perfect hush, a gentle glow.",
+    },
+    "335": {
+        "description": "HeavySnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnowShowers"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Snow is here, hushed and bright. A cozy day awaits, bathed in soft light.",
+    },
+    "338": {
+        "description": "HeavySnow",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnow"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnow"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Winter's white magic fills the air. A crisp, pure beauty beyond compare.",
+    },
+    "350": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "353": {
+        "description": "LightShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "356": {
+        "description": "HeavyShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyShowers"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "359": {
+        "description": "HeavyRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavyRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavyRain"],
+        "image": "rain",
+        "image-night": "rain",
+        "quote": "It's rainy, it's a great day! \nGet some ramen and watch as the rain falls",
+    },
+    "362": {
+        "description": "LightSleetShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleetShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleetShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "365": {
+        "description": "LightSleetShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleetShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleetShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Mystery in the clouds, embrace what unfolds.",
+    },
+    "368": {
+        "description": "LightSnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSnowShowers"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "It's snowing, it's a great day! \nGet some ramen and watch as the snow falls",
+    },
+    "371": {
+        "description": "HeavySnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnowShowers"],
+        "image": "snow",
+        "image-night": "snow",
+        "quote": "Bundle up warm, the snow calls your name. A winter's tale, a beautiful game",
+    },
+    "374": {
+        "description": "LightSleetShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleetShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleetShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "The forecast is vague; your day's still great!",
+    },
+    "377": {
+        "description": "LightSleet",
+        "icon": WEATHER_SYMBOL_WI_DAY["LightSleet"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["LightSleet"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Uncertain skies? Find joy anyway.",
+    },
+    "386": {
+        "description": "ThunderyShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["ThunderyShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["ThunderyShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "There's thunder in the air, showers will soon appear \nFind a cozy spot indoors, and let the storm draw near",
+    },
+    "389": {
+        "description": "ThunderyHeavyRain",
+        "icon": WEATHER_SYMBOL_WI_DAY["ThunderyHeavyRain"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["ThunderyHeavyRain"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "There's thunder in the air, showers will soon appear \nFind a cozy spot indoors, and let the storm draw near",
+    },
+    "392": {
+        "description": "ThunderySnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["ThunderySnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["ThunderySnowShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Sort of odd, I don't know what to forecast \nMake sure you have a good time!",
+    },
+    "395": {
+        "description": "HeavySnowShowers",
+        "icon": WEATHER_SYMBOL_WI_DAY["HeavySnowShowers"],
+        "icon-night": WEATHER_SYMBOL_WI_NIGHT["HeavySnowShowers"],
+        "image": "sleet",
+        "image-night": "sleet",
+        "quote": "Sort of odd, I don't know what to forecast \nMake sure you have a good time!",
+    },
+}
 
-# Applets
-wifi: str = "&#xeb52;"
-bluetooth: str = "&#xea37;"
-night: str = "&#xeaf8;"
-coffee: str = "&#xef0e;"
-dnd: str = "&#xea35;"
-darkmode: str = "&#xfe56;"
-world: str = "&#xeb54;"
 
-wifi_off: str = "&#xecfa;"
-bluetooth_off: str = "&#xeceb;"
-night_off: str = "&#xf162;"
-dnd_off: str = "&#xece9;"
-mic_off: str = "&#xed16;"
-
-# Bluetooth
-bluetooth_connected: str = "&#xecea;"
-bluetooth_disconnected: str = "&#xf081;"
-
-
-# Player
-pause: str = "&#xf690;"
-play: str = "&#xf691;"
-stop: str = "&#xf695;"
-skip_back: str = "&#xf693;"
-skip_forward: str = "&#xf694;"
-prev: str = "&#xf697;"
-next: str = "&#xf696;"
-shuffle: str = "&#xf000;"
-repeat: str = "&#xeb72;"
-music: str = "&#xeafc;"
-rewind_backward_5: str = "&#xfabf;"
-rewind_forward_5: str = "&#xfac7;"
-
-# Volume
-vol_off: str = "&#xf1c3;"
-vol_mute: str = "&#xeb50;"
-vol_medium: str = "&#xeb4f;"
-vol_high: str = "&#xeb51;"
-
-# Network
-lan: str = "&#xeb9d;"
-moderate_signal: str = "&#xeba4;"
-good_signal: str = "&#xeba5;"
-no_signal: str = "&#xf063;"
-weak_signal: str = "&#xeba3;"
-
-# Overview
-circle_plus: str = "&#xea69;"
-
-# Pins
-copy_plus: str = "&#xfdae;"
-paperclip: str = "&#xeb02;"
-paper_off: str = "&#xf014f;"
-
-# Confirm
-accept: str = "&#xea5e;"
-cancel: str = "&#xeb55;"
-trash: str = "&#xeb41;"
-clear: str = "&#xef88;"
-
-# Config
-config: str = "&#xeb20;"
-
-# Icons
-firefox: str = "&#xecfd;"
-chromium: str = "&#xec18;"
-spotify: str = "&#xfe86;"
-disc: str = "&#x1003e;"
-disc_off: str = "&#xf118;"
-gamepad = "&#xF02B4;"
-
-# Misc
-dot: str = "&#xf698;"
-palette: str = "&#xeb01;"
-
-exceptions: list[str] = ["font_family", "font_weight", "span"]
-
-
-def apply_span() -> None:
-    global_dict = globals()
-    for key in global_dict:
-        if key not in exceptions and not key.startswith("__"):
-            global_dict[key] = f"{span}{global_dict[key]}</span>"
-
-
-apply_span()
+symbolic_icons = {
+    "missing": "image-missing-symbolic",
+    "nix": {
+        "nix": "nix-snowflake-symbolic",
+    },
+    "app": {
+        "terminal": "terminal-symbolic",
+    },
+    "fallback": {
+        "executable": "application-x-executable",
+        "notification": "dialog-information-symbolic",
+        "video": "video-x-generic-symbolic",
+        "audio": "audio-x-generic-symbolic",
+        "image": "image-x-generic-symbolic",
+        "package": "package-x-generic-symbolic",
+    },
+    "ui": {
+        "window_close": "window-close-symbolic",
+        "close": "close-symbolic",
+        "colorpicker": "color-select-symbolic",
+        "info": "info-symbolic",
+        "link": "external-link-symbolic",
+        "lock": "system-lock-screen-symbolic",
+        "menu": "open-menu-symbolic",
+        "refresh": "view-refresh-symbolic",
+        "search": "system-search-symbolic",
+        "settings": "emblem-system-symbolic",
+        "themes": "preferences-desktop-theme-symbolic",
+        "tick": "object-select-symbolic",
+        "time": "hourglass-symbolic",
+        "toolbars": "toolbars-symbolic",
+        "warning": "dialog-warning-symbolic",
+        "avatar": "avatar-default-symbolic",
+        "camera": "camera-photo-symbolic",
+        "camera-video": "camera-video-symbolic",
+        "arrow": {
+            "right": "pan-end-symbolic",
+            "left": "pan-start-symbolic",
+            "down": "pan-down-symbolic",
+            "up": "pan-up-symbolic",
+        },
+    },
+    "audio": {
+        "mic": {
+            "muted": "microphone-disabled-symbolic",
+            "low": "microphone-sensitivity-low-symbolic",
+            "medium": "microphone-sensitivity-medium-symbolic",
+            "high": "microphone-sensitivity-high-symbolic",
+        },
+        "volume": {
+            "muted": "audio-volume-muted-symbolic",
+            "low": "audio-volume-low-symbolic",
+            "medium": "audio-volume-medium-symbolic",
+            "high": "audio-volume-high-symbolic",
+            "overamplified": "audio-volume-overamplified-symbolic",
+        },
+        "type": {
+            "headset": "audio-headphones-symbolic",
+            "speaker": "audio-speakers-symbolic",
+            "card": "audio-card-symbolic",
+        },
+        "mixer": "mixer-symbolic",
+    },
+    "powerprofiles": {
+        "balanced": "power-profile-balanced-symbolic",
+        "power-saver": "power-profile-power-saver-symbolic",
+        "performance": "power-profile-performance-symbolic",
+    },
+    "battery": {
+        "charging": "battery-flash-symbolic",
+        "full": "battery-full-charged-symbolic",
+        "full-charging": "battery-full-charging-symbolic",
+        "full-discharging": "battery-full-discharging-symbolic",
+        "discharging": "battery-empty-symbolic",
+        "empty": "battery-empty-symbolic",
+        "charging-unknown": "battery-charging-symbolic",
+        "unknown": "battery-missing-symbolic",
+    },
+    "bluetooth": {
+        "enabled": "bluetooth-active-symbolic",
+        "disabled": "bluetooth-disabled-symbolic",
+    },
+    "brightness": {
+        "indicator": "display-brightness-symbolic",
+        "keyboard": "keyboard-brightness-symbolic",
+        "screen": "display-brightness-symbolic",
+        "low": "display-brightness-low-symbolic",
+        "medium": "display-brightness-medium-symbolic",
+        "high": "display-brightness-high-symbolic",
+        "off": "display-brightness-off-symbolic",
+    },
+    "powermenu": {
+        "sleep": "system-suspend-symbolic",
+        "reboot": "system-reboot-symbolic",
+        "logout": "system-log-out-symbolic",
+        "shutdown": "system-shutdown-symbolic",
+    },
+    "recorder": {
+        "recording": "media-record-symbolic",
+        "stopped": "media-record-symbolic",
+    },
+    "notifications": {
+        "noisy": "org.gnome.Settings-notifications-symbolic",
+        "silent": "notifications-disabled-symbolic",
+        "message": "chat-bubbles-symbolic",
+    },
+    "trash": {
+        "full": "user-trash-full-symbolic",
+        "empty": "user-trash-symbolic",
+    },
+    "network": {
+        "wifi": {
+            "generic": "network-wireless-symbolic",
+            "connected": "network-wireless-connected-symbolic",
+            "disconnected": "network-wireless-disconnected-symbolic",
+            "connecting": "network-wireless-acquiring-symbolic",
+            "disabled": "network-wireless-disabled-symbolic",
+        },
+        "ethernet": {
+            "connected": "network-wired-connected-symbolic",
+            "disconnected": "network-wired-disconnected-symbolic",
+            "connecting": "network-wired-acquiring-symbolic",
+            "disabled": "network-wired-disabled-symbolic",
+        },
+        "vpn": {
+            "enabled": "network-vpn-symbolic",
+            "disabled": "network-vpn-off-symbolic",
+        },
+    },
+    "mpris": {
+        "shuffle": {
+            "enabled": "media-playlist-shuffle-symbolic",
+            "disabled": "media-playlist-consecutive-symbolic",
+        },
+        "loop": {
+            "none": "media-playlist-repeat-symbolic",
+            "track": "media-playlist-repeat-song-symbolic",
+            "playlist": "media-playlist-repeat-symbolic",
+        },
+        "playing": "media-playback-pause-symbolic",
+        "paused": "media-playback-start-symbolic",
+        "stopped": "media-playback-start-symbolic",
+        "prev": "media-skip-backward-symbolic",
+        "next": "media-skip-forward-symbolic",
+    },
+    "system": {
+        "cpu": "org.gnome.SystemMonitor-symbolic",
+        "ram": "drive-harddisk-solidstate-symbolic",
+        "temp": "temperature-symbolic",
+    },
+    "color": {
+        "dark": "dark-mode-symbolic",
+        "light": "light-mode-symbolic",
+    },
+}

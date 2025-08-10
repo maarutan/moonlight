@@ -1,0 +1,129 @@
+* {
+  margin: 0;
+  padding: 0;
+  color: #fff;
+  font-size: 16;
+  text-shadow: 0 0 5 #000;
+}
+
+#statusbar {
+  box-shadow: 0 0 10 0 #000;
+  background: transparent;
+}
+
+#bar-modules-start {
+  border: solid 0.2px white;
+  padding: 0 7px;
+  margin-left: 10px;
+  border-radius: 8px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0 #000;
+}
+
+#bar-modules-center {
+  border: solid 0.2px white;
+  padding: 0 7px;
+  border-radius: 8px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0 #000;
+}
+
+#bar-modules-end {
+  border: solid 0.2px white;
+  padding: 0 7px;
+  margin-right: 8px;
+  border-radius: 10px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0 #000;
+}
+
+#statusbar-workspaces-container {
+  border-radius: 0;
+  transition: 2s;
+}
+
+#statusbar-workspaces-container button {
+  color: #fff;
+  border: none;
+  background: none;
+  border-radius: 0;
+  transition: 0.4s;
+}
+#statusbar-workspaces-container button:hover {
+  background: #1e1e2a;
+}
+
+#statusbar-workspaces-container button:not(.empty) {
+  transition: 0.4s;
+  border-bottom: 2px solid #fff;
+}
+
+#statusbar-workspaces-container button.active {
+  transition: 0.6s;
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+}
+
+#statusbar-workspaces-text button.active :nth-child(1) {
+  transition: 0.4s;
+  color: #000;
+}
+
+#statusbar-windows-title-box {
+  background: transparent;
+  padding: 0 5;
+  border-radius: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+#statusbar-windows-title-box :nth-child(1) {
+  font-weight: bolder;
+  padding: 0 5;
+}
+
+#statusbar-tray-box-container {
+  border-radius: 8;
+}
+
+#statusbar-tray-box {
+  padding: 10;
+}
+
+#statusbar-tray-button {
+  border-radius: 0;
+  background: transparent;
+}
+
+#statusbar-memory-ram {
+  border-radius: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+#statusbar-memory-ram-button {
+  padding: 0 5;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+}
+
+#statusbar-clock {
+  padding: 0 5;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+}
+
+#statusbar-language-button {
+  padding: 0 10;
+}
+
+#statusbar-language-button-language {
+  padding: 0 5;
+}
+
+/*# sourceMappingURL=index.css.map */

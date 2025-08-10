@@ -1,21 +1,13 @@
-import subprocess, json
+import json
 from typing import Literal
 from fabric.hyprland.service import HyprlandEvent
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.hyprland.widgets import Language as HLanguage
+from fabric.utils import exec_shell_command
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
-from gi.repository import GLib, Gdk  # type: ignore
-
-
-def get_keyboard_devices():
-    try:
-        out = subprocess.check_output(["hyprctl", "devices", "-j"])
-        kb = json.loads(out).get("keyboards", [])
-        return [d["name"] for d in kb]
-    except Exception:
-        return []
+from fabric.utils.helpers import exec_shell_command_async
 
 
 class Language(Box):
@@ -25,52 +17,50 @@ class Language(Box):
         number_letters: int = 2,
         register: Literal["upper", "u", "lower", "l"] = "l",
     ):
+        super().__init__(
+            orientation="h" if is_horizontal else "v",
+            name="statusbar-language",
+        )
+
         self.number_letters = number_letters
         self.register = register
-
-        self.orientation_pos = is_horizontal
         self._lang_label = Label(name="lang-label")
 
         self.button = Button(
             child=self._lang_label,
-            name="language-button",
+            name="statusbar-language-button",
             on_clicked=self.on_clicked,
         )
+        self.children = [self.button]
 
-        super().__init__(
-            orientation="h" if self.orientation_pos else "v",
-            name="language",
-            children=self.button,
-        )
+        self.kb_devices = self.get_keyboard_devices()
+        self.hlanguage = HLanguage()
 
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.connect("button-press-event", self._on_box_click)
-
-        self.kb_devices = get_keyboard_devices()
-
+        self._on_language_switch()
         self.connection = get_hyprland_connection()
         self.connection.connect("event::activelayout", self._on_language_switch)
 
-        self._on_language_switch()
-
-    def _on_box_click(self, widget, event):
-        self.button.emit("clicked")
-        return True
+    def get_keyboard_devices(self):
+        try:
+            out = exec_shell_command("hyprctl devices -j")
+            kb = json.loads(f"{out}").get("keyboards", [])
+            return [d["name"] for d in kb]
+        except Exception:
+            return []
 
     def on_clicked(self, *args):
+        self._on_language_switch()
         for device in self.kb_devices:
-            subprocess.Popen(f"hyprctl switchxkblayout {device} next", shell=True)
+            exec_shell_command_async(f"hyprctl switchxkblayout {device} next")
 
-    def _on_language_switch(self, _=None, event: HyprlandEvent = None):  # type: ignore
+    def _on_language_switch(self, _=None, event: HyprlandEvent | None = None):
         lang = (
             event.data[1]
             if event and event.data and len(event.data) > 1
-            else HLanguage().get_label()
+            else self.hlanguage.get_label()
         )
         self.set_tooltip_text(lang)
-
+        short = lang[: self.number_letters]
         self._lang_label.set_label(
-            lang[: self.number_letters].upper()
-            if self.register in ["upper", "u"]
-            else lang[: self.number_letters].lower()
+            short.upper() if self.register in ["upper", "u"] else short.lower()
         )

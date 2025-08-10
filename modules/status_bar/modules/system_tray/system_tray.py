@@ -24,7 +24,7 @@ class SystemTrayHandler(Box):
         self.tray_box_position = tray_box_position
 
         super().__init__(
-            name="systemtray-container",
+            name="statusbar-systemtray-container",
             children=self._make_content(),
             orientation="h" if orientation_pos else "v",
         )
@@ -36,6 +36,7 @@ class SystemTrayHandler(Box):
                 orientation_pos=self.orientation_pos,
                 tray_box_position=self.tray_box_position,
             )
+
         else:
             return TrayItems(
                 grid=self.tray_box,

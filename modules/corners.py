@@ -22,7 +22,7 @@ class MyCorner(Box):
                 v_expand=False,
                 h_align="center",
                 v_align="center",
-                size=40,
+                # size=6,
             ),
         )
 
@@ -71,7 +71,7 @@ class ScreenCorners(Window):
                 v_expand=False,
                 h_align="center",
                 v_align="center",
-                size=37,
+                size=25,
             ),
         )
 

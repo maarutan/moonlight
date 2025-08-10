@@ -18,7 +18,7 @@ class TrayBox(Window):
         self.bar_position = bar_position
         self.do_click_handler = do_click_handler
         super().__init__(
-            name="tray-box-container",
+            name="statusbar-tray-box-container",
             layer="overlay",
             anchor=position,
             exclusivity="auto",
@@ -42,7 +42,7 @@ class TrayBox(Window):
 
     def _make_content(self):
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        content = Grid(name="tray-box", all_visible=True)
+        content = Grid(name="statusbar-tray-box", all_visible=True)
         tray = TrayItems()
         content.attach(tray, 0, 1, 1, 1)
         content.set_row_spacing(10)

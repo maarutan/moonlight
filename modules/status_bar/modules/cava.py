@@ -6,7 +6,7 @@ import struct
 import subprocess
 from math import pi
 
-from fabric.widgets.box import Box
+from fabric.widgets.overlay import Overlay
 from gi.repository import Gdk, GLib, Gtk  # type: ignore
 from loguru import logger
 from config import CAVA_CONFIG
@@ -252,21 +252,20 @@ class Spectrum:
 
 
 class SpectrumRender:
-    def __init__(self, orientation, mode=None, **kwargs):
+    def __init__(self, is_horizontal, mode=None, **kwargs):
         super().__init__(**kwargs)
-        self.orientation = orientation
+        self.is_horizontal = is_horizontal
         self.draw = Spectrum()
         self.cava = Cava(self)
         self.cava.start()
 
     def get_spectrum_box(self):
-        box = Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
-        box.set_name("cavalcade")
-        # box.set_halign(Gtk.Align.CENTER)
-        # box.set_valign(Gtk.Align.CENTER)
-        if not self.orientation:
-            box.set_size_request(40, 50)
-        else:
+        # Get the spectrum box
+        box = Overlay(name="cavalcade", h_align="center", v_align="center")
+        if self.is_horizontal:
             box.set_size_request(180, 40)
-        box.pack_start(self.draw.area, True, True, 0)
+        else:
+            box.set_size_request(40, 40)
+
+        box.add_overlay(self.draw.area)
         return box

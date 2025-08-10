@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+.pytest_cache
+
+# Node modules
+node_modules/
+package-lock.json

@@ -1,12 +1,12 @@
-import shlex
 import re
+import shlex
+from utils import JsonManager
 from fabric.widgets.box import Box
+from gi.repository import GLib, Gdk  # type: ignore
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
-from fabric.utils import exec_shell_command
-from gi.repository import GLib, Gdk  # type: ignore
 from config import STATUS_BAR_LOCK_MODULES
-from utils import JsonManager
+from fabric.utils import exec_shell_command
 
 
 class MemoryRAM(Box):
@@ -26,13 +26,13 @@ class MemoryRAM(Box):
         self._label = Label(name="memory-label", text="–")
 
         self.button = Button(
-            name="memory-button",
+            name="statusbar-memory-ram-button",
             child=self._label,
             on_clicked=self.do_clicked,
         )
 
         super().__init__(
-            name="memory",
+            name="statusbar-memory-ram",
             orientation="h" if self.orientation_pos else "v",
             children=self.button,
         )
@@ -40,7 +40,6 @@ class MemoryRAM(Box):
         self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
         self.connect("button-press-event", self._on_box_click)
 
-        # Создаём файлик состояния
         STATUS_BAR_LOCK_MODULES.parent.mkdir(parents=True, exist_ok=True)
         STATUS_BAR_LOCK_MODULES.touch(exist_ok=True)
 

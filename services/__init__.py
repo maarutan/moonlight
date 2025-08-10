@@ -1,5 +1,8 @@
-from .player import PlayerManager
+from .player import MprisPlayer, MprisPlayerManager
+from .check_config import CheckConfig
 
 __all__ = [
-    "PlayerManager",
+    "MprisPlayer",
+    "MprisPlayerManager",
+    "CheckConfig",
 ]

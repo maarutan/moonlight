@@ -1,0 +1,28 @@
+#statusbar-workspaces-container
+  // margin: 0 5;
+  border-radius: 0;
+  transition: 2s;
+
+#statusbar-workspaces-container button 
+  color: #fff;
+  border: none;
+  background: none;
+  border-radius: 0;
+  transition: 0.4s;
+  &:hover
+    background: #1e1e2a
+
+#statusbar-workspaces-container button:not(.empty) 
+  transition: 0.4s;
+  border-bottom: 2px solid #fff;
+
+#statusbar-workspaces-container button.active 
+  transition: .6s;
+  // transition: 0.2s;
+  border: 0;
+  border-radius: 0 
+  background: #ffffff;
+
+#statusbar-workspaces-text button.active :nth-child(1)
+  transition: 0.4s;
+  color: #000;
