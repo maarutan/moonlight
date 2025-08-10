@@ -1,14 +1,26 @@
 #!/usr/bin/env python
+import signal
+import sys
+import os
+
 from fabric import Application
 from fabric.utils import get_relative_path
+from services import CheckConfig  # ваш класс из предыдущего ответа
 
-from modules import ScreenCorners, ActivateLinux, StatusBar, NotificationPopup
+from modules import (
+    ScreenCorners,
+    ActivateLinux,
+    StatusBar,
+    NotificationPopup,
+    Dock,
+    PlayerWrapper,
+    DesktopClock,
+)
 from config import APP_NAME
 
 corners = ScreenCorners()
 activate_linux = ActivateLinux()
 bar = StatusBar()
-# notification = NotificationPopup()
 
 corners.set_visible(True)
 app = Application(
@@ -16,6 +28,9 @@ app = Application(
     corners,
     activate_linux,
     bar,
+    DesktopClock(),
+    # PlayerWrappe(),
+    # dock,
     # notification,
 )
 
@@ -26,9 +41,28 @@ def set_css():
     )
 
 
+def restart_program(signum, frame):
+    print("[INFO] Received SIGHUP, restarting application...")
+    python = sys.executable
+    os.execv(python, [python] + sys.argv)
+
+
+def on_config_changed():
+    print("[INFO] Config changed signal received")
+    app.set_css()
+
+    restart_program(None, None)
+
+
 def main():
     app.set_css = set_css
     app.set_css()
+
+    signal.signal(signal.SIGHUP, restart_program)
+
+    check_config = CheckConfig()
+    check_config.connect("config-changed", on_config_changed)
+
     app.run()
 
 
