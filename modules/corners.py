@@ -28,17 +28,18 @@ class MyCorner(Box):
 
 
 class ScreenCorners(Window):
-    def __init__(self, orientation_pos: bool = True):
+    def __init__(self, is_horizontal: bool = True):
         self.cfg = ConfigHandler()
         super().__init__(
+            name="screen-corners",
+            style_classes="screen-corners",
             layer="top",
             anchor="top left bottom right",
-            style="background: transparent;",
+            # style="",
             exclusivity=self.exclusivity_handler(),
-            # exclusivity="",
             pass_through=True,
             child=Box(
-                orientation="v" if orientation_pos else "h",
+                orientation="v" if is_horizontal else "h",
                 children=[
                     Box(
                         children=[
@@ -63,7 +64,6 @@ class ScreenCorners(Window):
         return Box(
             h_expand=False,
             v_expand=False,
-            name="corner-container",
             children=Corner(
                 name="corner",
                 orientation=orientation,
@@ -71,7 +71,7 @@ class ScreenCorners(Window):
                 v_expand=False,
                 h_align="center",
                 v_align="center",
-                size=25,
+                size=32,
             ),
         )
 

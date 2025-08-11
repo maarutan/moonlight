@@ -2,10 +2,11 @@ from ..cfg.default_config import Configuration
 from .prep_cfg import (
     StatusBarCfg,
     WorkspacesCfg,
-    LogoCfg,
+    ProfileCfg,
     ModulesCfg,
     SystemTrayCfg,
     MemoryRamCfg,
+    MetricsCfg,
     WindowsTitleCfg,
     LanguageCfg,
     ClockCfg,
@@ -33,7 +34,7 @@ class ConfigHandler:
 
         self.bar = StatusBarCfg(self)
         self.workspaces = WorkspacesCfg(self)
-        self.logo = LogoCfg(self)
+        self.profile = ProfileCfg(self)
         self.modules = ModulesCfg(self)
         self.system_tray = SystemTrayCfg(self)
         self.memory_ram = MemoryRamCfg(self)
@@ -41,6 +42,7 @@ class ConfigHandler:
         self.language = LanguageCfg(self)
         self.clock = ClockCfg(self)
         self.media_player_windows_title = MediaPlayerWindowsTitleCfg(self)
+        self.metrics = MetricsCfg(self)
 
     # Config
 

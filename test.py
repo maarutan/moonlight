@@ -1,96 +1,105 @@
-#!/usr/bin/env python3
+from datetime import timedelta
+from typing import Literal, Optional
+from pathlib import Path
+from fabric.widgets.box import Box
+from fabric.widgets.centerbox import CenterBox
+from fabric.widgets.image import Image
 
-import time
-import threading
-import tracemalloc
-import gc
-import logging
-import sys
+from config.data import PLACEHOLDER_IMAGE
+from widgets import CircleImage
+from utils import FileManager
 
-from fabric import Application
-from fabric.utils import get_relative_path
+import gi
+from gi.repository import Gtk  # type:ignore
 
-from modules import (
-    ScreenCorners,
-    ActivateLinux,
-    StatusBar,
-)  # NotificationPopup отключён
-from config import APP_NAME
+gi.require_version("Gtk", "3.0")
 
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="[%(asctime)s] %(levelname)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    stream=sys.stdout,
-)
-logger = logging.getLogger(APP_NAME)
+class ProfilePreview(Box):
+    def __init__(
+        self,
+        username: str = "Anonymous",
+        uptime: Optional[dict] = None,
+        image: Optional[dict] = None,
+    ) -> None:
+        self._uptime = uptime or {
+            "enable": False,
+            "format": "%H:%M:%S",
+        }
+        self._image = image or {
+            "shape": "circle",
+            "path": str(PLACEHOLDER_IMAGE),
+            "size": 24,
+        }
+        self._username = username
 
+        self._image_path = self._image.get("path", str(PLACEHOLDER_IMAGE))
+        self._image_size = self._image.get("size", 24)
+        self._image_shape = self._image.get("shape", "circle")
+        self.fm = FileManager()
+        print(self.__get_uptime())
 
-def apply_stylesheet(app: Application) -> None:
-    """Загрузить и применить CSS-стили."""
-    app.set_stylesheet_from_file(get_relative_path("main.css"))
-    logger.debug("Stylesheet applied")
+        super().__init__(
+            name="statusbar-profile-dashboard-preview",
+            h_align="start",
+            orientation=Gtk.Orientation.HORIZONTAL,
+            children=CenterBox(
+                start_children=self._make_profile_image_preview(),
+                end_children=self._make_profile_info(),
+            ),
+        )
 
+    def _make_profile_image_preview(self) -> CircleImage | Image:
+        path = Path(self._image_path).expanduser()
+        if not path.exists():
+            path = Path(str(PLACEHOLDER_IMAGE))
 
-def debug_watchdog(stop_event: threading.Event) -> None:
-    """
-    Функция для периодического профилирования памяти и подсчёта объектов.
-    Запускается в отдельном потоке.
-    """
-    tracemalloc.start()
-    while not stop_event.is_set():
+        widget_class = CircleImage if self._image_shape == "circle" else Image
+        return widget_class(
+            name="statusbar-profile-dashboard-profile-preview-image-child",
+            h_align="center",
+            image_file=str(path),
+            size=self._image_size,
+        )
+
+    def _make_profile_info(self) -> Box:
+        return Box()  # заглушка
+
+    def __get_uptime(self) -> str | None:
+        if not isinstance(self._uptime, dict):
+            return None
+
+        is_enable = self._uptime.get("enable", False)
+        fmt = self._uptime.get("format", "%H:%M:%S")
+
+        if not is_enable:
+            return None
+
         try:
-            time.sleep(10)
-            obj_count = len(gc.get_objects())
-            snapshot = tracemalloc.take_snapshot()
-            top_stats = snapshot.statistics("lineno")
+            f = self.fm.read(Path("/proc/uptime"))
+            uptime_seconds = float(f.split()[0])
+        except Exception:
+            return None
 
-            logger.debug("Watchdog Tick")
-            logger.debug(f"Кол-во Python объектов: {obj_count}")
-            logger.debug("Топ-3 по памяти:")
-            for stat in top_stats[:3]:
-                logger.debug(f"  {stat}")
-            logger.debug("-" * 40)
-        except Exception as e:
-            logger.error(f"Watchdog error: {e}", exc_info=True)
+        td = timedelta(seconds=int(uptime_seconds))
+        total_seconds = int(td.total_seconds())
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
 
-
-def main() -> None:
-    # Инициализация компонентов
-    corners = ScreenCorners()
-    activate_linux = ActivateLinux()
-    bar = StatusBar()
-
-    corners.set_visible(True)
-
-    app = Application(
-        APP_NAME,
-        corners,
-        activate_linux,
-        bar,
-        # NotificationPopup - отключён
-    )
-
-    apply_stylesheet(app)
-
-    stop_event = threading.Event()
-    watchdog_thread = threading.Thread(
-        target=debug_watchdog, args=(stop_event,), daemon=True
-    )
-    watchdog_thread.start()
-
-    try:
-        app.run()
-    except KeyboardInterrupt:
-        logger.info("Завершение работы по сигналу прерывания")
-    except Exception as e:
-        logger.error(f"Unhandled exception: {e}", exc_info=True)
-    finally:
-        stop_event.set()
-        watchdog_thread.join(timeout=5)
-        logger.info("Приложение завершено")
+        uptime_str = (
+            fmt.replace("%H", f"{hours:02d}")
+            .replace("%M", f"{minutes:02d}")
+            .replace("%S", f"{seconds:02d}")
+        )
+        return uptime_str
 
 
-if __name__ == "__main__":
-    main()
+p = ProfilePreview(
+    username="maaru",
+    uptime={
+        "enable": True,
+        # "format":"%H:%M:%S"
+        "format": "hours: %H minutes: %M seconds: %S",
+    },
+)

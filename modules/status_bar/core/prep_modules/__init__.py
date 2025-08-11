@@ -1,26 +1,24 @@
 from loguru import logger
 
 from .cava import cava_handler
-from .logo import logo_handler
+from .profile import profile_handler
 from .clock import clock_handler
 from .language import language_handler
 from .workspaces import workspaces_handler
 from .memory_ram import memory_ram_handler
 from .system_tray import system_tray_handler
 from .windows_title import windows_title_handler
-from .volume_control import volume_control_handler
 from .metrics import metrics_handler
 # from .media_player_windows_title import mp_windows_title_handler
 
 MODULES_REGISTRY = {
     "clock": clock_handler,
-    "logo": logo_handler,
+    "profile": profile_handler,
     "language": language_handler,
     "workspaces": workspaces_handler,
     "windows-title": windows_title_handler,
     # "media-player-with-windows-title": mp_windows_title_handler,
     "system-tray": system_tray_handler,
-    "volume": volume_control_handler,
     "memory": memory_ram_handler,
     "metrics": metrics_handler,
     "cava": cava_handler,

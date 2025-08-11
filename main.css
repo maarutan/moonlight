@@ -1,16 +1,6 @@
 @import url("./styles/status_bar/index.css");
-@import url("./styles/activate_linux.css");
-#cpu-icon,
-#ram-icon {
-  font-size: 15px;
-  margin-right: 4px;
-}
-#cpu-circle,
-#ram-circle,
-#disk-circle {
-  color: gray;
-  border: 3px solid white;
-}
+@import url("./styles/activate_linux/index.css");
+@import url("./styles/corners/index.css");
 #desktop_clock {
   padding: 0px 10px 0px 10px;
   /* margin: 40px 10px 40px 10px; */
@@ -30,16 +20,6 @@
   box-shadow: none;
   font-weight: bolder;
   background: transparent;
-}
-
-#corner {
-  background: #1e1e2e;
-  border-radius: 0px;
-}
-
-#corner-container {
-  min-width: 20px;
-  min-height: 20px;
 }
 
 #button-corner {

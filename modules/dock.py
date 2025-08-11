@@ -2,7 +2,7 @@ import json
 import os
 import re
 import threading
-from gi.repository import GLib, Gtk, GdkPixbuf
+from gi.repository import GLib, Gtk, GdkPixbuf  # type: ignore
 from fabric.widgets.box import Box
 from fabric.widgets.button import Button
 from fabric.widgets.image import Image

@@ -5,7 +5,7 @@ import os
 
 from fabric import Application
 from fabric.utils import get_relative_path
-from services import CheckConfig  # ваш класс из предыдущего ответа
+from services import CheckConfig
 
 from modules import (
     ScreenCorners,

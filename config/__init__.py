@@ -9,14 +9,19 @@ from .data import (
     STATUS_BAR_LOCK_MODULES,
     CAVA_CONFIG,
     ASSETS,
+    URL_AVATAR,
+    BACKBUTTON,
 )
 
 __all__ = [
     "APP_NAME",
     "CONFIG_FILE",
+    "BACKBUTTON",
     "STATUS_BAR_DIR",
     "ASSETS",
-    "HOMESTATUS_BAR_CONFIG",
+    "HOME",
+    "STATUS_BAR_CONFIG",
+    "URL_AVATAR",
     "STATUS_BAR_LOCK_MODULES",
     "GHOST_IMAGE",
     "PLACEHOLDER_IMAGE",

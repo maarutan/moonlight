@@ -9,6 +9,8 @@ from pathlib import Path
 from config import PLACEHOLDER_IMAGE, APP_NAME
 from threading import Thread, Timer
 
+from config.data import URL_AVATAR
+
 
 class GetPreviewPath:
     def __init__(self) -> None:
@@ -21,6 +23,33 @@ class GetPreviewPath:
 
         self.loading_files = set()
         self._start_cleanup_timer()
+
+    def is_image_url(self, url: str) -> bool:
+        try:
+            response = requests.head(url, allow_redirects=True, timeout=3)
+            content_type = response.headers.get("Content-Type", "")
+            return content_type.startswith("image/")
+        except Exception:
+            return False
+
+    def download_and_cache_image(self, url: str, result: Path) -> Path:
+        if result.exists():
+            return result
+        else:
+            result.parent.mkdir(exist_ok=True, parents=True)
+
+        try:
+            resp = requests.get(url, timeout=5)
+            resp.raise_for_status()
+
+            result.parent.mkdir(parents=True, exist_ok=True)
+            with open(result, "wb") as f:
+                f.write(resp.content)
+
+            return result
+        except Exception as e:
+            print(f"Failed to download image: {e}")
+            return PLACEHOLDER_IMAGE
 
     def _start_cleanup_timer(self):
         def cleanup():

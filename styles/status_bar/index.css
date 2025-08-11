@@ -39,7 +39,7 @@
 
 #statusbar-workspaces-container {
   border-radius: 0;
-  transition: 2s;
+  transition: 0.4s;
 }
 
 #statusbar-workspaces-container button {
@@ -124,6 +124,49 @@
 
 #statusbar-language-button-language {
   padding: 0 5;
+}
+
+#cpu-icon,
+#ram-icon {
+  font-size: 15px;
+  margin-right: 4px;
+  transition: 0.4s;
+}
+
+#cpu-circle,
+#ram-circle,
+#disk-circle {
+  color: #666666;
+  border: 3px solid #fff;
+  transition: 0.4s;
+}
+
+#statusbar-profile-dashboard-popup {
+  transition: 0.3s;
+  padding: 0 5;
+  border-radius: 0;
+  box-shadow: none;
+  border: 0;
+}
+
+.statusbar-profile-popup-hide {
+  opacity: 0;
+}
+
+.statusbar-profile-popup-show {
+  opacity: 1;
+}
+
+#statusbar-profile-logo-button {
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  border: 0;
+  margin: 0 20px;
+}
+#statusbar-profile-logo-button:hover {
+  margin-left: 40px;
+  padding-left: 40px;
 }
 
 /*# sourceMappingURL=index.css.map */
