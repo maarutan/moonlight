@@ -1,4 +1,4 @@
-from ...modules.workspace import Workspaces
+from ...modules.workspaces.workspace import Workspaces
 from .._config_handler import ConfigHandler
 
 

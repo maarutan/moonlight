@@ -1,28 +1,12 @@
 import math
 from typing import cast
-from gi.repository import Gtk, GdkPixbuf, cairo  # type: ignore
-from fabric.widgets.box import Box
-from fabric.widgets.label import Label
-import re
-import logging
 
-logger = logging.getLogger(__name__)
+import cairo
+from fabric.widgets.image import Image
+from gi.repository import Gtk  # type:ignore
 
 
-class CustomImage(Gtk.Image):
-    def __init__(self, image_path: str, icon_size: int = 64, **kwargs):
-        super().__init__(**kwargs)
-        try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-                filename=image_path,
-                width=icon_size,
-                height=icon_size,
-                preserve_aspect_ratio=True,
-            )
-            self.set_from_pixbuf(pixbuf)
-        except Exception as e:
-            logger.error(f"[CustomImage] Failed to load image '{image_path}': {e}")
-
+class CustomImage(Image):
     def do_render_rectangle(
         self, cr: cairo.Context, width: int, height: int, radius: int = 0
     ):
@@ -42,9 +26,13 @@ class CustomImage(Gtk.Image):
         width, height = self.get_allocated_width(), self.get_allocated_height()
         cr.save()
 
-        radius = cast(int, context.get_property("border-radius", Gtk.StateFlags.NORMAL))
-        self.do_render_rectangle(cr, width, height, radius)
+        self.do_render_rectangle(
+            cr,
+            width,
+            height,
+            cast(int, context.get_property("border-radius", Gtk.StateFlags.NORMAL)),
+        )
         cr.clip()
-        super().do_draw(cr)
+        Image.do_draw(self, cr)
 
         cr.restore()

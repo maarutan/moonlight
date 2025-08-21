@@ -1,4 +1,6 @@
+import os
 from pathlib import Path
+from tempfile import gettempdir
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -30,3 +32,6 @@ PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
 GHOST_IMAGE = ASSETS / "empty" / "ghost.png"
 BACKBUTTON = ASSETS / "buttons" / "back.png"
 URL_AVATAR = APP_CONFIG_DIR / "Assets" / "Profile" / "http(s)_avatar.png"
+
+"===== ~~ Templates ~~ ====="
+TEMP_DIR = Path(gettempdir())

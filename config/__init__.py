@@ -11,10 +11,12 @@ from .data import (
     ASSETS,
     URL_AVATAR,
     BACKBUTTON,
+    TEMP_DIR,
 )
 
 __all__ = [
     "APP_NAME",
+    "TEMP_DIR",
     "CONFIG_FILE",
     "BACKBUTTON",
     "STATUS_BAR_DIR",

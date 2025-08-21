@@ -70,6 +70,18 @@
   color: #000;
 }
 
+#statusbar-workspaces-preview {
+  border-radius: 10px;
+  border: 0;
+  margin: 0;
+  box-shadow: 0 0 10 0 white;
+}
+
+#statusbar-workspaces-preview-image {
+  padding: 20px;
+  margin: 0;
+}
+
 #statusbar-windows-title-box {
   background: transparent;
   padding: 0 5;

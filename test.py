@@ -1,105 +1,138 @@
-from datetime import timedelta
-from typing import Literal, Optional
 from pathlib import Path
-from fabric.widgets.box import Box
-from fabric.widgets.centerbox import CenterBox
-from fabric.widgets.image import Image
+from typing import Optional, Dict
+import imagehash
+from PIL import Image
 
-from config.data import PLACEHOLDER_IMAGE
-from widgets import CircleImage
-from utils import FileManager
+from fabric.widgets.wayland import WaylandWindow as Window
+from fabric.widgets.image import Image as FImage
+from fabric.hyprland.widgets import HyprlandWorkspaces
+from fabric.utils import exec_shell_command_async
 
-import gi
-from gi.repository import Gtk  # type:ignore
+from config import TEMP_DIR, STATUS_BAR_LOCK_MODULES, APP_NAME, PLACEHOLDER_IMAGE
+from utils import JsonManager
 
-gi.require_version("Gtk", "3.0")
+from gi.repository import GLib  # type: ignore
 
 
-class ProfilePreview(Box):
-    def __init__(
-        self,
-        username: str = "Anonymous",
-        uptime: Optional[dict] = None,
-        image: Optional[dict] = None,
-    ) -> None:
-        self._uptime = uptime or {
-            "enable": False,
-            "format": "%H:%M:%S",
-        }
-        self._image = image or {
-            "shape": "circle",
-            "path": str(PLACEHOLDER_IMAGE),
-            "size": 24,
-        }
-        self._username = username
-
-        self._image_path = self._image.get("path", str(PLACEHOLDER_IMAGE))
-        self._image_size = self._image.get("size", 24)
-        self._image_shape = self._image.get("shape", "circle")
-        self.fm = FileManager()
-        print(self.__get_uptime())
-
+class WorkspacesPreview(Window):
+    def __init__(self, max_visible_workspaces: int = 10) -> None:
         super().__init__(
-            name="statusbar-profile-dashboard-preview",
-            h_align="start",
-            orientation=Gtk.Orientation.HORIZONTAL,
-            children=CenterBox(
-                start_children=self._make_profile_image_preview(),
-                end_children=self._make_profile_info(),
-            ),
+            name="statusbar-workspaces-preview",
+            layer="top",
+            anchor="top left",
+            exclusivity="normal",
+            h_align="fill",
+            h_expand=True,
+        )
+        self.preview_node = "workspaces.preview"
+        self.HyprWorkS = HyprlandWorkspaces()
+        self.current_active_workspace = str(self.HyprWorkS._active_workspace)
+        self.json = JsonManager()
+        self.max_visible_workspaces = max_visible_workspaces
+        self.database: Dict[str, str] = {}
+
+        self.tmp_preview_dir = Path(TEMP_DIR) / APP_NAME / "workspaces" / "preview"
+        self.tmp_preview_dir.mkdir(parents=True, exist_ok=True)
+
+        # заполняем плейсхолдерами
+        for i in range(1, self.max_visible_workspaces + 1):
+            self.database[str(i)] = PLACEHOLDER_IMAGE.as_posix()
+
+        # создаём превью
+        self.children = self._make_preview()
+
+        # сразу запускаем обновление
+        self._update_preview_async()
+
+    def _make_preview(self) -> FImage:
+        previews = self._list_previews()
+        current_preview_path = previews.get(
+            str(self.current_active_workspace),
+            PLACEHOLDER_IMAGE.as_posix(),
+        )
+        candidate = Path(current_preview_path)
+        if not self._is_valid_image(candidate):
+            current_preview_path = PLACEHOLDER_IMAGE.as_posix()
+
+        return FImage(
+            name="statusbar-workspaces-preview-image",
+            image_file=current_preview_path,
+            size=128,
         )
 
-    def _make_profile_image_preview(self) -> CircleImage | Image:
-        path = Path(self._image_path).expanduser()
-        if not path.exists():
-            path = Path(str(PLACEHOLDER_IMAGE))
-
-        widget_class = CircleImage if self._image_shape == "circle" else Image
-        return widget_class(
-            name="statusbar-profile-dashboard-profile-preview-image-child",
-            h_align="center",
-            image_file=str(path),
-            size=self._image_size,
-        )
-
-    def _make_profile_info(self) -> Box:
-        return Box()  # заглушка
-
-    def __get_uptime(self) -> str | None:
-        if not isinstance(self._uptime, dict):
-            return None
-
-        is_enable = self._uptime.get("enable", False)
-        fmt = self._uptime.get("format", "%H:%M:%S")
-
-        if not is_enable:
-            return None
-
+    def _list_previews(self) -> Dict[str, str]:
+        previews_dict = self.database.copy()
+        for path in self.tmp_preview_dir.iterdir():
+            if path.is_file():
+                try:
+                    ws_index = int(path.stem)
+                    previews_dict[str(ws_index)] = path.as_posix()
+                except ValueError:
+                    continue
         try:
-            f = self.fm.read(Path("/proc/uptime"))
-            uptime_seconds = float(f.split()[0])
+            self.json.update(STATUS_BAR_LOCK_MODULES, self.preview_node, previews_dict)
         except Exception:
-            return None
+            pass
+        return previews_dict
 
-        td = timedelta(seconds=int(uptime_seconds))
-        total_seconds = int(td.total_seconds())
-        hours = total_seconds // 3600
-        minutes = (total_seconds % 3600) // 60
-        seconds = total_seconds % 60
+    def _shot(self, save_to: str) -> bool:
+        try:
+            exec_shell_command_async(f"grim {save_to}")
+            return True
+        except Exception:
+            return False
 
-        uptime_str = (
-            fmt.replace("%H", f"{hours:02d}")
-            .replace("%M", f"{minutes:02d}")
-            .replace("%S", f"{seconds:02d}")
-        )
-        return uptime_str
+    def _screen_shot_handler_async(self, ws: str, cb) -> None:
+        """Асинхронный снимок: сразу отдаём placeholder, потом догоняем готовым PNG."""
+        target = self.tmp_preview_dir / f"{ws}.png"
+        if not self._shot(target.as_posix()):
+            cb(None)
+            return
 
+        def check_ready() -> bool:
+            if self._is_valid_image(target):
+                cb(target)
+                return False  # снимаем idle callback
+            return True  # проверим снова на следующем idle
 
-p = ProfilePreview(
-    username="maaru",
-    uptime={
-        "enable": True,
-        # "format":"%H:%M:%S"
-        "format": "hours: %H minutes: %M seconds: %S",
-    },
-)
+        GLib.idle_add(check_ready)
+
+    def __is_different(self, img1: str, img2: str, threshold: int = 5) -> bool:
+        try:
+            h1 = imagehash.average_hash(Image.open(img1))
+            h2 = imagehash.average_hash(Image.open(img2))
+            return (h1 - h2) > threshold
+        except Exception:
+            return True
+
+    def _is_valid_image(self, path: Path) -> bool:
+        try:
+            if not path.exists() or path.stat().st_size == 0:
+                return False
+            with Image.open(path) as im:
+                im.verify()
+            return True
+        except Exception:
+            return False
+
+    def _update_preview_async(self, workspace: Optional[str] = None) -> None:
+        ws = workspace or self.current_active_workspace
+        key = str(ws)
+        prev_dict = self._list_previews()
+        prev_path = prev_dict.get(key)
+
+        def on_ready(saved: Optional[Path]):
+            if not saved:
+                return
+            if prev_path and Path(prev_path).exists():
+                if not self.__is_different(prev_path, saved.as_posix()):
+                    return
+            new_dict = prev_dict.copy()
+            new_dict[key] = saved.as_posix()
+            try:
+                self.json.update(STATUS_BAR_LOCK_MODULES, self.preview_node, new_dict)
+            except Exception:
+                pass
+
+        # запускаем асинхронный снимок
+        self._screen_shot_handler_async(ws, on_ready)
