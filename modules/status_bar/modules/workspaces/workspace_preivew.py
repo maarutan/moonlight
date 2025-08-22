@@ -28,7 +28,7 @@ class WorkspacesPreview(Window):
             name="statusbar-workspaces-preview",
             layer="top",
             anchor=anchor_handler,
-            exclusivity="auto",
+            exclusivity="none",
             margin=margin_handler,
         )
 

@@ -30,7 +30,13 @@ class WindowsTitle(Box):
         self.enable_icon = enable_icon
         self.vertical_title_length = vertical_title_length
         self.merged_titles = self.title_map + WINDOW_TITLE_MAP
-        super().__init__(**kwargs)
+        super().__init__(
+            v_expand=True,
+            h_expand=True,
+            v_align="center",
+            h_align="center",
+            **kwargs,
+        )
         box = Box(
             name="statusbar-windows-title-container",
             children=[

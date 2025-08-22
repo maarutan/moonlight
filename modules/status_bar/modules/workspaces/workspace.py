@@ -17,12 +17,22 @@ class Workspaces(Box):
         magic_icon: str = "✨",
         magic_enable: bool = False,
         enable_buttons_factory: bool = True,
+        preview_enable: bool = True,
+        preview_image_size: int = 300,
+        preview_anchor_handler: str = "top left",
+        preview_margin_handler: str = "0 30 0 30",
     ):
         self.is_popup_show = False
-        self.popup = WorkspacesPreview(
-            max_visible_workspaces=max_visible_workspaces,
-        )
-        self.popup.hide()
+        if preview_enable:
+            self.popup = WorkspacesPreview(
+                image_size=preview_image_size,
+                anchor_handler=preview_anchor_handler,
+                margin_handler=preview_margin_handler,
+                max_visible_workspaces=max_visible_workspaces,
+            )
+            self.popup.hide()
+        else:
+            self.popup = None
 
         if numbering_workpieces is None:
             numbering_workpieces = []
@@ -116,6 +126,9 @@ class Workspaces(Box):
             "hide",
         ] = "show",
     ):
+        if self.popup is None:
+            return
+
         if action == "show" and not self.is_popup_show:
             # self.popup.set_update()
             self.popup.show_all()
@@ -126,7 +139,7 @@ class Workspaces(Box):
 
     def _on_enter(self, widget, event):
         ws_id = widget.id
-        self.popup.set_update(ws_id)
+        self.popup.set_update(ws_id)  # type: ignore
         self.popup_toggle("show")
 
     def _on_leave(self, widget, event):

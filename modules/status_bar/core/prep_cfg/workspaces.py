@@ -28,3 +28,45 @@ class WorkspacesCfg:
         dflt = {}
         i = self._cfg._get_nested(self.parent, "magic-workspace", default=dflt)
         return i if isinstance(i, dict) else dflt
+
+    def preview_workspace(self) -> dict:
+        dflt = {}
+        i = self._cfg._get_nested(self.parent, "preview-workspace", default=dflt)
+        return i if isinstance(i, dict) else dflt
+
+    def preview_anchor_handler(self) -> str:
+        dflt = "top left"
+        position = self._cfg.bar.position()
+
+        anchors = {
+            "start": {
+                "top": "top left",
+                "bottom": "bottom left",
+                "left": "top left",
+                "right": "top right",
+            },
+            "center": {
+                "top": "top center",
+                "bottom": "bottom center",
+                "left": "center left",
+                "right": "center right",
+            },
+            "end": {
+                "top": "top right",
+                "bottom": "bottom right",
+                "left": "bottom left",
+                "right": "bottom right",
+            },
+        }
+
+        module_groups = {
+            "start": self._cfg.modules.get_modules_start(),
+            "center": self._cfg.modules.get_modules_center(),
+            "end": self._cfg.modules.get_modules_end(),
+        }
+
+        for group, modules in module_groups.items():
+            if self.parent in modules:
+                return anchors.get(group, {}).get(position, dflt)
+
+        return dflt

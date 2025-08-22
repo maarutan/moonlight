@@ -17,8 +17,9 @@ class Metrics(Box):
         is_horizontal=True,
         positions: Optional[list[str]] = None,
     ):
-        super().__init__()
-        self.is_horizontal = is_horizontal
+        super().__init__(
+            orientation="h" if is_horizontal else "v",
+        )
         self.disk = Disk()
         self.ram = Ram()
         self.cpu = Cpu()

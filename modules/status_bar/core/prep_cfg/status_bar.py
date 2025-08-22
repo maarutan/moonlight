@@ -9,6 +9,11 @@ class StatusBarCfg:
         self._cfg = cfg_handler
 
     def position(self) -> str:
+        dflt = "top"
+        position = self._cfg._get_options("position", "top")
+        return position if isinstance(position, str) else dflt
+
+    def position_handler(self) -> str:
         dflt = "left, top, right"
         position = self._cfg._get_options("position", "top")
         pos_map = {
@@ -26,5 +31,5 @@ class StatusBarCfg:
         return str(self._cfg._get_options("layer", "top"))
 
     def is_horizontal(self) -> bool:
-        position = self.position()
+        position = self.position_handler()
         return position in ["left, top, right", "left, bottom, right"]

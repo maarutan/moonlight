@@ -23,7 +23,7 @@ class StatusBar(Window):
             all_visible=True,
             exclusivity="auto",
             child=self.bar_content,
-            anchor=self.cfg.bar.position(),
+            anchor=self.cfg.bar.position_handler(),
             margin=self.cfg.bar.margin(),
             layer=self.cfg.bar.layer(),
             **kwargs,
