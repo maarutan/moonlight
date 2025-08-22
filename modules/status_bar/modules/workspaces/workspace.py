@@ -138,9 +138,15 @@ class Workspaces(Box):
             self.is_popup_show = False
 
     def _on_enter(self, widget, event):
+        if self.popup is None:
+            return
+
         ws_id = widget.id
         self.popup.set_update(ws_id)  # type: ignore
         self.popup_toggle("show")
 
     def _on_leave(self, widget, event):
+        if self.popup is None:
+            return
+
         self.popup_toggle("hide")
