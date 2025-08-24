@@ -11,6 +11,8 @@ def workspaces_handler(cfg: ConfigHandler) -> Workspaces:
         enable_buttons_factory=cfg.workspaces.enable_buttons_factory(),
         preview_image_size=cfg.workspaces.preview_workspace()["size"],
         preview_enable=cfg.workspaces.preview_workspace()["enable"],
+        preview_event=cfg.workspaces.preview_workspace()["event"],
+        preview_event_click=cfg.workspaces.preview_workspace()["event_click"],
         preview_anchor_handler=cfg.workspaces.preview_anchor_handler(),
         # our bar is horizontal
         is_horizontal=cfg.bar.is_horizontal(),

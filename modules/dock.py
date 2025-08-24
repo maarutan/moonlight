@@ -11,92 +11,13 @@ from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.hyprland.widgets import get_hyprland_connection
 from fabric.utils import exec_shell_command, idle_add, remove_handler
 from loguru import logger
+from utils import IconResolver
 
 # === IconResolver ===
 
 CACHE_DIR = str(GLib.get_user_cache_dir()) + "/modus"
 ICON_CACHE_FILE = os.path.join(CACHE_DIR, "icons.json")
 os.makedirs(CACHE_DIR, exist_ok=True)
-
-
-class IconResolver:
-    def __init__(self, default_icon="application-x-executable-symbolic"):
-        self.default_icon = default_icon
-        self._icon_dict = {}
-
-        if os.path.exists(ICON_CACHE_FILE):
-            try:
-                with open(ICON_CACHE_FILE) as f:
-                    self._icon_dict = json.load(f)
-            except json.JSONDecodeError:
-                logger.info("[ICONS] Cache file is corrupted")
-
-    def get_icon_name(self, app_id: str):
-        if app_id in self._icon_dict:
-            return self._icon_dict[app_id]
-
-        new_icon = self._compositor_find_icon(app_id)
-        logger.info(
-            f"[ICONS] found new icon: '{new_icon}' for app id: '{app_id}', storing..."
-        )
-        self._store_new_icon(app_id, new_icon)
-        return new_icon
-
-    def get_icon_pixbuf(self, app_id: str, size: int = 16):
-        try:
-            return Gtk.IconTheme.get_default().load_icon(
-                self.get_icon_name(app_id),
-                size,
-                Gtk.IconLookupFlags.FORCE_SIZE,
-            )
-        except Exception:
-            return None
-
-    def _store_new_icon(self, app_id: str, icon: str):
-        self._icon_dict[app_id] = icon
-        with open(ICON_CACHE_FILE, "w") as f:
-            json.dump(self._icon_dict, f)
-
-    def _get_icon_from_desktop_file(self, path: str):
-        try:
-            with open(path) as f:
-                for line in f:
-                    if line.startswith("Icon="):
-                        return "".join(line.strip()[5:].split())
-        except Exception:
-            pass
-        return self.default_icon
-
-    def _get_desktop_file(self, app_id: str):
-        for data_dir in GLib.get_system_data_dirs():
-            dir_path = os.path.join(data_dir, "applications")
-            if not os.path.exists(dir_path):
-                continue
-
-            files = os.listdir(dir_path)
-            match = [f for f in files if app_id.lower() in f.lower()]
-            if match:
-                return os.path.join(dir_path, match[0])
-
-            parts = re.split(r"[-_.\s]", app_id)
-            for word in filter(None, parts):
-                match = [f for f in files if word.lower() in f.lower()]
-                if match:
-                    return os.path.join(dir_path, match[0])
-        return None
-
-    def _compositor_find_icon(self, app_id: str):
-        theme = Gtk.IconTheme.get_default()
-        if theme.has_icon(app_id):
-            return app_id
-        if theme.has_icon(app_id + "-desktop"):
-            return app_id + "-desktop"
-        desktop_file = self._get_desktop_file(app_id)
-        return (
-            self._get_icon_from_desktop_file(desktop_file)
-            if desktop_file
-            else self.default_icon
-        )
 
 
 # === Dock ===
@@ -109,7 +30,7 @@ class Dock(Window):
         )
         self.config = {"pinned_apps": []}
         self.conn = get_hyprland_connection()
-        self.icon = IconResolver()
+        self.icon = IconResolver(ICON_CACHE_FILE)
         self.pinned = self.config["pinned_apps"]
         self.is_hidden = False
         self.hide_id = None
@@ -117,10 +38,12 @@ class Dock(Window):
 
         self.view = Box(name="viewport", orientation="h")
         self.wrapper = Box(name="dock", orientation="v", children=[self.view])
+
         self.hover = EventBox()
         self.hover.set_size_request(-1, 1)
         self.hover.connect("enter-notify-event", self._on_hover_enter)
         self.hover.connect("leave-notify-event", self._on_hover_leave)
+
         self.view.connect("enter-notify-event", self._on_hover_enter)
         self.view.connect("leave-notify-event", self._on_hover_leave)
         self.main_box = Box(orientation="v", children=[self.wrapper, self.hover])

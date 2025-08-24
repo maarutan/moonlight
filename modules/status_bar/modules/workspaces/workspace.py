@@ -21,7 +21,11 @@ class Workspaces(Box):
         preview_image_size: int = 300,
         preview_anchor_handler: str = "top left",
         preview_margin_handler: str = "0 30 0 30",
+        preview_event: Literal["hover", "click"] = "click",
+        preview_event_click: Literal["left", "middle", "right"] = "right",
     ):
+        self.preview_type = preview_event
+        self.preview_type_click = preview_event_click
         self.is_popup_show = False
         if preview_enable:
             self.popup = WorkspacesPreview(
@@ -78,8 +82,13 @@ class Workspaces(Box):
             else:
                 return None
             btn.connect("realize", lambda w: set_pointer_cursor(w))
-            btn.connect("enter-notify-event", self._on_enter)
-            btn.connect("leave-notify-event", self._on_leave)
+
+            if self.preview_type == "hover":
+                btn.connect("enter-notify-event", self._on_enter)
+                btn.connect("leave-notify-event", self._on_leave)
+            elif self.preview_type == "click":
+                btn.connect("button-press-event", self._on_right_click)
+                btn.connect("leave-notify-event", self._on_leave)
             return btn
 
         buttons = []
@@ -92,8 +101,14 @@ class Workspaces(Box):
                 style_classes=["buttons-workspace"],
             )
             btn.connect("realize", lambda w: set_pointer_cursor(w))
-            btn.connect("enter-notify-event", self._on_enter)
-            btn.connect("leave-notify-event", self._on_leave)
+
+            if self.preview_type == "hover":
+                btn.connect("enter-notify-event", self._on_enter)
+                btn.connect("leave-notify-event", self._on_leave)
+            elif self.preview_type == "click":
+                btn.connect("button-press-event", self._on_right_click)
+                btn.connect("leave-notify-event", self._on_leave)
+
             buttons.append(btn)
 
         super().__init__(
@@ -150,3 +165,22 @@ class Workspaces(Box):
             return
 
         self.popup_toggle("hide")
+
+    def _on_right_click(self, widget, event):
+        if self.preview_type_click == "right":
+            button_event = 3
+        elif self.preview_type_click == "middle":
+            button_event = 2
+        elif self.preview_type_click == "left":
+            button_event = 1
+        else:
+            button_event = 3
+
+        if event.button != button_event:
+            return
+
+        if self.popup is None:
+            return
+        ws_id = widget.id
+        self.popup.set_update(ws_id)
+        self.popup_toggle("show")

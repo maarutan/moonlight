@@ -12,6 +12,9 @@ from .data import (
     URL_AVATAR,
     BACKBUTTON,
     TEMP_DIR,
+    DOCK_STATION_CONFIG,
+    DOCK_STATION_DIR,
+    DOCK_STATION_ICONS,
 )
 
 __all__ = [
@@ -28,4 +31,7 @@ __all__ = [
     "GHOST_IMAGE",
     "PLACEHOLDER_IMAGE",
     "CAVA_CONFIG",
+    "DOCK_STATION_CONFIG",
+    "DOCK_STATION_DIR",
+    "DOCK_STATION_ICONS",
 ]

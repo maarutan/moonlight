@@ -23,6 +23,10 @@ STATUS_BAR_DIR = APP_CONFIG_DIR / "Status_Bar"
 STATUS_BAR_CONFIG = STATUS_BAR_DIR / "config.jsonc"
 STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
 
+"===== ~~ Dock Station ~~ ====="
+DOCK_STATION_DIR = APP_CONFIG_DIR / "Dock_Station"
+DOCK_STATION_ICONS = DOCK_STATION_DIR / "icons.json"
+DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
 
 "===== ~~ cava config ~~ ====="
 CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"

@@ -30,7 +30,7 @@ app = Application(
     bar,
     DesktopClock(),
     # PlayerWrappe(),
-    # dock,
+    Dock(),
     # notification,
 )
 

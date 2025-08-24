@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Literal, Optional, Dict, Union
 import uuid
-import imagehash
 from PIL import Image
 
 from fabric.widgets.wayland import WaylandWindow as Window
@@ -108,14 +107,6 @@ class WorkspacesPreview(Window):
         except Exception:
             return False
 
-    def __is_different(self, img1: str, img2: str, threshold: int = 5) -> bool:
-        try:
-            h1 = imagehash.average_hash(Image.open(img1))
-            h2 = imagehash.average_hash(Image.open(img2))
-            return (h1 - h2) > threshold
-        except Exception:
-            return True
-
     def _load_pixbuf_for_path(self, path: str) -> Optional[GdkPixbuf.Pixbuf]:
         try:
             pb = GdkPixbuf.Pixbuf.new_from_file_at_size(
@@ -217,16 +208,6 @@ class WorkspacesPreview(Window):
                 logger.debug(f"[WorkspacesPreview] shot failed/not stable for ws {ws}")
                 return
             saved_path = saved.as_posix()
-
-            if prev_path and Path(prev_path).exists():
-                try:
-                    if not self.__is_different(prev_path, saved_path):
-                        logger.debug(
-                            f"[WorkspacesPreview] image for ws {ws} didn't change"
-                        )
-                        return
-                except Exception:
-                    pass
 
             new_dict = prev_dict.copy()
             new_dict[ws] = saved_path
