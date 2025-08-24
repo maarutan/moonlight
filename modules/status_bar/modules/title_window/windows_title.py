@@ -22,6 +22,8 @@ class WindowsTitle(Box):
         is_horizontal: bool = True,
         truncation: bool = True,
         truncation_size: int = 80,
+        title_type: Literal["class", "title"] = "title",
+        title_type_length: int = 30,
         title_map: Optional[list] = None,
         title_exceptions: Optional[list] = None,
         vertical_title_length: int = 6,
@@ -30,6 +32,8 @@ class WindowsTitle(Box):
         resolve_icon_size: int = 16,
         resolve_position: Literal["left", "right"] = "left",
     ):
+        self.title_type = title_type
+        self.title_type_length = title_type_length
         self.resolve_position = resolve_position
         self.resolve_icon_size = resolve_icon_size
         self.title_exceptions = title_exceptions or []
@@ -101,21 +105,26 @@ class WindowsTitle(Box):
 
         if matched_window:
             icon_text = matched_window[1] if not self.resolve_icon else ""
-            title_text = matched_window[2]
+            window_class_title = matched_window[2]
         else:
             icon_text = "" if not self.resolve_icon else ""
-            title_text = win_class.lower() or "unknown"
+            window_class_title = win_class.lower() or "unknown"
 
-        if self.truncation and self.is_horizontal:
-            title_text = truncate(title_text, self.truncation_size)
-        elif not self.is_horizontal:
-            title_text = self._trim_visual(title_text, self.vertical_title_length)
+        if self.title_type == "title":
+            display_text = win_title
+        else:
+            display_text = window_class_title
+
+        if not self.is_horizontal:
+            display_text = self._trim_visual(display_text, self.vertical_title_length)
+        elif self.title_type_length > 0:
+            display_text = truncate(display_text, self.title_type_length)
 
         if self.resolve_icon and self.enable_icon:
             pixbuf = self.icon.get_icon_pixbuf(win_class, self.resolve_icon_size)
-            return title_text, pixbuf
+            return display_text, pixbuf
         else:
-            return title_text, icon_text
+            return display_text, icon_text
 
     def _build_container(self, win_class: str, win_title: str) -> Box:
         container = Box(
@@ -126,14 +135,13 @@ class WindowsTitle(Box):
         text, icon_or_pixbuf = self._get_title_and_icon(win_class, win_title)
 
         if isinstance(icon_or_pixbuf, str) and icon_or_pixbuf:
-            label = Label(text)
-            icon_label = Label(icon_or_pixbuf)
-            if self.resolve_position == "left":
-                container.add(icon_label)
-                container.add(label)
+            if self.is_horizontal:
+                full_text = f"{icon_or_pixbuf} {text}"
             else:
-                container.add(label)
-                container.add(icon_label)
+                icon_trimmed = self._trim_visual(icon_or_pixbuf, 1)
+                text_trimmed = self._trim_visual(text, self.vertical_title_length)
+                full_text = f"{icon_trimmed}\n{text_trimmed}"
+            container.add(Label(full_text))
         elif icon_or_pixbuf:
             image = Image(pixbuf=icon_or_pixbuf)
             label = Label(text)

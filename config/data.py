@@ -34,8 +34,11 @@ CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
 PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
 GHOST_IMAGE = ASSETS / "empty" / "ghost.png"
 BACKBUTTON = ASSETS / "buttons" / "back.png"
-URL_AVATAR = APP_CONFIG_DIR / "Assets" / "Profile" / "http(s)_avatar.png"
-RESOLVED_ICONS = ASSETS / "resolved_icons.json"
+APP_ASSETS = APP_CONFIG_DIR / "Assets"
+
+"===== ~~ APP ASSETS ~~ ====="
+URL_AVATAR = APP_ASSETS / "Profile" / "http(s)_avatar.png"
+RESOLVED_ICONS = APP_ASSETS / "resolved_icons.json"
 
 "===== ~~ Templates ~~ ====="
 TEMP_DIR = Path(gettempdir())

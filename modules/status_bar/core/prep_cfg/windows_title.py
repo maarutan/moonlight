@@ -43,3 +43,8 @@ class WindowsTitleCfg:
         dflt = {}
         i = self._cfg._get_nested(self.parent, "icon_resolve", default=dflt)
         return i if isinstance(i, dict) else dflt
+
+    def title_type(self) -> dict:
+        dflt = {}
+        i = self._cfg._get_nested(self.parent, "title-type", default=dflt)
+        return i if isinstance(i, dict) else dflt

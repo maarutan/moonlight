@@ -11,6 +11,9 @@ def windows_title_handler(cfg: ConfigHandler) -> WindowsTitle:
         enable_icon=cfg.windows_title.enable_icon(),
         is_horizontal=cfg.bar.is_horizontal(),
         title_exceptions=cfg.windows_title.exceptions(),
-        icon_resolve=cfg.windows_title.icon_resolve()["enable"],
-        icon_size=cfg.windows_title.icon_resolve()["size"],
+        resolve_icon=cfg.windows_title.icon_resolve()["enable"],
+        resolve_icon_size=cfg.windows_title.icon_resolve()["size"],
+        resolve_position=cfg.windows_title.icon_resolve()["position"],
+        title_type=cfg.windows_title.title_type()["type"],
+        title_type_length=cfg.windows_title.title_type()["length"],
     )
