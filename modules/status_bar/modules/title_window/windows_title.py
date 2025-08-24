@@ -135,13 +135,19 @@ class WindowsTitle(Box):
         text, icon_or_pixbuf = self._get_title_and_icon(win_class, win_title)
 
         if isinstance(icon_or_pixbuf, str) and icon_or_pixbuf:
+            icon_label = Label(icon_or_pixbuf)
+            text_label = Label(text)
             if self.is_horizontal:
-                full_text = f"{icon_or_pixbuf} {text}"
+                if self.resolve_position == "left":
+                    container.add(icon_label)
+                    container.add(Label(f"{text}"))
+                else:
+                    container.add(Label(f"{text}"))
+                    container.add(icon_label)
             else:
                 icon_trimmed = self._trim_visual(icon_or_pixbuf, 1)
                 text_trimmed = self._trim_visual(text, self.vertical_title_length)
-                full_text = f"{icon_trimmed}\n{text_trimmed}"
-            container.add(Label(full_text))
+                container.add(Label(f"{icon_trimmed}\n{text_trimmed}"))
         elif icon_or_pixbuf:
             image = Image(pixbuf=icon_or_pixbuf)
             label = Label(text)
