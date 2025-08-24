@@ -13,10 +13,16 @@ class TrayButtonHandler(Box):
         self,
         tray_box_position: str,
         bar_position: str,
-        orientation_pos: bool = True,
+        is_horizontal: bool = True,
+        spacing: int = 8,
+        pixel_size: int = 20,
+        refresh_interval: int = 1,
     ):
+        self.spacing = spacing
+        self.pixel_size = pixel_size
+        self.refresh_interval = refresh_interval
         super().__init__(
-            name="tray-handler-container", orientation="h" if orientation_pos else "v"
+            name="tray-handler-container", orientation="h" if is_horizontal else "v"
         )
         self.connection = Hyprland()
         self.last_window_address = None
@@ -51,6 +57,9 @@ class TrayButtonHandler(Box):
             position=tray_box_position,
             bar_position=bar_position,
             do_click_handler=self.do_clicked,
+            spacing=self.spacing,
+            pixel_size=self.pixel_size,
+            refresh_interval=self.refresh_interval,
         )
         self.tray.hide()
 

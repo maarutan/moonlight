@@ -19,7 +19,7 @@ class SystemTrayHandler(Box):
         self.tray_box = tray_box
         self.pixel_size = pixel_size
         self.bar_position = bar_position
-        self.orientation_pos = orientation_pos
+        self.is_horizontal = orientation_pos
         self.refresh_interval = refresh_interval
         self.tray_box_position = tray_box_position
 
@@ -33,15 +33,17 @@ class SystemTrayHandler(Box):
         if self.tray_box:
             return TrayButtonHandler(
                 bar_position=self.bar_position,
-                orientation_pos=self.orientation_pos,
+                is_horizontal=self.is_horizontal,
                 tray_box_position=self.tray_box_position,
+                spacing=self.spacing,
+                pixel_size=self.pixel_size,
+                refresh_interval=self.refresh_interval,
             )
-
         else:
             return TrayItems(
                 grid=self.tray_box,
                 spacing=self.spacing,
                 pixel_size=self.pixel_size,
-                orientation_pos=self.orientation_pos,
+                is_horizontal=self.is_horizontal,
                 refresh_interval=self.refresh_interval,
             )

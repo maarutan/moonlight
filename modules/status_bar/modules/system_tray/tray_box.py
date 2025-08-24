@@ -13,7 +13,16 @@ class TrayBox(Window):
         position: str,
         bar_position: str,
         do_click_handler: Callable,
+        is_horizontal: bool = True,
+        spacing: int = 8,
+        pixel_size: int = 20,
+        refresh_interval: int = 1,
     ):
+        self.spacing = spacing
+        self.refresh_interval = refresh_interval
+        self.pixel_size = pixel_size
+
+        self.is_horizontal = is_horizontal
         self.position = position
         self.bar_position = bar_position
         self.do_click_handler = do_click_handler
@@ -43,7 +52,13 @@ class TrayBox(Window):
     def _make_content(self):
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         content = Grid(name="statusbar-tray-box", all_visible=True)
-        tray = TrayItems()
+        tray = TrayItems(
+            is_horizontal=self.is_horizontal,
+            pixel_size=self.pixel_size,
+            refresh_interval=self.refresh_interval,
+            grid=True,
+            spacing=self.spacing,
+        )
         content.attach(tray, 0, 1, 1, 1)
         content.set_row_spacing(10)
 
