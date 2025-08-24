@@ -28,7 +28,7 @@ WINDOW_TITLE_MAP = [
     ["obs", "", "OBS Studio"],
     # Terminals
     ["gnome-terminal", "", "GNOME Terminal"],
-    ["kitty", "󰄛", "Kitty Terminal"],
+    ["kitty", "󰄛", "Kitty"],
     ["konsole", "", "Konsole"],
     ["alacritty", "", "Alacritty"],
     ["wezterm", "", "Wezterm"],
@@ -60,6 +60,7 @@ WINDOW_TITLE_MAP = [
     ["telegram-desktop", "", "Telegram"],
     ["org.telegram.desktop", "", "Telegram"],
     ["whatsapp", "󰖣", "WhatsApp"],
+    ["signal", "󰭻", "Signal"],
     ["teams", "󰊻", "Microsoft Teams"],
     ["skype", "󰒯", "Skype"],
     ["thunderbird", "", "Thunderbird"],
