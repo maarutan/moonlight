@@ -12,20 +12,16 @@ gi.require_version("Gtk", "3.0")
 class IconResolver:
     def __init__(
         self,
-        file_path_icon_lock: Path | str,
+        icon_lock: Path,
         default_icon="application-x-executable-symbolic",
     ):
-        self.icon_lock = (
-            Path(file_path_icon_lock)
-            if isinstance(file_path_icon_lock, str)
-            else file_path_icon_lock
-        )
+        self.icon_lock = icon_lock
         self.json = JsonManager()
         self.default_icon = default_icon
         self._icon_dict = {}
 
-        if self.icon_lock.exists():
-            self._icon_dict = self.json.get_data(self.icon_lock)
+        if icon_lock.exists():
+            self._icon_dict = self.json.get_data(icon_lock)
 
     def get_icon_name(self, app_id: str) -> str:
         if app_id in self._icon_dict:
