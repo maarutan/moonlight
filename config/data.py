@@ -25,7 +25,6 @@ STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
 
 "===== ~~ Dock Station ~~ ====="
 DOCK_STATION_DIR = APP_CONFIG_DIR / "Dock_Station"
-DOCK_STATION_ICONS = DOCK_STATION_DIR / "icons.json"
 DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
 
 "===== ~~ cava config ~~ ====="
@@ -36,6 +35,7 @@ PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
 GHOST_IMAGE = ASSETS / "empty" / "ghost.png"
 BACKBUTTON = ASSETS / "buttons" / "back.png"
 URL_AVATAR = APP_CONFIG_DIR / "Assets" / "Profile" / "http(s)_avatar.png"
+RESOLVED_ICONS = ASSETS / "resolved_icons.json"
 
 "===== ~~ Templates ~~ ====="
 TEMP_DIR = Path(gettempdir())

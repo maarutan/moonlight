@@ -1,6 +1,6 @@
 from loguru import logger
 
-from .cava import cava_handler
+from .cavalcade import cavalcade_handler
 from .profile import profile_handler
 from .clock import clock_handler
 from .language import language_handler
@@ -21,7 +21,7 @@ MODULES_REGISTRY = {
     "system-tray": system_tray_handler,
     "memory": memory_ram_handler,
     "metrics": metrics_handler,
-    "cava": cava_handler,
+    "cavalcade": cavalcade_handler,
 }
 
 

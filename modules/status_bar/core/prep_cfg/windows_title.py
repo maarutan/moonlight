@@ -33,3 +33,13 @@ class WindowsTitleCfg:
         dflt = 6
         i = self._cfg._get_nested(self.parent, "vertical-length", default=dflt)
         return i if isinstance(i, int) else dflt
+
+    def exceptions(self):
+        dflt = []
+        i = self._cfg._get_nested(self.parent, "exceptions", default=dflt)
+        return i if isinstance(i, list) else dflt
+
+    def icon_resolve(self) -> dict:
+        dflt = {}
+        i = self._cfg._get_nested(self.parent, "icon_resolve", default=dflt)
+        return i if isinstance(i, dict) else dflt

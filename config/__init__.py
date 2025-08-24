@@ -14,7 +14,7 @@ from .data import (
     TEMP_DIR,
     DOCK_STATION_CONFIG,
     DOCK_STATION_DIR,
-    DOCK_STATION_ICONS,
+    RESOLVED_ICONS,
 )
 
 __all__ = [
@@ -33,5 +33,5 @@ __all__ = [
     "CAVA_CONFIG",
     "DOCK_STATION_CONFIG",
     "DOCK_STATION_DIR",
-    "DOCK_STATION_ICONS",
+    "RESOLVED_ICONS",
 ]
