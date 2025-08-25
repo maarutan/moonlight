@@ -15,12 +15,14 @@ from modules import (
     Dock,
     PlayerWrapper,
     DesktopClock,
+    LanguagePreview,
 )
 from config import APP_NAME
 
 corners = ScreenCorners()
 activate_linux = ActivateLinux()
 bar = StatusBar()
+language = LanguagePreview()
 
 corners.set_visible(True)
 app = Application(
@@ -29,6 +31,7 @@ app = Application(
     activate_linux,
     bar,
     DesktopClock(),
+    language,
     # PlayerWrappe(),
     # Dock(),
     # notification,

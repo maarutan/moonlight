@@ -124,3 +124,6 @@ class JsonManager:
 
         d[last_key].append(value)
         self.write(path, data)
+
+    def loads(self, content) -> dict:
+        return json.loads(content)

@@ -9,6 +9,7 @@ dependencies = [
     "pillow>=11.3.0",
     "psutil>=7.0.0",
     "py-spy>=0.4.1",
+    "pydbus>=0.6.0",
     "pywal>=3.3.0",
     "requests>=2.32.4",
 ]

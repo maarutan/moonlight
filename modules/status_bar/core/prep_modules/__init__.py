@@ -1,5 +1,7 @@
 from loguru import logger
 
+from ...modules.screen_recording import ScreenRecording
+
 from .cavalcade import cavalcade_handler
 from .profile import profile_handler
 from .clock import clock_handler
@@ -22,6 +24,7 @@ MODULES_REGISTRY = {
     "memory": memory_ram_handler,
     "metrics": metrics_handler,
     "cavalcade": cavalcade_handler,
+    "screen-recording": lambda _: ScreenRecording(),
 }
 
 

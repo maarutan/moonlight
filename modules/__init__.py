@@ -5,6 +5,7 @@ from .notification import NotificationPopup
 from .dock_station.dock import Dock
 from .player.player import PlayerWrapper
 from .desktop_clock import DesktopClock
+from .language_preview.language_preview import LanguagePreview
 
 __all__ = [
     "MyCorner",
@@ -14,5 +15,6 @@ __all__ = [
     "PlayerWrapper",
     "StatusBar",
     "NotificationPopup",
+    "LanguagePreview",
     "Dock",
 ]
