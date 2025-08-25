@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/maarutan/moonlight#readme",
   "devDependencies": {
-    "sass": "^1.90.0"
+    "sass": "^1.91.0"
   }
 }
