@@ -9,6 +9,7 @@ from .prep_cfg import (
     MetricsCfg,
     WindowsTitleCfg,
     LanguageCfg,
+    ScreenRecorderCfg,
     ClockCfg,
     MediaPlayerWindowsTitleCfg,
 )
@@ -43,6 +44,7 @@ class ConfigHandler:
         self.clock = ClockCfg(self)
         self.media_player_windows_title = MediaPlayerWindowsTitleCfg(self)
         self.metrics = MetricsCfg(self)
+        self.screen_recorder = ScreenRecorderCfg(self)
 
     # Config
 

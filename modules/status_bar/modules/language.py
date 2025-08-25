@@ -2,7 +2,7 @@ import json
 from typing import Literal
 from fabric.hyprland.service import HyprlandEvent
 from fabric.hyprland.widgets import get_hyprland_connection
-from fabric.hyprland.widgets import Language as HLanguage
+from fabric.hyprland.widgets import HyprlandLanguage as HLanguage
 from fabric.utils import exec_shell_command
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label

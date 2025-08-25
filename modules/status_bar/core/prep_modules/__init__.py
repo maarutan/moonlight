@@ -1,6 +1,6 @@
 from loguru import logger
 
-from ...modules.screen_recording import ScreenRecording
+from ...modules.screen_recorder import ScreenRecorder
 
 from .cavalcade import cavalcade_handler
 from .profile import profile_handler
@@ -11,6 +11,7 @@ from .memory_ram import memory_ram_handler
 from .system_tray import system_tray_handler
 from .windows_title import windows_title_handler
 from .metrics import metrics_handler
+from .screen_recorder import screen_recorder_handler
 # from .media_player_windows_title import mp_windows_title_handler
 
 MODULES_REGISTRY = {
@@ -24,7 +25,7 @@ MODULES_REGISTRY = {
     "memory": memory_ram_handler,
     "metrics": metrics_handler,
     "cavalcade": cavalcade_handler,
-    "screen-recording": lambda _: ScreenRecording(),
+    "screen-recorder": screen_recorder_handler,
 }
 
 

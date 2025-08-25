@@ -9,6 +9,7 @@ from .language import LanguageCfg
 from .clock import ClockCfg
 from .media_player_windows_title import MediaPlayerWindowsTitleCfg
 from .metrics import MetricsCfg
+from .screen_recorder import ScreenRecorderCfg
 
 __all__ = [
     "StatusBarCfg",
@@ -19,6 +20,7 @@ __all__ = [
     "ClockCfg",
     "LanguageCfg",
     "WindowsTitleCfg",
+    "ScreenRecorderCfg",
     "MemoryRamCfg",
     "ProfileCfg",
     "MediaPlayerWindowsTitleCfg",

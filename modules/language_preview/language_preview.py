@@ -25,18 +25,6 @@ class LanguagePreview(Window):
         replacer = {"us": "en"}  # short replacements
         self.replacer = {k.lower(): v for k, v in (replacer or {}).items()}
 
-        super().__init__(
-            name="language-preview",
-            margin=margin,
-            layer=layer,
-            anchor=position,
-            h_expand=True,
-            v_expand=True,
-            v_align="center",
-            h_align="center",
-            style="border-radius:30px;",
-        )
-
         self.lang_box = Box(
             name="language-preview-box",
             h_expand=True,
@@ -44,15 +32,8 @@ class LanguagePreview(Window):
             h_align="center",
             v_align="center",
         )
-        self.top_box = Box(
+        self.result_box = Box(
             name="language-preview-top",
-            h_expand=True,
-            v_expand=False,
-            h_align="center",
-            v_align="center",
-        )
-        self.bottom_box = Box(
-            name="language-preview-bottom",
             h_expand=True,
             v_expand=False,
             h_align="center",
@@ -95,13 +76,20 @@ class LanguagePreview(Window):
             wrapper.add(full_lbl)
 
             self.items[code] = (wrapper, short_lbl, full_lbl)
-            self.top_box.add(wrapper)
-            self.bottom_box.add(full_lbl)
+            self.result_box.add(wrapper)
 
-        self.lang_box.add(self.top_box)
-        self.lang_box.add(Box(name="language-preview-spacer", orientation="h"))
-        self.lang_box.add(self.bottom_box)
-        self.children = self.lang_box
+        self.lang_box.add(self.result_box)
+        super().__init__(
+            name="language-preview",
+            margin=margin,
+            layer=layer,
+            anchor=position,
+            h_expand=True,
+            v_expand=True,
+            v_align="center",
+            h_align="center",
+            child=self.lang_box,
+        )
 
         self.hypr = Hyprland(commands_only=False)
         self.hypr.connect("event::activelayout", self.on_layout_change)
@@ -112,10 +100,9 @@ class LanguagePreview(Window):
         self._last_event_ts: float = 0.0
         self._throttle_interval: float = 0.3
 
-        self.update_active(None)
+        # self.update_active(None)
         self.hide()
 
-    # ---------- hyprctl helpers ----------
     def _run_hyprctl_json(self) -> dict:
         out = exec_shell_command("hyprctl devices -j")
         try:
@@ -154,12 +141,10 @@ class LanguagePreview(Window):
 
         result: dict[str, str] = {}
         for idx, s in enumerate(short_norm):
-            # default_fullnames всегда имеет приоритет
             if s in self.default_fullnames:
                 result[s] = self.default_fullnames[s]
                 continue
 
-            # fallback из hyprctl
             full_list = None
             for field in [
                 "layout_names",
@@ -175,20 +160,17 @@ class LanguagePreview(Window):
                 result[s] = str(full_list[idx])
                 continue
 
-            # fallback active
             active_full = self.active_language()
             active_norm = re.sub(r"\W", "", active_full).lower()
             if s == active_norm or active_norm.startswith(s) or s in active_norm:
                 result[s] = active_full
                 continue
 
-            # окончательный fallback
             raw = short_raw_list[idx] if idx < len(short_raw_list) else s
             result[s] = raw.strip().replace("_", " ").title()
 
         return result
 
-    # ---------- widget helpers ----------
     def _add_style_class(self, widget, cls: str):
         try:
             widget.add_style_class(cls)
@@ -230,7 +212,6 @@ class LanguagePreview(Window):
         except Exception:
             pass
 
-    # ---------- scoring ----------
     def _score_locale(self, locale_norm: str, active_norm: str) -> int:
         if not locale_norm:
             return 0
@@ -242,7 +223,6 @@ class LanguagePreview(Window):
             return len(locale_norm)
         return 0
 
-    # ---------- update active ----------
     def update_active(self, active_raw: str | None):
         if active_raw is None:
             active_raw = self.active_language()
@@ -267,7 +247,6 @@ class LanguagePreview(Window):
             if baseline_full:
                 self._set_label_text(full_lbl, baseline_full)
 
-    # ---------- hide scheduling ----------
     def _delayed_hide_with_id(self, cid: int):
         if cid != self._call_id:
             return False
@@ -289,7 +268,6 @@ class LanguagePreview(Window):
         )
         self._hide_timeout_id = tid
 
-    # ---------- event handler ----------
     def on_layout_change(self, *args):
         event = next((a for a in reversed(args) if isinstance(a, HyprlandEvent)), None)
         active_value = None
@@ -325,6 +303,5 @@ class LanguagePreview(Window):
         self._schedule_hide(3500, self._call_id)
         return False
 
-    # ---------- change language ----------
     def change_language(self):
         exec_shell_command("hyprctl switchxkblayout current next")

@@ -1,10 +1,9 @@
 from typing import Literal
 from fabric.hyprland.widgets import WorkspaceButton
-from fabric.hyprland.widgets import Workspaces as HWorkspaces
+from fabric.hyprland.widgets import HyprlandWorkspaces as HWorkspaces
 from fabric.widgets.box import Box
 from .workspace_preivew import WorkspacesPreview
 
-import gi
 from gi.repository import Gdk  # type: ignore
 
 
