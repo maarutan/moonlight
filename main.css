@@ -1,55 +1,62 @@
-@import url("./styles/status_bar/index.css");
-@import url("./styles/activate_linux/index.css");
-@import url("./styles/corners/index.css");
+#activate-linux {
+  background: none;
+  min-width: 600px;
+  min-height: 600px;
+  color: rgba(255, 255, 255, 0.7);
+}
 
-.statusbar-screen-recording {
-  margin: 0 0px;
-  min-width: 60px;
-  background: #960000;
-  border-radius: 50px;
-  box-shadow: 0 0 1.5px 0 #ccc;
+#activate-linux-title {
+  text-shadow: 1px 2px 2px black;
+  font-size: 25px;
+  font-weight: normal;
+  transition: 0.2s;
 }
-#screen-recording-icon {
-  /* background: black; */
-  margin: 0 10px;
-  margin-right: 17px;
-  color: white;
+
+#activate-linux-desc {
+  text-shadow: 1px 2px 2px black;
+  font-size: 19px;
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.5);
+  transition: 0.2s;
 }
-#indicator {
-  border-radius: 100%;
-  background: red;
-  border: 0.2px solid black;
-  min-width: 23px;
+
+#screen-corners {
+  background: transparent;
+  box-shadow: inset 0px 0px 0px 1px black;
 }
-#rec-icon {
-  margin-left: 5px;
-  font-size: 18px;
-  color: white;
+
+#corner {
+  background: black;
+  border-radius: 0px;
+  transition: 0.8s;
 }
-#rec-icon.mig {
-  color: #ccc;
+
+#corner-container {
+  min-width: 0px;
+  min-height: 0px;
 }
 
 #desktop_clock {
   padding: 0px 10px 0px 10px;
-  /* margin: 40px 10px 40px 10px; */
-  margin: 0;
+  margin: 0px;
   background: transparent;
 }
+
 #desktop_clock :nth-child(2) {
   padding: 0px 100px 80px 80px;
-  /* margin: 40px 10px 40px 10px; */
   font-weight: bolder;
   background: transparent;
   box-shadow: none;
 }
+
 #desktop_clock :nth-child(1) {
-  margin: 0;
+  margin: 0px;
   font-size: 80px;
   box-shadow: none;
   font-weight: bolder;
   background: transparent;
 }
+
 #language-preview-box {
   background: #1e1e2f;
   padding: 15px;
@@ -69,13 +76,14 @@
   font-weight: bold;
   color: #ffffff;
 }
+
 #language-preview :nth-child(1) {
   font-size: 30px;
   border-radius: 20px;
-  /* font-weight: 300; */
   min-width: 150px;
   min-height: 120px;
 }
+
 #language-preview :nth-child(2) {
   border-radius: 20px;
 }
@@ -91,12 +99,219 @@
   color: #ffffff;
 }
 
-.dock-station-show {
-  opacity: 1;
-  margin: 0;
+* {
+  margin: 0px;
+  padding: 0px;
+  color: #fff;
+  font-size: 16px;
+  text-shadow: 0px 0px 5px #000;
 }
 
-.dock-station-hide {
-  opacity: 1;
-  margin: -80px;
+#statusbar {
+  box-shadow: 0px 0px 10px 0px #000;
+  background: transparent;
 }
+
+#bar-modules-start {
+  border: solid 0.2px white;
+  padding: 0px 7px;
+  margin-left: 10px;
+  border-radius: 8px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0px #000;
+}
+
+#bar-modules-center {
+  border: solid 0.2px white;
+  padding: 0px 7px;
+  border-radius: 8px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0px #000;
+}
+
+#bar-modules-end {
+  border: solid 0.2px white;
+  padding: 0px 7px;
+  margin-right: 8px;
+  border-radius: 10px;
+  background-color: #1e1e2e;
+  box-shadow: 0px 0px 3px 0px #000;
+}
+
+#statusbar-workspaces-container {
+  border-radius: 0px;
+  transition: 0.4s;
+}
+
+#statusbar-workspaces-container button {
+  color: #fff;
+  border: none;
+  background: none;
+  border-radius: 0px;
+  transition: 0.4s;
+}
+#statusbar-workspaces-container button:hover {
+  background: #1e1e2a;
+}
+
+#statusbar-workspaces-container button:not(.empty) {
+  transition: 0.4s;
+  border-bottom: 2px solid #fff;
+}
+
+#statusbar-workspaces-container button.active {
+  transition: 0.6s;
+  border: 0px;
+  border-radius: 0px;
+  background: #ffffff;
+}
+
+#statusbar-workspaces-text button.active :nth-child(1) {
+  transition: 0.4s;
+  color: #000;
+}
+
+#statusbar-workspaces-preview {
+  border-radius: 10px;
+  border: 0px;
+  margin: 0px;
+  box-shadow: 0px 0px 10px 0px white;
+}
+
+#statusbar-workspaces-preview-image {
+  padding: 20px;
+  margin: 0px;
+}
+
+#statusbar-windows-title-box {
+  background: transparent;
+  padding: 0px 5px;
+  margin: 0px;
+  border-radius: 0px;
+  box-shadow: none;
+  border: 0px;
+  font-weight: bolder;
+}
+
+#statusbar-windows-title-box :nth-child(2) {
+  padding: 0px 5px;
+}
+
+#statusbar-tray-box-container {
+  border-radius: 8px;
+}
+
+#statusbar-tray-box {
+  padding: 10px;
+}
+
+#statusbar-tray-button {
+  border-radius: 0px;
+  background: transparent;
+}
+
+#statusbar-memory-ram {
+  border-radius: 0px;
+  box-shadow: none;
+  border: 0px;
+}
+
+#statusbar-memory-ram-button {
+  padding: 0px 5px;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+  border: 0px;
+}
+
+#statusbar-clock {
+  padding: 0px 5px;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+  border: 0px;
+}
+
+#statusbar-language-button {
+  padding: 0px 10px;
+}
+
+#statusbar-language-button-language {
+  padding: 0px 5px;
+}
+
+#cpu-icon,
+#ram-icon {
+  font-size: 15px;
+  margin-right: 4px;
+  transition: 0.4s;
+}
+
+#cpu-circle,
+#ram-circle,
+#disk-circle {
+  color: #666666;
+  border: 3px solid #fff;
+  transition: 0.4s;
+}
+
+#statusbar-profile-dashboard-popup {
+  transition: 0.3s;
+  padding: 0px 5px;
+  border-radius: 0px;
+  box-shadow: none;
+  border: 0px;
+}
+
+.statusbar-profile-popup-hide {
+  opacity: 0;
+}
+
+.statusbar-profile-popup-show {
+  opacity: 1;
+}
+
+#statusbar-profile-logo-button {
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+  border: 0px;
+  margin: 0px 20px;
+}
+#statusbar-profile-logo-button:hover {
+  margin-left: 40px;
+  padding-left: 40px;
+}
+
+.statusbar-screen-recording {
+  margin: 0px 0px;
+  min-width: 60px;
+  background: #960000;
+  border-radius: 50px;
+  box-shadow: 0px 0px 1.5px 0px #ccc;
+}
+
+#screen-recording-icon {
+  margin: 0px 10px;
+  margin-right: 17px;
+  color: white;
+}
+
+#indicator {
+  border-radius: 100%;
+  background: red;
+  border: 0.2px solid black;
+  min-width: 23px;
+}
+
+#rec-icon {
+  margin-left: 3px;
+  font-size: 18px;
+  color: white;
+}
+
+#rec-icon.mig {
+  color: white;
+}
+
+/*# sourceMappingURL=main.css.map */
