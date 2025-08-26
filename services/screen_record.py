@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from loguru import logger
 from fabric.core.service import Service, Signal
 from fabric.utils.helpers import idle_add
-from gi.repository import GLib  # type:ignore
+from gi.repository import GLib  # type: ignore
+from typing import Callable
 
 
 @dataclass(frozen=True)
@@ -32,17 +33,33 @@ class ScreenRecorderService(Service):
         super().__init__()
         self._hypr = None
         self.is_recording = False
+
         self._retry_timer_id = None
         self._confirm_timer_id = None
         self._pending_state = None
+
         self._bg_check_id = None
+
+        self._probe_funcs: list[Callable[[], object]] | None = None
+
         if not self._init_hypr():
             self._retry_timer_id = GLib.timeout_add_seconds(2, self._try_init_hypr)
-        self._bg_check_id = GLib.timeout_add(500, self._background_check)
+
+        self._bg_check_id = GLib.timeout_add(2000, self._background_check)
+
         idle_add(self._immediate_probe_and_set)
+
+    def start_recording(self) -> None:
+        """Явно пометить запись активной и эмитнуть сигнал."""
+        self._apply_state(True)
+
+    def stop_recording(self) -> None:
+        """Явно пометить запись остановленной и эмитнуть сигнал."""
+        self._apply_state(False)
 
     def _try_init_hypr(self) -> bool:
         ok = self._init_hypr()
+
         return not ok
 
     def _init_hypr(self) -> bool:
@@ -50,14 +67,47 @@ class ScreenRecorderService(Service):
             from fabric.hyprland.service import Hyprland
 
             self._hypr = Hyprland()
-            self._hypr.connect("event::screencast", self._on_screencast_event)
+
+            try:
+                self._hypr.connect("event::screencast", self._on_screencast_event)
+            except Exception:
+                logger.debug(
+                    "[ScreenRecorderService] failed to connect screencast event"
+                )
             logger.info("[ScreenRecorderService] connected to Hyprland events socket")
+
             if self._retry_timer_id:
                 try:
                     GLib.source_remove(self._retry_timer_id)
                 except Exception:
                     pass
                 self._retry_timer_id = None
+
+            candidates = [
+                "is_screencast_active",
+                "screencast_active",
+                "get_screencast_state",
+                "get_screencast",
+                "is_recording",
+                "screencast_state",
+                "have_screencast",
+                "screencast",
+                "screencast_is_active",
+            ]
+            funcs: list[Callable[[], object]] = []
+            for name in candidates:
+                try:
+                    attr = getattr(self._hypr, name, None)
+                    if attr is None:
+                        continue
+                    if callable(attr):
+                        funcs.append(attr)
+                    else:
+                        funcs.append(lambda v=attr: v)
+                except Exception:
+                    continue
+            self._probe_funcs = funcs
+
             idle_add(self._immediate_probe_and_set)
             return True
         except Exception as e:
@@ -74,6 +124,7 @@ class ScreenRecorderService(Service):
                 getattr(event, "raw_data", None),
                 getattr(event, "data", None),
             )
+
             state_token = None
             if getattr(event, "data", None):
                 if len(event.data) > 0:
@@ -87,25 +138,30 @@ class ScreenRecorderService(Service):
                         state_token = body.split(",")[0].strip()
                 except Exception:
                     state_token = None
+
             if state_token is None:
                 logger.warning(
                     "[ScreenRecorderService] unknown screencast payload, ignoring (raw=%r)",
                     getattr(event, "raw_data", None),
                 )
                 return
+
             s = state_token.lower().strip()
             new_state = s in ("1", "true", "start", "started", "on")
             if s in ("0", "false", "stop", "stopped", "off"):
                 new_state = False
+
             logger.debug(
                 "[ScreenRecorderService] parsed screencast state -> %s", new_state
             )
+
             if new_state == self.is_recording:
                 logger.debug(
                     "[ScreenRecorderService] screencast state unchanged -> %s",
                     new_state,
                 )
                 return
+
             self._schedule_confirm(new_state)
         except Exception as e:
             logger.error(
@@ -121,23 +177,29 @@ class ScreenRecorderService(Service):
             except Exception:
                 pass
             self._confirm_timer_id = None
+
         probe = self._probe_state()
         if probe is not None and probe == new_state:
             self._apply_state(new_state)
             self._pending_state = None
             return
+
         self._confirm_timer_id = GLib.timeout_add(250, self._confirm_pending_state)
 
     def _confirm_pending_state(self) -> bool:
         try:
             pending = self._pending_state
+
             self._confirm_timer_id = None
             if pending is None:
                 return False
+
             probe = self._probe_state()
+
             if probe is not None and probe != pending:
                 self._pending_state = None
                 return False
+
             self._apply_state(pending)
         except Exception as e:
             logger.error(
@@ -146,58 +208,51 @@ class ScreenRecorderService(Service):
             logger.debug(traceback.format_exc())
         finally:
             self._pending_state = None
+
         return False
 
     def _apply_state(self, state: bool):
-        if state != self.is_recording:
-            self.is_recording = state
+        if state == self.is_recording:
+            return
+
+        self.is_recording = state
+
+        try:
             idle_add(lambda: self.recording.emit(state))
-            logger.info(
-                "[ScreenRecorderService] screencast -> {}",
-                "active" if state else "stopped",
-            )
+        except Exception:
+            try:
+                self.recording.emit(state)
+            except Exception:
+                logger.debug("[ScreenRecorderService] failed to emit recording signal")
+        logger.info(
+            "[ScreenRecorderService] screencast -> {}", "active" if state else "stopped"
+        )
 
     def _probe_state(self):
         try:
             if self._hypr is None:
                 if not self._init_hypr():
                     return None
-            hy = self._hypr
-            candidates = [
-                "is_screencast_active",
-                "screencast_active",
-                "get_screencast_state",
-                "get_screencast",
-                "is_recording",
-                "screencast_state",
-                "have_screencast",
-                "screencast",
-                "screencast_is_active",
-            ]
-            for name in candidates:
+
+            if not self._probe_funcs:
+                return None
+
+            for func in self._probe_funcs:
                 try:
-                    attr = getattr(hy, name, None)
-                    if attr is None:
-                        continue
-                    if callable(attr):
-                        try:
-                            val = attr()
-                        except TypeError:
-                            val = attr
-                    else:
-                        val = attr
-                    if isinstance(val, bool):
-                        return val
-                    if isinstance(val, (int, float)):
-                        return bool(val)
-                    if isinstance(val, str):
-                        s = val.strip().lower()
-                        if s in ("1", "true", "start", "started", "on"):
-                            return True
-                        if s in ("0", "false", "stop", "stopped", "off"):
-                            return False
+                    val = func()
                 except Exception:
                     continue
+
+                if isinstance(val, bool):
+                    return val
+                if isinstance(val, (int, float)):
+                    return bool(val)
+                if isinstance(val, str):
+                    s = val.strip().lower()
+                    if s in ("1", "true", "start", "started", "on"):
+                        return True
+                    if s in ("0", "false", "stop", "stopped", "off"):
+                        return False
             return None
         except Exception as e:
             logger.debug("[ScreenRecorderService] exception in _probe_state: {}", e)
@@ -220,6 +275,7 @@ class ScreenRecorderService(Service):
                 "[ScreenRecorderService] exception in _background_check: {}", e
             )
             logger.debug(traceback.format_exc())
+
         return True
 
     def _immediate_probe_and_set(self):
@@ -230,5 +286,9 @@ class ScreenRecorderService(Service):
             if probe != self.is_recording:
                 self._apply_state(probe)
         except Exception:
-            pass
+            logger.debug(
+                "[ScreenRecorderService] exception in _immediate_probe_and_set"
+            )
+            logger.debug(traceback.format_exc())
+
         return False

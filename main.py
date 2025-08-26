@@ -71,7 +71,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        exec_shell_command_async("./sass.sh -w")
         main()
     except Exception as e:
         print(f"[ERROR] {e}")
