@@ -15,7 +15,7 @@ HYPR_CONFIG_DIR = DOT_CONFIG / "hypr"
 APP_CONFIG_DIR = HYPR_CONFIG_DIR / APP_NAME
 CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 ASSETS = CURRENT_DIR.parent / "assets"
-
+STYLES_DIR = CURRENT_DIR.parent / "styles"
 
 "===== ~~ Status Bar ~~ ====="
 "status bar dir:"

@@ -4,6 +4,7 @@ from .data import (
     PLACEHOLDER_IMAGE,
     STATUS_BAR_DIR,
     STATUS_BAR_CONFIG,
+    STYLES_DIR,
     GHOST_IMAGE,
     HOME,
     STATUS_BAR_LOCK_MODULES,
@@ -34,4 +35,5 @@ __all__ = [
     "DOCK_STATION_CONFIG",
     "DOCK_STATION_DIR",
     "RESOLVED_ICONS",
+    "STYLES_DIR",
 ]
