@@ -4,7 +4,7 @@ import sys
 import os
 
 from fabric import Application
-from fabric.utils import get_relative_path
+from fabric.utils import get_relative_path, exec_shell_command_async
 from services import CheckConfig
 
 from modules import (
@@ -72,5 +72,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+        exec_shell_command_async("./sass.sh")
     except Exception as e:
         print(f"[ERROR] {e}")
