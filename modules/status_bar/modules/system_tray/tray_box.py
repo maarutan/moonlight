@@ -1,8 +1,16 @@
+from fabric.widgets.box import Box
+from fabric.widgets.button import Button
+from fabric.widgets.centerbox import CenterBox
+from fabric.widgets.eventbox import EventBox
+from fabric.widgets.label import Label
+
+from utils.widget_utils import setup_cursor_hover
 from .tray_items import TrayItems
 from typing import Callable
 
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.grid import Grid
+from fabric.widgets.scrolledwindow import ScrolledWindow
 
 from gi.repository import Gtk, Gdk, GLib  # type:ignore
 
@@ -50,7 +58,7 @@ class TrayBox(Window):
         self._ignore_close_click = False
 
     def _make_content(self):
-        main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        main_box = Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         content = Grid(name="statusbar-tray-box", all_visible=True)
         tray = TrayItems(
             is_horizontal=self.is_horizontal,
@@ -62,23 +70,33 @@ class TrayBox(Window):
         content.attach(tray, 0, 1, 1, 1)
         content.set_row_spacing(10)
 
-        scrolled = Gtk.ScrolledWindow()
+        scrolled = ScrolledWindow(name="statusbar-tray-box-scrolled")
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
         scrolled.set_overlay_scrolling(False)
         scrolled.add(content)
-        scrolled.set_min_content_height(100)
+        scrolled.set_min_content_height(160)
         content.set_size_request(190, 190)
 
+        close_button = Button(
+            name="statusbar-tray-box-close",
+            label="",
+            on_clicked=self._on_close_clicked,
+        )
+        setup_cursor_hover(close_button, "pointer")
+        main_box.add(
+            EventBox(
+                child=CenterBox(
+                    start_children=Label(
+                        name="statusbar-tray-box-title", label="System Tray"
+                    ),
+                    end_children=close_button,
+                )
+            )
+        )
         main_box.pack_start(scrolled, True, True, 0)
-
-        close_button = Gtk.Button(label="Close 🚪")
-        close_button.connect("clicked", self._on_close_clicked)
-        self.close_button = close_button
-        main_box.pack_start(close_button, False, False, 0)
-
         return main_box
 
-    def _on_close_clicked(self, button=None, *args):
+    def _on_close_clicked(self, *args):
         self.user_closed = True
         if self.do_click_handler:
             self.do_click_handler()
@@ -87,7 +105,7 @@ class TrayBox(Window):
     def _on_focus_out(self, widget, event):
         if not self._ignore_close_click:
             self._ignore_close_click = True
-            self.close_button.emit("clicked")
+            self._on_close_clicked()
             GLib.timeout_add(100, self._reset_ignore_flag)
 
     def _reset_ignore_flag(self):
@@ -97,7 +115,7 @@ class TrayBox(Window):
     def _on_mouse_leave(self, widget, event):
         if not self._ignore_close_click:
             self._ignore_close_click = True
-            self.close_button.emit("clicked")
+            self._on_close_clicked()
             GLib.timeout_add(100, self._reset_ignore_flag)
 
     def margin_handler(self) -> str:

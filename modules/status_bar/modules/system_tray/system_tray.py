@@ -40,10 +40,13 @@ class SystemTrayHandler(Box):
                 refresh_interval=self.refresh_interval,
             )
         else:
-            return TrayItems(
-                grid=self.tray_box,
-                spacing=self.spacing,
-                pixel_size=self.pixel_size,
-                is_horizontal=self.is_horizontal,
-                refresh_interval=self.refresh_interval,
+            return Box(
+                name="statusbar-systemtray",
+                children=TrayItems(
+                    grid=self.tray_box,
+                    spacing=self.spacing,
+                    pixel_size=self.pixel_size,
+                    is_horizontal=self.is_horizontal,
+                    refresh_interval=self.refresh_interval,
+                ),
             )

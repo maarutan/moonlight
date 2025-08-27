@@ -202,16 +202,51 @@
 }
 
 #statusbar-tray-box-container {
-  border-radius: 8px;
+  background: #1E1E2E;
+  border-radius: 10px;
+  border: solid 0.6px white;
+}
+
+#statusbar-tray-box-scrolled {
+  background: none;
+  padding: 5px;
+}
+
+#statusbar-tray-box-scrolled :nth-child(1) {
+  padding: 3px;
+}
+
+#statusbar-tray-box-title {
+  font-weight: bold;
+  padding: 5px 30px;
+}
+
+#statusbar-tray-box-close {
+  background: none;
+  padding: 5px 10px;
+  box-shadow: none;
+}
+#statusbar-tray-box-close label {
+  font-size: 23px;
+  color: tomato;
+}
+
+#statusbar-systray-item {
+  background: none;
+  padding: 0px 5px;
 }
 
 #statusbar-tray-box {
   padding: 10px;
 }
 
+#statusbar-systemtray {
+  margin: 0px 10px;
+}
+
 #statusbar-tray-button {
-  border-radius: 0px;
   background: transparent;
+  margin: 5px 10px;
 }
 
 #statusbar-memory-ram {
@@ -238,6 +273,8 @@
 
 #statusbar-language-button {
   padding: 0px 10px;
+  margin: 4px 2px;
+  background: #1E1E2E;
 }
 
 #statusbar-language-button-language {

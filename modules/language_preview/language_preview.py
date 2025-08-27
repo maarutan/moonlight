@@ -287,7 +287,7 @@ class LanguagePreview(Window):
             and (now - self._last_event_ts) < self._throttle_interval
         ):
             self._call_id += 1
-            self._schedule_hide(500, self._call_id)
+            self._schedule_hide(400, self._call_id)
             return False
 
         self._last_event_ts = now
@@ -300,7 +300,7 @@ class LanguagePreview(Window):
             str(active_value) if active_value else self.active_language()
         )
         self.show_all()
-        self._schedule_hide(3500, self._call_id)
+        self._schedule_hide(400, self._call_id)
         return False
 
     def change_language(self):

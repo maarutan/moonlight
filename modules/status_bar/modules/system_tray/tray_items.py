@@ -12,6 +12,8 @@ from gi.repository import Gtk, Gdk, GdkPixbuf, GLib  # type: ignore
 from fabric.widgets.box import Box
 from fabric.widgets.grid import Grid
 
+from utils.widget_utils import setup_cursor_hover
+
 logger = logging.getLogger(__name__)
 
 
@@ -394,8 +396,8 @@ class TrayItems(Box):
                     except Exception:
                         pass
                 for idx, btn in enumerate(self.buttons_by_id.values()):
-                    row = idx // 4
-                    col = idx % 4
+                    row = idx // 5
+                    col = idx % 5
                     try:
                         self.grid_layout.attach(btn, col, row, 1, 1)
                     except Exception:
@@ -411,7 +413,8 @@ class TrayItems(Box):
             tooltip = None
         if not any([icon_name, icon_pixmap, title, tooltip]):
             return None
-        btn = Button()
+        btn = Button(name="statusbar-systray-item")
+        setup_cursor_hover(btn, "pointer")
         btn.connect("button-press-event", lambda b, e: self.on_button_click(b, item, e))
         identifier = (
             getattr(item, "identifier", None)

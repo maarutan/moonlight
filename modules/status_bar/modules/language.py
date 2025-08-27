@@ -8,6 +8,7 @@ from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
 from fabric.utils.helpers import exec_shell_command_async
+from utils import setup_cursor_hover
 
 
 class Language(Box):
@@ -31,6 +32,7 @@ class Language(Box):
             name="statusbar-language-button",
             on_clicked=self.on_clicked,
         )
+        setup_cursor_hover(self.button, "pointer")
         self.children = [self.button]
 
         self.kb_devices = self.get_keyboard_devices()

@@ -1,3 +1,4 @@
+from utils import setup_cursor_hover
 from .tray_box import TrayBox
 import json
 
@@ -45,13 +46,11 @@ class TrayButtonHandler(Box):
             on_clicked=self.do_clicked,
             label="",
         )
+        setup_cursor_hover(self.button, "pointer")
 
-        inner = Box(name="tray-handler-inner", all_visible=True)
+        inner = Box(name="tray-handler-inner")
         inner.add(self.button)
         self.add(inner)
-
-        self.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
-        self.connect("button-press-event", self._on_box_click)
 
         self.tray = TrayBox(
             position=tray_box_position,
@@ -68,10 +67,6 @@ class TrayButtonHandler(Box):
         win_json = json.loads(win_data)
         self.last_window_address = win_json.get("address")
 
-    def _on_box_click(self, widget, event):
-        self.button.emit("clicked")
-        return True
-
     def _on_active_window(self, _, event: HyprlandEvent):
         if len(event.data) < 3:
             return
@@ -87,7 +82,7 @@ class TrayButtonHandler(Box):
             self.tray.hide()
             self.button.set_label("")
 
-    def do_clicked(self, button=None, *args):
+    def do_clicked(self, *args):
         current = self.button.get_label()
         self.button.set_label("" if current == "" else "")
 
@@ -97,6 +92,5 @@ class TrayButtonHandler(Box):
         else:
             self.tray.user_closed = False
             self.tray.show_all()
-            self.tray.grab_focus()
 
         return True
