@@ -1,10 +1,11 @@
 from loguru import logger
-from gi.repository import GLib  # type: ignore
+from gi.repository import GLib, Gdk  # type: ignore
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from services.screen_record import get_screen_recorder
-from utils import JsonManager
+from utils import JsonManager, setup_cursor_hover
 from config import STATUS_BAR_LOCK_MODULES
+from fabric.widgets.button import Button
 
 
 class ScreenRecorder(Box):
@@ -13,12 +14,14 @@ class ScreenRecorder(Box):
         icons_enable: bool = True,
         first_icon: str = "󰄘",
         second_icon: str = "󰄙",
+        stop_icon: str = "",
         blink: bool = True,
         blink_interval: int = 400,
         timer: bool = True,
     ):
         self.first_icon = first_icon
         self.second_icon = second_icon
+        self.stop_icon = stop_icon
         self.blink = blink
         self.timer = timer
         self.json = JsonManager()
@@ -43,19 +46,31 @@ class ScreenRecorder(Box):
         except Exception:
             pass
 
+        self.icon_button = Button(
+            name="statusbar-screen-recorder-wrapper",
+        )
         self.timer_label = Label(name="statusbar-screen-recorder-time", label="")
         self.blink_interval = blink_interval
         self._icon_state = True
 
         self.child_box = Box(name="statusbar-screen-recorder-indicator")
         self.child_box.add(self.icon_label)
+
         try:
             self.child_box.add_style_class("screen-recorder-indicator")
         except Exception:
             pass
 
-        self.add(self.child_box)
-        self.add(self.timer_label)
+        self.icon_button.add(self.child_box)
+        self.child_wrapper = Box(name="statusbar-screen-recorder-child-wrapper")
+        self.child_wrapper.add(self.icon_button)
+        self.child_wrapper.add(self.timer_label)
+
+        self.add(self.child_wrapper)
+        setup_cursor_hover(self.icon_button, "pointer")
+        self.icon_button.connect("enter-notify-event", self._enter_button)
+        self.icon_button.connect("leave-notify-event", self._leave_button)
+        self.icon_button.connect("button-press-event", self._press_button)
 
         try:
             self.set_no_show_all(True)
@@ -76,15 +91,51 @@ class ScreenRecorder(Box):
         self.recorder_service.recording.connect(self.on_recording_change)
 
         try:
-            current = self.json.get_with_dot_data(
+            self.is_background_recording = self.json.get_with_dot_data(
                 STATUS_BAR_LOCK_MODULES, "screen_recorder.is_recording"
             )
-            if current:
+            if self.is_background_recording:
+                self.default_seconds = self.json.get_with_dot_data(
+                    STATUS_BAR_LOCK_MODULES,
+                    "screen_recorder.seconds",
+                )
+                self._seconds = self.default_seconds
                 GLib.idle_add(self._start_timer)
             else:
                 GLib.idle_add(self._stop_timer)
         except Exception:
             GLib.idle_add(self._stop_timer)
+
+    def _enter_button(self, *event):
+        self.blink = False
+        if self._blink_id is not None:
+            try:
+                GLib.source_remove(self._blink_id)
+            except Exception:
+                pass
+            self._blink_id = None
+        self.icon_label.set_label(self.stop_icon)
+        return False
+
+    def _leave_button(self, *event):
+        self.blink = True
+        self.icon_label.set_label(self.first_icon)
+        if self.blink and self.icons_enable and self._blink_id is None:
+            try:
+                self._blink_id = GLib.timeout_add(self.blink_interval, self._blink_tick)
+            except Exception:
+                self._blink_id = None
+        GLib.idle_add(self._start_timer)
+        return False
+
+    def _press_button(self, *event):
+        self._stop_timer()
+        self.recorder_service.stop_recording()
+        self.icon_button.hide()
+        self.hide()
+        self.json.update(STATUS_BAR_LOCK_MODULES, "screen_recorder.is_recording", False)
+        self.json.update(STATUS_BAR_LOCK_MODULES, "screen_recorder.seconds", 0)
+        return False
 
     @staticmethod
     def _to_bool(value) -> bool:
@@ -110,6 +161,7 @@ class ScreenRecorder(Box):
 
     def _blink_tick(self) -> bool:
         if not (self.icons_enable and self.blink):
+            self._blink_id = None
             return False
 
         self._icon_state = not self._icon_state
@@ -130,6 +182,9 @@ class ScreenRecorder(Box):
         self._seconds += 1
         try:
             self.timer_label.set_label(self._format_time(self._seconds))
+            self.json.update(
+                STATUS_BAR_LOCK_MODULES, "screen_recorder.seconds", self._seconds
+            )
         except Exception:
             pass
         return True
@@ -219,19 +274,36 @@ class ScreenRecorder(Box):
             logger.debug("[ScreenRecording] on_recording_change -> {}", is_recording)
 
             if is_recording:
-                if self._timer_id is not None or (
-                    self.blink and self._blink_id is not None
-                ):
-                    return
+                self.show_all()
+                self.icon_button.show()
+                self._stop_timer()
+
+                self.json.update(
+                    STATUS_BAR_LOCK_MODULES, "screen_recorder.is_recording", True
+                )
+
+                self.default_seconds = self.json.get_with_dot_data(
+                    STATUS_BAR_LOCK_MODULES, "screen_recorder.seconds"
+                )
+                self._seconds = self.default_seconds
+                self.timer_label.set_label(self._format_time(self._seconds))
+
                 GLib.idle_add(self._start_timer)
+
             else:
-                if self._timer_id is None and (
-                    not self.blink or self._blink_id is None
-                ):
-                    return
+                self.json.update(
+                    STATUS_BAR_LOCK_MODULES, "screen_recorder.is_recording", False
+                )
+                self.json.update(STATUS_BAR_LOCK_MODULES, "screen_recorder.seconds", 0)
+
+                self.default_seconds = 0
+                self._seconds = 0
+                self.timer_label.set_label("")
+
                 GLib.idle_add(self._stop_timer)
 
         except Exception as e:
             logger.exception(
                 "[ScreenRecording] exception in on_recording_change: {}", e
             )
+            pass

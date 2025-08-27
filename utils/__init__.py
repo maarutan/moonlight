@@ -5,6 +5,7 @@ from .get_preview import GetPreviewPath
 from .animatior import Animator
 from .smooth_turn import SmoothTurn
 from .icon_resolver import IconResolver
+from .widget_utils import setup_cursor_hover
 
 __all__ = [
     "FileManager",
@@ -14,4 +15,5 @@ __all__ = [
     "Animator",
     "SmoothTurn",
     "GetPreviewPath",
+    "setup_cursor_hover",
 ]
