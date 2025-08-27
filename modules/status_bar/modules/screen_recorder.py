@@ -18,6 +18,7 @@ class ScreenRecorder(Box):
         blink: bool = True,
         blink_interval: int = 400,
         timer: bool = True,
+        is_horizontal: bool = True,
     ):
         self.first_icon = first_icon
         self.second_icon = second_icon
@@ -25,13 +26,14 @@ class ScreenRecorder(Box):
         self.blink = blink
         self.timer = timer
         self.json = JsonManager()
+        self.is_horizontal = is_horizontal
 
         super().__init__(
             h_expand=True,
             v_expand=True,
             h_align="center",
             v_align="center",
-            orientation="h",
+            orientation="h" if self.is_horizontal else "v",
         )
 
         self.default_seconds = 0
@@ -48,12 +50,21 @@ class ScreenRecorder(Box):
 
         self.icon_button = Button(
             name="statusbar-screen-recorder-wrapper",
+            v_align="center",
+            h_align="center",
+            v_expand=True,
+            h_expand=True,
         )
-        self.timer_label = Label(name="statusbar-screen-recorder-time", label="")
+        self.timer_label = Label(
+            name="statusbar-screen-recorder-time",
+            label="",
+        )
         self.blink_interval = blink_interval
         self._icon_state = True
 
-        self.child_box = Box(name="statusbar-screen-recorder-indicator")
+        self.child_box = Box(
+            name="statusbar-screen-recorder-indicator",
+        )
         self.child_box.add(self.icon_label)
 
         try:
@@ -62,7 +73,14 @@ class ScreenRecorder(Box):
             pass
 
         self.icon_button.add(self.child_box)
-        self.child_wrapper = Box(name="statusbar-screen-recorder-child-wrapper")
+        self.child_wrapper = Box(
+            name="statusbar-screen-recorder-child-wrapper",
+            orientation="h" if self.is_horizontal else "v",
+            v_align="center",
+            h_align="center",
+            v_expand=True,
+            h_expand=True,
+        )
         self.child_wrapper.add(self.icon_button)
         self.child_wrapper.add(self.timer_label)
 
@@ -89,6 +107,11 @@ class ScreenRecorder(Box):
 
         self.recorder_service = get_screen_recorder()
         self.recorder_service.recording.connect(self.on_recording_change)
+
+        if self.is_horizontal:
+            self.get_style_context().add_class("horizontal")
+        else:
+            self.get_style_context().add_class("vertical")
 
         try:
             self.is_background_recording = self.json.get_with_dot_data(
@@ -152,12 +175,17 @@ class ScreenRecorder(Box):
         if seconds < 3600:
             minutes = seconds // 60
             secs = seconds % 60
-            return f"{minutes:02}:{secs:02}"
+            if self.is_horizontal:
+                return f"{minutes:02}:{secs:02}"
+            return f"{minutes:02}\n{secs:02}"
+
         else:
             hours = seconds // 3600
             minutes = (seconds % 3600) // 60
             secs = seconds % 60
-            return f"{hours:02}:{minutes:02}:{secs:02}"
+            if self.is_horizontal:
+                return f"{hours:02}:{minutes:02}:{secs:02}"
+            return f"{hours:02}\n{minutes:02}\n{secs:02}"
 
     def _blink_tick(self) -> bool:
         if not (self.icons_enable and self.blink):

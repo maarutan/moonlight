@@ -63,18 +63,18 @@ class Workspaces(Box):
                     label=magic_icon,
                     style_classes=["magic-workspace"],
                     orientation="h" if is_horizontal else "v",
-                    v_align="fill",
-                    h_align="fill",
+                    v_align="center",
+                    h_align="center",
                     v_expand=True,
                     h_expand=True,
                 )
             elif i >= 1 and enable_buttons_factory:
                 btn = WorkspaceButton(
                     id=i,
+                    v_align="center",
+                    h_align="center",
                     v_expand=True,
                     h_expand=True,
-                    v_align="fill",
-                    h_align="fill",
                     label=str(i),
                     style_classes=["buttons-workspace"],
                 )
@@ -93,8 +93,10 @@ class Workspaces(Box):
         buttons = []
         for i in range(1, max_visible_workspaces + 1):
             btn = WorkspaceButton(
-                v_align="fill",
-                h_align="fill",
+                v_align="center",
+                h_align="center",
+                v_expand=True,
+                h_expand=True,
                 id=i,
                 label=get_label(i),
                 style_classes=["buttons-workspace"],

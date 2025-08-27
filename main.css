@@ -325,14 +325,26 @@
 }
 
 .statusbar-screen-recorder {
-  margin: 0px 15px;
-  min-width: 60px;
   background: #960000;
   border-radius: 50px;
   box-shadow: 0px 0px 1.5px 0px #ccc;
 }
-.statusbar-screen-recorder :nth-child(2) {
-  padding: 0px 15px 0px 7px;
+
+.statusbar-screen-recorder.horizontal {
+  margin: 0px 15px;
+  min-width: 60px;
+}
+.statusbar-screen-recorder.horizontal :nth-child(2) {
+  padding: 0px 7px 0px 7px;
+  margin: 0px;
+}
+
+.statusbar-screen-recorder.vertical {
+  margin: 10px 0px;
+}
+.statusbar-screen-recorder.vertical :nth-child(2) {
+  padding: 0px 7px 10px 7px;
+  margin: 5px 0px;
 }
 
 #screen-recording-icon {

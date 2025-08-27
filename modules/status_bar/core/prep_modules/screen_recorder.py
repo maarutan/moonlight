@@ -9,6 +9,7 @@ def screen_recorder_handler(cfg: ConfigHandler) -> ScreenRecorder:
         second_icon=cfg.screen_recorder.icons()["second"],
         stop_icon=cfg.screen_recorder.icons()["stop"],
         blink=cfg.screen_recorder.blink()["enable"],
+        is_horizontal=cfg.bar.is_horizontal(),
         blink_interval=cfg.screen_recorder.blink()["interval"],
         timer=cfg.screen_recorder.timer(),
     )
