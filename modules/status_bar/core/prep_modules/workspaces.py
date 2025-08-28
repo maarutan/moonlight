@@ -14,6 +14,7 @@ def workspaces_handler(cfg: ConfigHandler) -> Workspaces:
         preview_event=cfg.workspaces.preview_workspace()["event"],
         preview_event_click=cfg.workspaces.preview_workspace()["event_click"],
         preview_anchor_handler=cfg.workspaces.preview_anchor_handler(),
+        preview_missing_behavior=cfg.workspaces.preview_workspace()["missing-behavior"],
         # our bar is horizontal
         is_horizontal=cfg.bar.is_horizontal(),
     )

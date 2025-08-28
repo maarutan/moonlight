@@ -304,14 +304,6 @@
   border: 0px;
 }
 
-.statusbar-profile-popup-hide {
-  opacity: 0;
-}
-
-.statusbar-profile-popup-show {
-  opacity: 1;
-}
-
 #statusbar-profile-logo-button {
   border-radius: 0px;
   box-shadow: none;

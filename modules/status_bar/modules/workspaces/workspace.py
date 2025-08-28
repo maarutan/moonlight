@@ -22,6 +22,7 @@ class Workspaces(Box):
         preview_margin_handler: str = "0 30 0 30",
         preview_event: Literal["hover", "click"] = "click",
         preview_event_click: Literal["left", "middle", "right"] = "right",
+        preview_missing_behavior: Literal["hide", "show"] = "hide",
     ):
         self.preview_type = preview_event
         self.preview_type_click = preview_event_click
@@ -32,6 +33,7 @@ class Workspaces(Box):
                 anchor_handler=preview_anchor_handler,
                 margin_handler=preview_margin_handler,
                 max_visible_workspaces=max_visible_workspaces,
+                missing_behavior=preview_missing_behavior,
             )
             self.popup.hide()
         else:
@@ -137,20 +139,19 @@ class Workspaces(Box):
 
     def popup_toggle(
         self,
-        action: Literal[
-            "show",
-            "hide",
-        ] = "show",
+        action: Literal["show", "hide"] = "show",
     ):
         if self.popup is None:
             return
 
         if action == "show" and not self.is_popup_show:
-            # self.popup.set_update()
-            self.popup.show_all()
-            self.is_popup_show = True
+            # вместо show_all → вызываем корректный метод
+            self.popup._show_window()
+            if not getattr(self.popup, "_suspended", False):
+                self.is_popup_show = True
+
         elif action == "hide" and self.is_popup_show:
-            self.popup.hide()
+            self.popup._hide_window()
             self.is_popup_show = False
 
     def _on_enter(self, widget, event):
