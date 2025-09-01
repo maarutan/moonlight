@@ -120,6 +120,11 @@ class Workspaces(Box):
             v_align="fill",
             h_align="fill",
         )
+        self.add_style_class("statusbar-workspaces-container-vertical")
+
+        if is_horizontal:
+            self.remove_style_class("statusbar-workspaces-container-vertical")
+            self.add_style_class("statusbar-workspaces-container-horizontal")
 
         workspaces_widget = HWorkspaces(
             name="statusbar-workspaces-text",
