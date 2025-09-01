@@ -42,7 +42,6 @@ class WindowsTitle(Box):
         self.icon = IconResolver(RESOLVED_ICONS)
         self.is_horizontal = is_horizontal
         self.vertical_title_length = vertical_title_length
-        self.current_title = None
         self.truncation = truncation
         self.truncation_size = truncation_size
         self.title_map = title_map or []
@@ -66,12 +65,14 @@ class WindowsTitle(Box):
         self.hypr.connect("event::activewindow", on_active_window)
 
     def _match_exception(self, win_class: str, win_title: str):
+        win_class_l = win_class.lower()
+        win_title_l = win_title.lower()
         return next(
             (
                 ex
                 for ex in self.title_exceptions
-                if re.search(ex[0], win_class, re.IGNORECASE)
-                or re.search(ex[0], win_title, re.IGNORECASE)
+                if re.search(ex[0].lower(), win_class_l)
+                or re.search(ex[0].lower(), win_title_l)
             ),
             None,
         )
@@ -89,7 +90,6 @@ class WindowsTitle(Box):
 
     def _get_title_and_icon(self, win_class: str, win_title: str):
         matched_exception = self._match_exception(win_class, win_title)
-
         if matched_exception:
             icon_text = matched_exception[1]
             title_text = matched_exception[2]
@@ -99,7 +99,11 @@ class WindowsTitle(Box):
             return title_text, icon_text
 
         matched_window = next(
-            (wt for wt in self.merged_titles if re.search(wt[0], win_class.lower())),
+            (
+                wt
+                for wt in self.merged_titles
+                if re.search(wt[0].lower(), win_class.lower())
+            ),
             None,
         )
 
@@ -120,43 +124,68 @@ class WindowsTitle(Box):
         elif self.title_type_length > 0:
             display_text = truncate(display_text, self.title_type_length)
 
-        if self.resolve_icon and self.enable_icon:
-            pixbuf = self.icon.get_icon_pixbuf(win_class, self.resolve_icon_size)
-            return display_text, pixbuf
+        if self.enable_icon:
+            if self.resolve_icon:
+                pixbuf = self.icon.get_icon_pixbuf(win_class, self.resolve_icon_size)
+                return display_text, pixbuf
+            else:
+                return display_text, icon_text
         else:
-            return display_text, icon_text
+            return display_text, ""
 
     def _build_container(self, win_class: str, win_title: str) -> Box:
         container = Box(
             name="statusbar-windows-title-box",
             orientation="h" if self.is_horizontal else "v",
+            h_align="center",
+            v_align="center",
+            h_expand=True,
+            v_expand=True,
         )
 
         text, icon_or_pixbuf = self._get_title_and_icon(win_class, win_title)
 
         if isinstance(icon_or_pixbuf, str) and icon_or_pixbuf:
-            icon_label = Label(icon_or_pixbuf)
-            text_label = Label(text)
             if self.is_horizontal:
                 if self.resolve_position == "left":
-                    container.add(icon_label)
-                    container.add(Label(f"{text}"))
+                    container.add(
+                        Label(
+                            f" {icon_or_pixbuf} ",
+                            h_align="center",
+                            v_align="center",
+                            h_expand=True,
+                            v_expand=True,
+                        )
+                    )
+                    container.add(Label(text))
                 else:
-                    container.add(Label(f"{text}"))
-                    container.add(icon_label)
+                    container.add(Label(text))
+                    container.add(Label(icon_or_pixbuf))
             else:
                 icon_trimmed = self._trim_visual(icon_or_pixbuf, 1)
                 text_trimmed = self._trim_visual(text, self.vertical_title_length)
-                container.add(Label(f"{icon_trimmed}\n{text_trimmed}"))
+                container.add(
+                    Label(
+                        icon_trimmed,
+                        h_align="center",
+                        v_align="center",
+                        h_expand=True,
+                        v_expand=True,
+                    ),
+                )
+                container.add(Label(text_trimmed))
         elif icon_or_pixbuf:
-            image = Image(pixbuf=icon_or_pixbuf)
             label = Label(text)
-            if self.resolve_position == "left":
-                container.add(image)
-                container.add(label)
+            if self.is_horizontal:
+                if self.resolve_position == "left":
+                    container.add(Image(pixbuf=icon_or_pixbuf))
+                    container.add(label)
+                else:
+                    container.add(label)
+                    container.add(Image(pixbuf=icon_or_pixbuf))
             else:
+                container.add(Image(pixbuf=icon_or_pixbuf))
                 container.add(label)
-                container.add(image)
         else:
             container.add(Label(text))
 
