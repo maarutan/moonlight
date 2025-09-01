@@ -13,6 +13,7 @@ HOME = Path.home()
 DOT_CONFIG = HOME / ".config"
 HYPR_CONFIG_DIR = DOT_CONFIG / "hypr"
 APP_CONFIG_DIR = HYPR_CONFIG_DIR / APP_NAME
+APP_CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 ASSETS = CURRENT_DIR.parent / "assets"
 STYLES_DIR = CURRENT_DIR.parent / "styles"
@@ -35,6 +36,7 @@ PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
 GHOST_IMAGE = ASSETS / "empty" / "ghost.png"
 BACKBUTTON = ASSETS / "buttons" / "back.png"
 APP_ASSETS = APP_CONFIG_DIR / "Assets"
+BATTERY_ICONS = ASSETS / "battery"
 
 "===== ~~ APP ASSETS ~~ ====="
 URL_AVATAR = APP_ASSETS / "Profile" / "http(s)_avatar.png"

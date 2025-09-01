@@ -4,6 +4,7 @@ from .data import (
     PLACEHOLDER_IMAGE,
     STATUS_BAR_DIR,
     STATUS_BAR_CONFIG,
+    APP_CONFIG_FILE,
     STYLES_DIR,
     GHOST_IMAGE,
     HOME,
@@ -16,11 +17,14 @@ from .data import (
     DOCK_STATION_CONFIG,
     DOCK_STATION_DIR,
     RESOLVED_ICONS,
+    BATTERY_ICONS,
 )
 
 __all__ = [
+    "APP_CONFIG_FILE",
     "APP_NAME",
     "TEMP_DIR",
+    "BATTERY_ICONS",
     "CONFIG_FILE",
     "BACKBUTTON",
     "STATUS_BAR_DIR",
