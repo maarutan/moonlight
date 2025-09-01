@@ -5,9 +5,11 @@ from .get_preview import GetPreviewPath
 from .animatior import Animator
 from .smooth_turn import SmoothTurn
 from .icon_resolver import IconResolver
+from .dbus_helper import GioDBusHelper
 from .widget_utils import setup_cursor_hover
 
 __all__ = [
+    "GioDBusHelper",
     "FileManager",
     "JsonManager",
     "WINDOW_TITLE_MAP",

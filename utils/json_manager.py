@@ -127,3 +127,6 @@ class JsonManager:
 
     def loads(self, content) -> dict:
         return json.loads(content)
+
+    def dumps(self, content, indent: int = 2) -> str:
+        return json.dumps(content, indent=indent)
