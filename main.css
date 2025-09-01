@@ -112,39 +112,36 @@
 }
 
 #statusbar {
-  box-shadow: 0px 0px 10px 0px #000;
-  background: transparent;
+  box-shadow: none;
 }
 
-#bar-modules-start {
-  border: solid 0.2px white;
-  padding: 0px 7px;
-  margin-left: 10px;
-  border-radius: 8px;
-  background-color: #1e1e2e;
-  box-shadow: 0px 0px 3px 0px #000;
+.statusbar-modules-horizontal {
+  padding: 0px 20px;
 }
 
-#bar-modules-center {
-  border: solid 0.2px white;
-  padding: 0px 7px;
-  border-radius: 8px;
-  background-color: #1e1e2e;
-  box-shadow: 0px 0px 3px 0px #000;
+.statusbar-modules-vertical {
+  padding: 20px 0px;
 }
 
-#bar-modules-end {
-  border: solid 0.2px white;
-  padding: 0px 7px;
-  margin-right: 8px;
-  border-radius: 10px;
+#bar-modules-start, #bar-modules-center, #bar-modules-end {
+  border-radius: 15px;
   background-color: #1e1e2e;
   box-shadow: 0px 0px 3px 0px #000;
+  border: solid 0.2px white;
+  box-shadow: none;
 }
 
 #statusbar-workspaces-container {
   border-radius: 0px;
   transition: 0.4s;
+}
+
+.statusbar-workspaces-container-horizontal {
+  padding: 0px 10px;
+}
+
+.statusbar-workspaces-container-vertical {
+  padding: 10px 0px;
 }
 
 #statusbar-workspaces-container button {
@@ -164,8 +161,8 @@
 }
 
 #statusbar-workspaces-container button.active {
-  transition: 0.6s;
-  border: 0px;
+  transition: 0.2s;
+  border-bottom: 2px solid #fff;
   border-radius: 0px;
   background: #ffffff;
 }
@@ -326,7 +323,7 @@
   margin: 0px 15px;
   min-width: 60px;
 }
-.statusbar-screen-recorder.horizontal :nth-child(2) {
+.statusbar-screen-recorder.horizontal:nth-child(2) {
   padding: 0px 7px 0px 7px;
   margin: 0px;
 }
@@ -334,7 +331,7 @@
 .statusbar-screen-recorder.vertical {
   margin: 10px 0px;
 }
-.statusbar-screen-recorder.vertical :nth-child(2) {
+.statusbar-screen-recorder.vertical:nth-child(2) {
   padding: 0px 7px 10px 7px;
   margin: 5px 0px;
 }
