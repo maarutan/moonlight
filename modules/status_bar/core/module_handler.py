@@ -42,11 +42,19 @@ class ModulesHandler(Modules):
         return widgets
 
     def _build_box(self, name: str, keys: list[str]) -> Box:
-        return Box(
+        box = Box(
             name=name,
             orientation="h" if self.cfg.bar.is_horizontal() else "v",
             children=self._modules_position_handler(keys),
         )
+        if self.cfg.bar.is_horizontal():
+            box.add_style_class("statusbar-modules-horizontal")
+            box.remove_style_class("statusbar-modules-vertical")
+        else:
+            box.add_style_class("statusbar-modules-vertical")
+            box.remove_style_class("statusbar-modules-horizontal")
+
+        return box
 
     def modules_start_handler(self) -> Box:
         return self._build_box("bar-modules-start", self.modules_start)

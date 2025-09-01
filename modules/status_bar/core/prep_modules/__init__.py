@@ -12,7 +12,10 @@ from .system_tray import system_tray_handler
 from .windows_title import windows_title_handler
 from .metrics import metrics_handler
 from .screen_recorder import screen_recorder_handler
+from .battery import battery_handler
+
 # from .media_player_windows_title import mp_windows_title_handler
+from ...modules.battery.battery import Battery
 
 MODULES_REGISTRY = {
     "clock": clock_handler,
@@ -26,6 +29,7 @@ MODULES_REGISTRY = {
     "metrics": metrics_handler,
     "cavalcade": cavalcade_handler,
     "screen-recorder": screen_recorder_handler,
+    "battery": battery_handler,
 }
 
 

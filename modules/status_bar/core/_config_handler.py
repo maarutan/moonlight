@@ -12,6 +12,7 @@ from .prep_cfg import (
     ScreenRecorderCfg,
     ClockCfg,
     MediaPlayerWindowsTitleCfg,
+    BatteryCfg,
 )
 from config import (
     STATUS_BAR_DIR,
@@ -45,6 +46,7 @@ class ConfigHandler:
         self.media_player_windows_title = MediaPlayerWindowsTitleCfg(self)
         self.metrics = MetricsCfg(self)
         self.screen_recorder = ScreenRecorderCfg(self)
+        self.battery = BatteryCfg(self)
 
     # Config
 

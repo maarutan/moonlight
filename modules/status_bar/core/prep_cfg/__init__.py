@@ -10,11 +10,13 @@ from .clock import ClockCfg
 from .media_player_windows_title import MediaPlayerWindowsTitleCfg
 from .metrics import MetricsCfg
 from .screen_recorder import ScreenRecorderCfg
+from .battery import BatteryCfg
 
 __all__ = [
     "StatusBarCfg",
     "WorkspacesCfg",
     "ModulesCfg",
+    "BatteryCfg",
     "SystemTrayCfg",
     "MetricsCfg",
     "ClockCfg",
