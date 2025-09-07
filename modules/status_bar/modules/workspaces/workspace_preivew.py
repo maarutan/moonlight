@@ -9,7 +9,6 @@ from fabric.utils import exec_shell_command_async
 
 from config import TEMP_DIR, STATUS_BAR_LOCK_MODULES, APP_NAME, PLACEHOLDER_IMAGE
 from utils import JsonManager
-from widgets import CustomImage
 from fabric.widgets.image import Image
 
 from gi.repository import GLib, GdkPixbuf  # type: ignore
