@@ -2,19 +2,20 @@ from fabric.widgets.shapes import Corner
 from typing import Literal
 from fabric.widgets.box import Box
 from fabric.widgets.wayland import WaylandWindow as Window
-from .status_bar.core._config_handler import ConfigHandler
+from .status_bar.core._config_handler import ConfigHandlerStatusBar
 
 
 class MyCorner(Box):
     def __init__(
         self,
         corner: Literal["top-left", "top-right", "bottom-left", "bottom-right"],
+        name: str = "corner-container",
         orientation_pos: bool = True,
     ):
         super().__init__(
-            style="margin-bottom: 15px;",
+            # style="margin-bottom: 15px;",
             orientation="v" if orientation_pos else "h",
-            name="corner-container",
+            name=name,
             children=Corner(
                 name="corner",
                 orientation=corner,
@@ -22,14 +23,14 @@ class MyCorner(Box):
                 v_expand=False,
                 h_align="center",
                 v_align="center",
-                # size=6,
+                size=32,
             ),
         )
 
 
 class ScreenCorners(Window):
     def __init__(self, is_horizontal: bool = True):
-        self.cfg = ConfigHandler()
+        self.cfg = ConfigHandlerStatusBar()
         super().__init__(
             name="screen-corners",
             style_classes="screen-corners",

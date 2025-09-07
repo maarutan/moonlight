@@ -11,6 +11,7 @@ from modules import (
     ScreenCorners,
     ActivateLinux,
     StatusBar,
+    BatteryAlert,
     NotificationPopup,
     Dock,
     PlayerWrapper,
@@ -20,20 +21,21 @@ from modules import (
 from config import APP_NAME
 
 corners = ScreenCorners()
-activate_linux = ActivateLinux()
+# activate_linux = ActivateLinux()
 bar = StatusBar()
 language = LanguagePreview()
-
+dock = Dock()
 corners.set_visible(True)
 app = Application(
     f"{APP_NAME}",
     corners,
-    activate_linux,
+    # activate_linux,
     bar,
     DesktopClock(),
+    BatteryAlert(),
     language,
+    dock,
     # PlayerWrappe(),
-    # Dock(),
     # notification,
 )
 

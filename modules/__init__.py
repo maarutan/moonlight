@@ -6,6 +6,7 @@ from .dock_station.dock import Dock
 from .player.player import PlayerWrapper
 from .desktop_clock import DesktopClock
 from .language_preview.language_preview import LanguagePreview
+from .battery_alert.alert import BatteryAlert
 
 __all__ = [
     "MyCorner",

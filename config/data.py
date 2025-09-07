@@ -32,7 +32,15 @@ DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
 CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
 
 "===== ~~ ASSETS ~~ ====="
-PLACEHOLDER_IMAGE = ASSETS / "player" / "placeholder.png"
+
+PLACEHOLDER_DIR = ASSETS / "placeholders"
+PLACEHOLDER_IMAGE = PLACEHOLDER_DIR / "placeholder.png"
+LOGOUT_SOUND_DIR = ASSETS / "logout_sound"
+CHARGING_SOUND_DIR = ASSETS / "charging_sound"
+DISCONNECT_CHARGING_SOUND = CHARGING_SOUND_DIR / "airpods_disconnected.mp3"
+CHARGING_SOUND = CHARGING_SOUND_DIR / "ios_charging_sound.mp3"
+LOGOUT_SOUND = LOGOUT_SOUND_DIR / "ios_lock_off_sound.mp3"
+
 GHOST_IMAGE = ASSETS / "empty" / "ghost.png"
 BACKBUTTON = ASSETS / "buttons" / "back.png"
 APP_ASSETS = APP_CONFIG_DIR / "Assets"
@@ -41,6 +49,7 @@ BATTERY_ICONS = ASSETS / "battery"
 "===== ~~ APP ASSETS ~~ ====="
 URL_AVATAR = APP_ASSETS / "Profile" / "http(s)_avatar.png"
 RESOLVED_ICONS = APP_ASSETS / "resolved_icons.json"
+BASE_LOCK = APP_ASSETS / "base_lock.json"
 
 "===== ~~ Templates ~~ ====="
 TEMP_DIR = Path(gettempdir())
