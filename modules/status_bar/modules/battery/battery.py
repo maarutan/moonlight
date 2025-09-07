@@ -1,10 +1,10 @@
-# battery_widget.py
 from pathlib import Path
 from typing import Literal, Optional
 import threading
 from fabric.widgets.eventbox import EventBox
 from fabric.widgets.svg import Svg
-from .custom_icons import CustomIcons, DEFAULT_ICONS
+
+from .custom_icons import CustomIcons
 from services import BatteryService
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
