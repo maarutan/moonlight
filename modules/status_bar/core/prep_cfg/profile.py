@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from config.data import PLACEHOLDER_IMAGE
 
 if TYPE_CHECKING:
-    from .._config_handler import ConfigHandler
+    from .._config_handler import ConfigHandlerStatusBar
 
 
 class ProfileCfg:
-    def __init__(self, cfg_handler: "ConfigHandler") -> None:
+    def __init__(self, cfg_handler: "ConfigHandlerStatusBar") -> None:
         self._cfg = cfg_handler
         self.parent = "profile"
 

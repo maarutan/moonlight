@@ -1,8 +1,8 @@
 from ...modules.battery.battery import Battery
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 
 
-def battery_handler(cfg: ConfigHandler) -> Battery:
+def battery_handler(cfg: ConfigHandlerStatusBar) -> Battery:
     return Battery(
         is_horizontal=cfg.bar.is_horizontal(),
         percentage_enable=cfg.battery.percentage()["enable"],

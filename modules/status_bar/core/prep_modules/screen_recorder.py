@@ -1,8 +1,8 @@
 from ...modules.screen_recorder import ScreenRecorder
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 
 
-def screen_recorder_handler(cfg: ConfigHandler) -> ScreenRecorder:
+def screen_recorder_handler(cfg: ConfigHandlerStatusBar) -> ScreenRecorder:
     return ScreenRecorder(
         icons_enable=cfg.screen_recorder.icons()["enable"],
         first_icon=cfg.screen_recorder.icons()["first"],

@@ -1,5 +1,7 @@
 from loguru import logger
 
+from .._config_handler import ConfigHandlerStatusBar
+
 from ...modules.screen_recorder import ScreenRecorder
 
 from .cavalcade import cavalcade_handler
@@ -33,11 +35,33 @@ MODULES_REGISTRY = {
 }
 
 
-def init_modules(conf) -> dict[str, object]:
+def init_modules(cfg: ConfigHandlerStatusBar) -> dict[str, object]:
     built_modules = {}
-    for key, handler in MODULES_REGISTRY.items():
+    seen = set()
+
+    def _get_list(key: str) -> list[str]:
+        value = cfg._get_options(key, [])
+        if not isinstance(value, list):
+            return []
+        return value
+
+    all_modules = (
+        _get_list("modules-start")
+        + _get_list("modules-center")
+        + _get_list("modules-end")
+    )
+
+    for key in all_modules:
+        if key in seen:
+            continue
+        seen.add(key)
+        handler = MODULES_REGISTRY.get(key)
+        if not handler:
+            logger.warning(f"[Module Warning] '{key}' not found in registry")
+            continue
         try:
-            built_modules[key] = handler(conf)
+            built_modules[key] = handler(cfg)
         except Exception as e:
             logger.error(f"[Module Error] Failed to initialize '{key}': {e}")
+
     return built_modules

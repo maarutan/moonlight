@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING
 from config import ASSETS
 
 if TYPE_CHECKING:
-    from .._config_handler import ConfigHandler
+    from .._config_handler import ConfigHandlerStatusBar
 
 
 class MediaPlayerWindowsTitleCfg:
-    def __init__(self, _cfg: "ConfigHandler") -> None:
+    def __init__(self, _cfg: "ConfigHandlerStatusBar") -> None:
         self._cfg = _cfg
         self.parent = "media-player-with-windows-title"
 

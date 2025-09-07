@@ -1,8 +1,8 @@
 from ...modules.title_window.windows_title import WindowsTitle
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 
 
-def windows_title_handler(cfg: ConfigHandler) -> WindowsTitle:
+def windows_title_handler(cfg: ConfigHandlerStatusBar) -> WindowsTitle:
     return WindowsTitle(
         truncation=cfg.windows_title.truncation(),
         truncation_size=cfg.windows_title.truncation_size(),

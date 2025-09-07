@@ -1,11 +1,11 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .._config_handler import ConfigHandler
+    from .._config_handler import ConfigHandlerStatusBar
 
 
 class MemoryRamCfg:
-    def __init__(self, cfg_handler: "ConfigHandler") -> None:
+    def __init__(self, cfg_handler: "ConfigHandlerStatusBar") -> None:
         self._cfg = cfg_handler
         self.parent = "memory_ram"
 

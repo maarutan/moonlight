@@ -1,5 +1,5 @@
 from .prep_modules import init_modules
-from ._config_handler import ConfigHandler
+from ._config_handler import ConfigHandlerStatusBar
 
 import gi
 from loguru import logger
@@ -17,13 +17,13 @@ class Modules:
 
 class ModulesHandler(Modules):
     def __init__(self):
-        self.cfg = ConfigHandler()
+        self.cfg = ConfigHandlerStatusBar()
 
         self.modules_start = self.cfg.modules.get_modules_start()
         self.modules_center = self.cfg.modules.get_modules_center()
         self.modules_end = self.cfg.modules.get_modules_end()
 
-        built_modules = init_modules(self.cfg)
+        built_modules = init_modules(cfg=self.cfg)
 
         super().__init__(modules=built_modules)
         self.__dict__.update(built_modules)

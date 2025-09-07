@@ -1,8 +1,8 @@
 from ...modules.workspaces.workspace import Workspaces
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 
 
-def workspaces_handler(cfg: ConfigHandler) -> Workspaces:
+def workspaces_handler(cfg: ConfigHandlerStatusBar) -> Workspaces:
     return Workspaces(
         max_visible_workspaces=cfg.workspaces.max_visible_workspaces(),
         numbering_workpieces=cfg.workspaces.numbering_workpieces(),

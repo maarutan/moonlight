@@ -1,9 +1,9 @@
 from ...modules.title_window.media_player_with_windows_title import MPWitWindowsTitle
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 from .windows_title import windows_title_handler
 
 
-def mp_windows_title_handler(cfg: ConfigHandler) -> MPWitWindowsTitle:
+def mp_windows_title_handler(cfg: ConfigHandlerStatusBar) -> MPWitWindowsTitle:
     return MPWitWindowsTitle(
         windows_title_handler(cfg),
         is_horizontal=cfg.bar.is_horizontal(),

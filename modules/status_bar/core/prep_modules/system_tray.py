@@ -1,8 +1,8 @@
 from ...modules.system_tray.system_tray import SystemTrayHandler
-from .._config_handler import ConfigHandler
+from .._config_handler import ConfigHandlerStatusBar
 
 
-def system_tray_handler(cfg: ConfigHandler) -> SystemTrayHandler:
+def system_tray_handler(cfg: ConfigHandlerStatusBar) -> SystemTrayHandler:
     return SystemTrayHandler(
         tray_box_position=cfg.system_tray.box_position_handler(),
         orientation_pos=cfg.bar.is_horizontal(),

@@ -2,11 +2,11 @@ from typing import Literal
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .._config_handler import ConfigHandler
+    from .._config_handler import ConfigHandlerStatusBar
 
 
 class MetricsCfg:
-    def __init__(self, _cfg: "ConfigHandler") -> None:
+    def __init__(self, _cfg: "ConfigHandlerStatusBar") -> None:
         self.parent = "metrics"
         self._cfg = _cfg
 
