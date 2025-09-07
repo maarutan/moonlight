@@ -5,7 +5,7 @@
 # Copyright (c) 2025 maarutan. \ Marat Arzymatov All Rights Reserved.
 
 from .core.module_handler import ModulesHandler
-from .core._config_handler import ConfigHandler
+from .core._config_handler import ConfigHandlerStatusBar
 
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.centerbox import CenterBox
@@ -13,14 +13,12 @@ from fabric.widgets.centerbox import CenterBox
 
 class StatusBar(Window):
     def __init__(self, **kwargs):
-        self.cfg = ConfigHandler()
+        self.cfg = ConfigHandlerStatusBar()
         self.modules = ModulesHandler()
         self.bar_content = self._create_bar_content()
 
         super().__init__(
-            visible=True,
             name="statusbar",
-            all_visible=True,
             exclusivity="auto",
             child=self.bar_content,
             anchor=self.cfg.bar.position_handler(),
