@@ -16,14 +16,16 @@ gi.require_version("Gdk", "3.0")
 class LanguagePreview(Window):
     def __init__(
         self,
+        enabled: bool = True,
+        default_fullnames: Optional[dict[str, str]] = None,
         replacer: Optional[dict[str, str]] = None,
-        position: str = "center",
+        position: str = "top right",
         margin: str = "40px 40px 40px 40px",
         layer: str = "top",
     ):
         self.json = JsonManager()
-        replacer = {"us": "en"}  # short replacements
         self.replacer = {k.lower(): v for k, v in (replacer or {}).items()}
+        self.default_fullnames = default_fullnames or {}
 
         self.lang_box = Box(
             name="language-preview-box",
@@ -41,20 +43,6 @@ class LanguagePreview(Window):
         )
 
         self.items: dict[str, tuple[Box, Label, Label]] = {}
-
-        self.default_fullnames = {
-            "us": "English (US)",
-            "en": "English",
-            "ru": "Russian",
-            "uk": "Ukrainian",
-            "de": "German",
-            "fr": "French",
-            "es": "Spanish",
-            "it": "Italian",
-            "pt": "Portuguese",
-            "cn": "Chinese",
-            "jp": "Japanese",
-        }
 
         short_raw_list = self._read_layout_raw_list()
         short_codes = [re.sub(r"\W", "", s).lower() for s in short_raw_list]
@@ -92,7 +80,8 @@ class LanguagePreview(Window):
         )
 
         self.hypr = Hyprland(commands_only=False)
-        self.hypr.connect("event::activelayout", self.on_layout_change)
+        if enabled:
+            self.hypr.connect("event::activelayout", self.on_layout_change)
 
         self._hide_timeout_id: int | None = None
         self._call_id: int = 0
