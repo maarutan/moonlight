@@ -27,17 +27,17 @@ class DesktopClock(Window):
                 orientation="v",
                 children=[
                     DateTime(
+                        name="desktop-clock-box-first",
                         h_align="start",
                         v_align="start",
                         formatters=first_fromat,
-                        name="clock",
                     ),
                     DateTime(
+                        name="desktop-clock-box-second",
                         h_align="start",
                         v_align="start",
                         formatters=second_format,
                         interval=3600000,  # Update every hour
-                        name="date",
                     ),
                 ],
             ),

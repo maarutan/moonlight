@@ -1,73 +1,52 @@
-from config import BATTERY_ICONS
-from utils import JsonManager
-from services import BatteryService, DeviceState
+from fabric import Fabricator, Application
+from fabric.utils import exec_shell_command_async, get_relative_path
+from fabric.widgets.box import Box
+from fabric.widgets.label import Label
+from fabric.widgets.button import Button
+from fabric.widgets.wayland import WaylandWindow as Window
 
 
-class BatteryIcons:
-    def __init__(self, system_theme="dark"):
-        self.jsonc = JsonManager()
-        self.battery = BatteryService()
-        self.system_theme = system_theme
-        self.svg_icons_dir = list(BATTERY_ICONS.iterdir())
-        self.key = list(range(0, 101))
-        self.dir_names = {
-            "dark": ["battery_charging_dark", "battery_dark"],
-            "light": ["battery_charging_light", "battery_light"],
-        }
-        self.icon_dir = self._collect_icons()
-        self.ICONS = self.dict_icon()
+class CavaWidget(Button):
+    """A widget to display the Cava audio visualizer."""
 
-    def _collect_icons(self):
-        icons = []
-        for theme_dir in self.svg_icons_dir:
-            for d in self.dir_names.get(self.system_theme, []):
-                if theme_dir.name == d:
-                    icons.append(theme_dir)
-        return icons
+    def __init__(self):
+        super().__init__(name="cava")
 
-    def dict_icon(self):
-        icons_dict = {}
+        cava_command = "cava"
+        command = f"kitty --title cava-visualizer sh -c '{cava_command}'"
 
-        svg_dir = None
-        if self.icon_dir:
-            battery_state = self.battery.get_property("State")
-            state = DeviceState.get(int(battery_state or 0), "UNKNOWN")
+        color = "#ffffff"
+        bars = 10
 
-            if state == "CHARGING" and len(self.icon_dir) > 1:
-                svg_dir = self.icon_dir[1]
-            elif state == "DISCHARGING":
-                svg_dir = self.icon_dir[0]
-            else:
-                svg_dir = self.icon_dir[0]
+        cava_label = Label(
+            v_align="center",
+            h_align="center",
+            style=f"color: {color};",
+        )
 
-        if svg_dir:
-            svg_files = {f.stem: f for f in svg_dir.glob("*.svg")}
+        script_path = get_relative_path("../assets/scripts/cava.sh")
 
-            for k in self.key:
-                k_str = str(k)
-                if k_str in svg_files:
-                    icons_dict[k_str] = str(svg_files[k_str])
-                else:
-                    nearest = max(
-                        (
-                            int(name)
-                            for name in svg_files.keys()
-                            if name.isdigit() and int(name) <= k
-                        ),
-                        default=None,
-                    )
-                    if nearest is not None:
-                        icons_dict[k_str] = str(svg_files[str(nearest)])
-                    else:
-                        icons_dict[k_str] = str(svg_dir / "?.svg")
+        self.box = Box(spacing=1, children=[cava_label]).build(
+            lambda box, _: Fabricator(
+                poll_from=f"bash -c '{script_path} {bars}'",
+                stream=True,
+                on_changed=lambda f, line: cava_label.set_label(line),
+            )
+        )
 
-            icons_dict["?"] = str(svg_dir / "?.svg")
-        else:
-            icons_dict["?"] = None
+        self.connect(
+            "clicked", lambda _: exec_shell_command_async(command, lambda *_: None)
+        )
 
-        return icons_dict
+        self.add(self.box)
 
 
 if __name__ == "__main__":
-    icons_dict = BatteryIcons().dict_icon()
-    print(JsonManager().dumps(icons_dict, indent=2))
+    app = Application("cava")
+    win = Window(name="cava-visualizer")
+    cava = CavaWidget()
+
+    win.add(cava)
+    app.add_window(win)
+
+    app.run()

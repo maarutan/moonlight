@@ -1,9 +1,8 @@
-import re
-import shutil  # наверху файла
+import shutil
 from typing import TYPE_CHECKING, Literal
 from difflib import get_close_matches
 from fabric.widgets.button import Button
-from gi.repository import GLib, Gdk, Gtk  # type:ignore
+from gi.repository import GLib, Gdk, Gtk  # pyright: ignore[reportAttributeAccessIssue]
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.image import Image
@@ -11,6 +10,7 @@ from fabric.widgets.overlay import Overlay
 from utils import JsonManager, IconResolver, setup_cursor_hover
 from config import RESOLVED_ICONS, DOCK_STATION_PINS
 from .actions import DockAction
+from fabric.utils.helpers import get_desktop_applications, idle_add
 from fabric.widgets.centerbox import CenterBox
 
 if TYPE_CHECKING:
@@ -27,13 +27,14 @@ class Items(Box):
         self.icons_size = 38
         self.action = DockAction(self._cfg)
         self.pinned_list = self.json.get_data(DOCK_STATION_PINS)["pinned"]
+        self.apps = get_desktop_applications()
 
         super().__init__(
             name="dock-station-items",
             orientation="h" if self._cfg.is_horizontal else "v",
         )
 
-        GLib.idle_add(self.refresh)
+        idle_add(self.refresh)
         for ev in ("openwindow", "closewindow", "activewindow"):
             self._cfg.conn.connect(f"event::{ev}", self._on_windows_changed)
 
@@ -41,33 +42,23 @@ class Items(Box):
         self.refresh()
         return True
 
-    def _normalize(self, name: str) -> str:
-        name = name.strip().lower()
-        parts = re.split(r"[.\-_ ]+", name)
-        ignore = {"com", "org", "project", "desktop", "launcher", "app"}
-        parts = [p for p in parts if p and p not in ignore]
-        if parts:
-            return max(parts, key=len)
-        return name
-
     def _correct_name(self, name: str) -> str:
-        norm = self._normalize(name)
-        for existing in self.clients_cache.keys():
-            if self._normalize(existing) == norm:
-                return existing
+        if name in self.clients_cache:
+            return name
+
         matches = get_close_matches(
-            norm,
-            [self._normalize(k) for k in self.clients_cache.keys()],
+            name,
+            list(self.clients_cache.keys()),
             n=1,
             cutoff=0.6,
         )
         if matches:
-            for existing in self.clients_cache.keys():
-                if self._normalize(existing) == matches[0]:
-                    return existing
+            return matches[0]
+
         desktop_file = self.icons._get_desktop_file(name)
         if desktop_file:
             return desktop_file.split("/")[-1].removesuffix(".desktop")
+
         return name
 
     def _load_pins(self) -> list[str]:
@@ -94,7 +85,7 @@ class Items(Box):
 
         merged: dict[str, list[dict]] = {}
         for c in clients:
-            cname = self._correct_name(c.get("class", "unknown"))
+            cname = self._correct_name(c.get("initialClass", "class"))
             merged.setdefault(cname, []).append(c)
 
         self.clients_cache = merged
@@ -206,10 +197,8 @@ class Items(Box):
             ctx.remove_class(show)
             ctx.add_class(hide)
 
-    def pinned_checker(self, app: str):
-        if self._normalize(app) in self.pinned_list:
-            return True
-        return False
+    def pinned_checker(self, app: str) -> bool:
+        return app in self.pinned_list
 
     def click_handler(
         self,
@@ -244,10 +233,10 @@ class Items(Box):
             GLib.timeout_add(400, remove_pin)
 
             if self.pinned_checker(app):
-                self.pinned_list.remove(self._normalize(app))
+                self.pinned_list.remove(app)
                 self.json.update(DOCK_STATION_PINS, "pinned", self.pinned_list)
             else:
-                self.pinned_list.append(self._normalize(app))
+                self.pinned_list.append(app)
                 self.json.update(DOCK_STATION_PINS, "pinned", self.pinned_list)
 
             GLib.timeout_add(800, self._cfg.dock.refresh_ui)

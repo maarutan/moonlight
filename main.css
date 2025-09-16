@@ -61,7 +61,8 @@
   color: #a10000;
   border: 3px solid red;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-low #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-low
+  #battery-alert-progress-bar-icon {
   color: red;
   font-size: 34px;
 }
@@ -70,7 +71,8 @@
   color: #757500;
   border: 3px solid yellow;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-medium #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-medium
+  #battery-alert-progress-bar-icon {
   color: yellow;
   font-size: 34px;
 }
@@ -80,7 +82,8 @@
   border: 3px solid white;
   transition: 0.4s;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-high #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-high
+  #battery-alert-progress-bar-icon {
   color: white;
 }
 
@@ -101,24 +104,27 @@
 }
 
 #desktop_clock {
-  padding: 0px 10px 0px 10px;
-  margin: 0px;
   background: transparent;
 }
 
-#desktop_clock :nth-child(2) {
-  padding: 0px 100px 80px 80px;
-  font-weight: bolder;
-  background: transparent;
-  box-shadow: none;
+#desktop-clock-box {
+  padding: 0 150px;
 }
-
-#desktop_clock :nth-child(1) {
-  margin: 0px;
-  font-size: 30px;
-  box-shadow: none;
-  font-weight: bolder;
+#desktop-clock-box :nth-child(1) {
   background: transparent;
+}
+#desktop-clock-box :nth-child(1) :nth-child(1) {
+  margin: 0;
+  padding: 0;
+  font-size: 80px;
+}
+#desktop-clock-box :nth-child(2) {
+  background: transparent;
+}
+#desktop-clock-box :nth-child(2) :nth-child(1) {
+  margin: 0;
+  padding: 0;
+  font-size: 25px;
 }
 
 #dock-station {
@@ -128,22 +134,10 @@
 
 #dock {
   transition: 0.4s;
-  background: #1E1E2E;
+  background: #1e1e2e;
   border: solid 0.2px white;
   border-radius: 15px;
   padding: 10px;
-}
-
-.dock-station-show {
-  transition: 1s;
-  opacity: 1;
-  margin: 10px;
-}
-
-.dock-station-hide {
-  transition: 1s;
-  opacity: 1;
-  margin: -100px;
 }
 
 #dock-station-app-icons {
@@ -161,23 +155,7 @@
 #dock-station-app-buttons {
   margin: 5px -5px;
   background: none;
-}
-
-#hamburger-button {
-  background: none;
-  padding: 10px;
-}
-
-.dock-station-pinned-hide {
-  transition: 0.3s;
-  opacity: 1;
-  margin: 0px;
-}
-
-.dock-station-pinned-show {
-  transition: 0.3s;
-  opacity: 0;
-  margin-top: 10px;
+  /* box-shadow: none */
 }
 
 #dock-station-pin-indicator {
@@ -196,6 +174,35 @@
 
 .dock-station-app-line-vertical {
   min-height: 0.5px;
+}
+
+#hamburger-button {
+  background: none;
+  padding: 10px;
+}
+
+.dock-station-show {
+  transition: 1s;
+  opacity: 1;
+  margin: 10px;
+}
+
+.dock-station-hide {
+  transition: 1s;
+  opacity: 1;
+  margin: -100px;
+}
+
+.dock-station-pinned-show {
+  transition: 0.3s;
+  opacity: 0;
+  margin-top: 10px;
+}
+
+.dock-station-pinned-hide {
+  transition: 0.3s;
+  opacity: 1;
+  margin: 0px;
 }
 
 #language-preview-box {
@@ -265,7 +272,9 @@
   padding: 20px 0px;
 }
 
-#bar-modules-start, #bar-modules-center, #bar-modules-end {
+#bar-modules-start,
+#bar-modules-center,
+#bar-modules-end {
   border-radius: 15px;
   background-color: #1e1e2e;
   box-shadow: 0px 0px 3px 0px #000;
@@ -341,7 +350,7 @@
 }
 
 #statusbar-tray-box-container {
-  background: #1E1E2E;
+  background: #1e1e2e;
   border-radius: 10px;
   border: solid 0.6px white;
 }
@@ -413,7 +422,7 @@
 #statusbar-language-button {
   padding: 0px 10px;
   margin: 4px 2px;
-  background: #1E1E2E;
+  background: #1e1e2e;
 }
 
 #statusbar-language-button-language {
@@ -502,3 +511,13 @@
 }
 
 /*# sourceMappingURL=main.css.map */
+
+#desktop-cava {
+  background: none;
+  /* color: white; */
+  min-height: 300px;
+  margin: 200px;
+}
+#desktop-cava-stack {
+  padding: 300px 100px;
+}

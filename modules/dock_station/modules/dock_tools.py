@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Literal
 from fabric.widgets.button import Button
 from gi.repository import GLib  # type: ignore
+from fabric.utils.helpers import idle_add
 
 from modules.dock_station.modules.items import Items
 from utils.widget_utils import setup_cursor_hover  # type: ignore
@@ -44,7 +45,6 @@ class DockTools:
     def delay_hide(self):
         self.cancel_hide()
         self.toggle("hide")
-        # self._cfg.hide_id = GLib.timeout_add(self._cfg.hide_timeout, self.hide_dock)
 
     def hide_dock(self):
         self.toggle("hide")
@@ -150,4 +150,4 @@ class DockTools:
             self.auto_hide_check()
             return False
 
-        GLib.idle_add(refresh)
+        idle_add(refresh)

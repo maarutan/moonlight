@@ -4,12 +4,13 @@ import os
 import signal
 import struct
 import subprocess
+import tempfile
 from math import pi
 
 from fabric.widgets.overlay import Overlay
 from gi.repository import Gdk, GLib, Gtk  # type: ignore
 from loguru import logger
-from config import CAVA_CONFIG
+from config import CAVA_DESKTOP
 
 
 def get_bars(file_path):
@@ -18,25 +19,17 @@ def get_bars(file_path):
     return int(config["general"]["bars"])
 
 
-bars = get_bars(CAVA_CONFIG)
+bars = get_bars(CAVA_DESKTOP)
 
 
 def set_death_signal():
-    """
-    Set the death signal of the child process to SIGTERM so that if the parent
-    process is killed, the child (cava) is automatically terminated.
-    """
+    """Ensure cava dies with the parent process."""
     libc = ctypes.CDLL("libc.so.6")
     PR_SET_PDEATHSIG = 1
     libc.prctl(PR_SET_PDEATHSIG, signal.SIGTERM)
 
 
 class Cava:
-    """
-    CAVA wrapper.
-    Launch cava process with certain settings and read output.
-    """
-
     NONE = 0
     RUNNING = 1
     RESTARTING = 2
@@ -44,27 +37,45 @@ class Cava:
 
     def __init__(self, mainapp):
         self.bars = bars
-        self.path = "/tmp/cava.fifo"
+        self.path = tempfile.mktemp(prefix="cava_", dir="/tmp")
+        self.cava_config_file = self._patch_config(CAVA_DESKTOP)
 
-        self.cava_config_file = CAVA_CONFIG
         self.data_handler = mainapp.draw.update
         self.command = ["cava", "-p", self.cava_config_file]
         self.state = self.NONE
 
         self.env = dict(os.environ)
-        self.env["LC_ALL"] = "en_US.UTF-8"  # not sure if it's necessary
+        self.env["LC_ALL"] = "en_US.UTF-8"
 
-        is_16bit = True
-        self.byte_type, self.byte_size, self.byte_norm = (
-            ("H", 2, 65535) if is_16bit else ("B", 1, 255)
-        )
+        # format: 16-bit little-endian
+        self.byte_type, self.byte_size, self.byte_norm = ("H", 2, 65535)
 
         if not os.path.exists(self.path):
             os.mkfifo(self.path)
 
         self.fifo_fd = None
-        self.fifo_dummy_fd = None
+        self.channel = None
         self.io_watch_id = None
+        self.process = None
+
+    def _patch_config(self, original_cfg: str) -> str:
+        """Создать временный конфиг с raw_target = self.path"""
+        config = configparser.ConfigParser()
+        config.read(original_cfg)
+
+        if "output" not in config:
+            config["output"] = {}
+        config["output"]["method"] = "raw"
+        config["output"]["raw_target"] = self.path
+        config["output"]["data_format"] = "binary"
+        config["output"]["bits"] = "16"
+        config["output"]["channels"] = "mono"
+
+        tmp_cfg = tempfile.mktemp(prefix="cava_cfg_", dir="/tmp")
+        with open(tmp_cfg, "w") as f:
+            config.write(f)
+
+        return tmp_cfg
 
     def _run_process(self):
         logger.debug("Launching cava process...")
@@ -74,7 +85,7 @@ class Cava:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
                 env=self.env,
-                preexec_fn=set_death_signal,  # Ensure cava gets killed when the parent dies.
+                preexec_fn=set_death_signal,
             )
             logger.debug("cava successfully launched!")
             self.state = self.RUNNING
@@ -82,78 +93,65 @@ class Cava:
             logger.exception("Fail to launch cava")
 
     def _start_io_reader(self):
-        logger.debug("Activating GLib IO watch for cava stream handler")
-        # Open FIFO in non-blocking mode for reading
+        logger.debug("Activating GLib IOChannel for cava stream handler")
         self.fifo_fd = os.open(self.path, os.O_RDONLY | os.O_NONBLOCK)
-        # Open dummy write end to prevent getting an EOF on our FIFO
-        self.fifo_dummy_fd = os.open(self.path, os.O_WRONLY | os.O_NONBLOCK)
+        # обертка вокруг FD
+        self.channel = GLib.IOChannel.unix_new(self.fifo_fd)
+        self.channel.set_encoding(None)  # raw-байты
+        self.channel.set_buffered(False)
+
+        # регистрируем callback
         self.io_watch_id = GLib.io_add_watch(
-            self.fifo_fd, GLib.IO_IN, self._io_callback
+            self.channel, GLib.IO_IN, self._io_callback
         )
 
     def _io_callback(self, source, condition):
-        chunk = self.byte_size * self.bars  # number of bytes for given format
+        chunk = self.byte_size * self.bars
         try:
             data = os.read(self.fifo_fd, chunk)
-        except OSError as e:
-            # logger.error("Error reading FIFO: {}".format(e))
-            return False
-
-        # When no data is read, do not remove the IO watch immediately.
-        if len(data) < chunk:
-            # Instead of closing the FIFO, we log a warning and continue.
-            # logger.warning("Incomplete data packet received (expected {} bytes, got {}). Waiting for more data...".format(chunk, len(data)))
-            # Returning True keeps the IO watch active. A real EOF will only occur when the writer closes.
+        except OSError:
             return True
 
-        fmt = self.byte_type * self.bars  # format string for struct.unpack
+        if len(data) < chunk:
+            return True
+
+        fmt = "<" + (self.byte_type * self.bars)
         sample = [i / self.byte_norm for i in struct.unpack(fmt, data)]
         GLib.idle_add(self.data_handler, sample)
         return True
 
-    def _on_stop(self):
-        logger.debug("Cava stream handler deactivated")
-        if self.state == self.RESTARTING:
-            self.start()
-        elif self.state == self.RUNNING:
-            self.state = self.NONE
-            logger.error("Cava process was unexpectedly terminated.")
-            # self.restart()  # May cause infinity loop, need more check
-
     def start(self):
-        """Launch cava"""
         self._start_io_reader()
         self._run_process()
 
     def restart(self):
-        """Restart cava process"""
         if self.state == self.RUNNING:
-            logger.debug("Restarting cava process (normal mode) ...")
+            logger.debug("Restarting cava process...")
             self.state = self.RESTARTING
-            if self.process.poll() is None:
+            if self.process and self.process.poll() is None:
                 self.process.kill()
         elif self.state == self.NONE:
-            logger.warning("Restarting cava process (after crash) ...")
+            logger.warning("Restarting cava process after crash...")
             self.start()
 
     def close(self):
-        """Stop cava process"""
         self.state = self.CLOSING
-        if self.process.poll() is None:
+        if self.process and self.process.poll() is None:
             self.process.kill()
         if self.io_watch_id:
             GLib.source_remove(self.io_watch_id)
+        if self.channel:
+            self.channel.shutdown(True)
+            self.channel = None
         if self.fifo_fd:
             os.close(self.fifo_fd)
-        if self.fifo_dummy_fd:
-            os.close(self.fifo_dummy_fd)
-        if os.path.exists(self.path):
-            os.remove(self.path)
+            self.fifo_fd = None
+        for p in (self.path, self.cava_config_file):
+            if p and os.path.exists(p):
+                os.remove(p)
 
 
 class AttributeDict(dict):
-    """Dictionary with keys as attributes. Does nothing but easy reading"""
-
     def __getattr__(self, attr):
         return self.get(attr, 3)
 
@@ -162,8 +160,6 @@ class AttributeDict(dict):
 
 
 class Spectrum:
-    """Spectrum drawing"""
-
     def __init__(self):
         self.silence_value = 0
         self.audio_sample = []
@@ -184,12 +180,10 @@ class Spectrum:
         self.color_update()
 
     def is_silence(self, value):
-        """Check if volume level critically low during last iterations"""
         self.silence_value = 0 if value > 0 else self.silence_value + 1
         return self.silence_value > self.silence
 
     def update(self, data):
-        """Audio data processing"""
         self.color_update()
         self.audio_sample = data
         if not self.is_silence(self.audio_sample[0]):
@@ -199,17 +193,47 @@ class Spectrum:
             self.area.queue_draw()
 
     def redraw(self, widget, cr):
-        cr.set_source_rgba(*self.color)  # type: ignore
         dx = self.sizes.padding
+        shadow_offset = 3  # смещение тени
+
         for value in self.audio_sample:
             bar_width = self.sizes.area.width / self.sizes.number - self.sizes.padding
             radius = bar_width / 2
             bar_height = max(self.sizes.bar.height * min(value, 1), self.sizes.zero) / 2
-            if bar_height == (self.sizes.zero / 2 + 1):
-                bar_height *= 0.5
             bar_height = min(bar_height, self.max_height)
+
+            # ---- ТЕНЬ ----
+            cr.set_source_rgba(0, 0, 0, 0.4)  # чёрная тень с прозрачностью
             cr.rectangle(
-                dx, (self.sizes.area.height / 2) - bar_height, bar_width, bar_height * 2
+                dx + shadow_offset,
+                (self.sizes.area.height / 2) - bar_height + shadow_offset,
+                bar_width,
+                bar_height * 2,
+            )
+            cr.arc(
+                dx + radius + shadow_offset,
+                (self.sizes.area.height / 2) - bar_height + shadow_offset,
+                radius,
+                0,
+                2 * pi,
+            )
+            cr.arc(
+                dx + radius + shadow_offset,
+                (self.sizes.area.height / 2) + bar_height + shadow_offset,
+                radius,
+                0,
+                2 * pi,
+            )
+            cr.close_path()
+            cr.fill()
+
+            # ---- ОСНОВНОЙ БАР ----
+            cr.set_source_rgba(*self.color)
+            cr.rectangle(
+                dx,
+                (self.sizes.area.height / 2) - bar_height,
+                bar_width,
+                bar_height * 2,
             )
             cr.arc(
                 dx + radius,
@@ -226,11 +250,11 @@ class Spectrum:
                 2 * pi,
             )
             cr.close_path()
+            cr.fill()
+
             dx += bar_width + self.sizes.padding
-        cr.fill()
 
     def size_update(self, *args):
-        """Update drawing geometry"""
         self.sizes.number = bars
         self.sizes.padding = 100 / bars
         self.sizes.zero = 0
@@ -243,8 +267,7 @@ class Spectrum:
         self.sizes.bar.height = self.sizes.area.height
 
     def color_update(self):
-        """Set drawing color according to current settings by reading primary color from CSS"""
-        color = "#a5c8ff"  # default value
+        color = "#ffffff"
         red = int(color[1:3], 16) / 255
         green = int(color[3:5], 16) / 255
         blue = int(color[5:7], 16) / 255
@@ -260,13 +283,8 @@ class SpectrumRender:
         self.cava.start()
 
     def get_spectrum_box(self):
-        # Get the spectrum box
-        box = Overlay(name="cavalcade", h_align="center", v_align="center")
-        if self.is_horizontal:
-            box.set_size_request(180, 40)
-        else:
-            box.set_size_request(40, 40)
-
+        box = Overlay(name="cavalcade-desktop", h_align="center", v_align="center")
+        box.set_size_request(980, 100)
         box.add_overlay(self.draw.area)
         box.show_all()
         return box

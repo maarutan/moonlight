@@ -32,7 +32,9 @@ DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
 DOCK_STATION_PINS = DOCK_STATION_DIR / "pinned.json"
 
 "===== ~~ cava config ~~ ====="
-CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"
+CAVALCADE_DIR = CURRENT_DIR / "cavalcade"
+CAVA_CONFIG = CAVALCADE_DIR / "cava.ini"
+CAVA_DESKTOP = CAVALCADE_DIR / "desktop_cava.ini"
 
 "===== ~~ ASSETS ~~ ====="
 
