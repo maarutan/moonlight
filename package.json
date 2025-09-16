@@ -24,5 +24,9 @@
   "devDependencies": {
     "sass": "^1.91.0",
     "sass-formatter": "^0.7.9"
+  },
+  "dependencies": {
+    "hamburger": "^0.1.1",
+    "hamburgers": "^1.2.1"
   }
 }

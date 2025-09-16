@@ -1,6 +1,9 @@
-from pathlib import Path
 from utils import JsonManager
 from utils import FileManager
+
+import copy
+from pathlib import Path
+from typing import Any
 
 
 class ConfigHandler:
@@ -8,36 +11,90 @@ class ConfigHandler:
         self,
         config_dir: Path | str,
         config_file: Path | str,
-        default_config: str,
+        default_config: dict,
     ) -> None:
-        self.jsonc = JsonManager()
+        self.json = JsonManager()
         self.fm = FileManager()
         self.fm.if_not_exists_create(Path(config_dir))
         self.path = Path(config_file)
-        self.cfg = default_config
+        # ensure parent dir exists (extra safety)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+
+        # keep original default structure (do not mutate the passed dict)
+        self.cfg = copy.deepcopy(default_config or {})
 
         self.generate_default_config()
 
-    # Config
-
     def generate_default_config(self) -> None:
-        if self.fm.read(self.path) in [None, ""]:
-            self.fm.write(self.path, self.cfg)  # type: ignore
-
-    # Options
+        try:
+            existing = self.json.get_data(self.path)
+            if not existing or not isinstance(existing, dict):
+                raise ValueError("Config empty or not a dict")
+        except Exception:
+            # если битый JSON, пустой или не словарь → перезаписываем дефолтом
+            self.json.write(self.path, copy.deepcopy(self.cfg))
 
     def _get_options(
         self,
         key: str,
-        default: str | int | bool | dict | list | None = None,
-    ) -> str | int | bool | dict | list | None:
-        data = self.jsonc.read(self.path)
-        return data.get(key, default) if data else default
+        default: Any = None,
+    ) -> Any:
+        data = self.json.get_data(self.path)
+        if not isinstance(data, dict):
+            data = {}
+            changed = True
+        else:
+            changed = False
 
-    def _get_nested(self, *keys, default=None):
-        data = self._get_options(keys[0], {})
-        for key in keys[1:]:
-            if not isinstance(data, dict):
-                return default
-            data = data.get(key, default)
-        return data
+        if key not in data:
+            # use deepcopy to avoid shared mutables
+            data[key] = copy.deepcopy(default)
+            changed = True
+
+        if changed:
+            self.json.write(self.path, data)
+
+        return data.get(key, default)
+
+    def _get_nested(self, *keys: str, default: Any = None) -> Any:
+        if not keys:
+            return default
+
+        data = self.json.get_data(self.path)
+        if not isinstance(data, dict):
+            data = {}
+            changed = True
+        else:
+            changed = False
+
+        current = data
+        for i, key in enumerate(keys):
+            is_last = i == len(keys) - 1
+
+            if is_last:
+                if not isinstance(current, dict):
+                    # defensive: replace with dict if somehow not a dict
+                    # (this shouldn't happen because we ensure parent keys are dicts)
+                    current = {}
+                    changed = True
+
+                if key not in current:
+                    current[key] = copy.deepcopy(default)
+                    changed = True
+
+                # commit if we changed the structure
+                if changed:
+                    self.json.write(self.path, data)
+
+                return current.get(key, default)
+            else:
+                # ensure the intermediate node is a dict; if not — replace it
+                if key not in current or not isinstance(current[key], dict):
+                    current[key] = {}
+                    changed = True
+                current = current[key]
+
+        # fallback (should not reach here)
+        if changed:
+            self.json.write(self.path, data)
+        return default

@@ -50,10 +50,6 @@ class JsonManager:
             clean = self._remove_trailing_commas(clean)
             return json.loads(clean)
 
-    def write(self, path: Path, data: dict, indent: int = 2) -> None:
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=indent)
-
     def get_data(self, path: Path) -> dict:
         if path.exists():
             return self.read(path)
@@ -128,5 +124,23 @@ class JsonManager:
     def loads(self, content) -> dict:
         return json.loads(content)
 
+    def write(self, path: Path, data: dict, indent: int = 2) -> None:
+        def default(o):
+            from pathlib import Path
+
+            if isinstance(o, Path):
+                return str(o)
+            return str(o)  # fallback: превратим любой неожиданный объект в строку
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=indent, default=default)
+
     def dumps(self, content, indent: int = 2) -> str:
-        return json.dumps(content, indent=indent)
+        def default(o):
+            from pathlib import Path
+
+            if isinstance(o, Path):
+                return str(o)
+            return str(o)
+
+        return json.dumps(content, indent=indent, default=default)
