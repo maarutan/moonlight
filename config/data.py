@@ -16,7 +16,9 @@ APP_CONFIG_DIR = HYPR_CONFIG_DIR / APP_NAME
 APP_CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 CONFIG_FILE = APP_CONFIG_DIR / "config.jsonc"
 ASSETS = CURRENT_DIR.parent / "assets"
+DOCK_MENU_ICON = ASSETS / "Dock_Station" / "menu.png"
 STYLES_DIR = CURRENT_DIR.parent / "styles"
+MAIN_CSS_FILE = CURRENT_DIR.parent / "main.css"
 
 "===== ~~ Status Bar ~~ ====="
 "status bar dir:"
@@ -27,6 +29,7 @@ STATUS_BAR_LOCK_MODULES = STATUS_BAR_DIR / ".modules-lock.json"
 "===== ~~ Dock Station ~~ ====="
 DOCK_STATION_DIR = APP_CONFIG_DIR / "Dock_Station"
 DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
+DOCK_STATION_PINS = DOCK_STATION_DIR / "pinned.json"
 
 "===== ~~ cava config ~~ ====="
 CAVA_CONFIG = CURRENT_DIR / "cavalcade" / "cava.ini"

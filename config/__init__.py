@@ -1,8 +1,12 @@
 from .data import (
     APP_NAME,
+    DOCK_MENU_ICON,
+    APP_CONFIG_DIR,
     CONFIG_FILE,
     PLACEHOLDER_IMAGE,
     STATUS_BAR_DIR,
+    DOCK_STATION_PINS,
+    MAIN_CSS_FILE,
     STATUS_BAR_CONFIG,
     BASE_LOCK,
     DISCONNECT_CHARGING_SOUND,
@@ -25,6 +29,7 @@ from .data import (
 
 __all__ = [
     "APP_CONFIG_FILE",
+    "APP_CONFIG_DIR",
     "APP_NAME",
     "DISCONNECT_CHARGING_SOUND",
     "CHARGING_SOUND",
@@ -46,4 +51,7 @@ __all__ = [
     "DOCK_STATION_DIR",
     "RESOLVED_ICONS",
     "STYLES_DIR",
+    "MAIN_CSS_FILE",
+    "DOCK_STATION_PINS",
+    "DOCK_MENU_ICON",
 ]
