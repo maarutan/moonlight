@@ -1,16 +1,15 @@
-from typing import Literal
+from typing import Literal, Optional, List
 from fabric.hyprland.widgets import WorkspaceButton
 from fabric.hyprland.widgets import HyprlandWorkspaces as HWorkspaces
 from fabric.widgets.box import Box
 from .workspace_preivew import WorkspacesPreview
-
-from gi.repository import Gdk  # type: ignore
+from gi.repository import Gdk, GLib  # type: ignore
 
 
 class Workspaces(Box):
     def __init__(
         self,
-        numbering_workpieces=None,
+        numbering_workpieces: Optional[List[str]] = None,
         max_visible_workspaces: int = 10,
         is_horizontal: bool = True,
         magic_icon: str = "✨",
@@ -38,7 +37,6 @@ class Workspaces(Box):
             self.popup.hide()
         else:
             self.popup = None
-
         if numbering_workpieces is None:
             numbering_workpieces = []
 
@@ -58,7 +56,11 @@ class Workspaces(Box):
                 cursor = Gdk.Cursor.new_from_name(display, "pointer")
                 gdk_window.set_cursor(cursor)
 
+        self._hovering = False
+        self._hover_timeout_id = 0
+
         def custom_buttons_factory(i: int):
+            btn = None
             if i < 0 and magic_enable:
                 btn = WorkspaceButton(
                     id=i,
@@ -82,8 +84,12 @@ class Workspaces(Box):
                 )
             else:
                 return None
+            btn.add_events(
+                Gdk.EventMask.ENTER_NOTIFY_MASK
+                | Gdk.EventMask.LEAVE_NOTIFY_MASK
+                | Gdk.EventMask.BUTTON_PRESS_MASK
+            )
             btn.connect("realize", lambda w: set_pointer_cursor(w))
-
             if self.preview_type == "hover":
                 btn.connect("enter-notify-event", self._on_enter)
                 btn.connect("leave-notify-event", self._on_leave)
@@ -103,17 +109,19 @@ class Workspaces(Box):
                 label=get_label(i),
                 style_classes=["buttons-workspace"],
             )
+            btn.add_events(
+                Gdk.EventMask.ENTER_NOTIFY_MASK
+                | Gdk.EventMask.LEAVE_NOTIFY_MASK
+                | Gdk.EventMask.BUTTON_PRESS_MASK
+            )
             btn.connect("realize", lambda w: set_pointer_cursor(w))
-
             if self.preview_type == "hover":
                 btn.connect("enter-notify-event", self._on_enter)
                 btn.connect("leave-notify-event", self._on_leave)
             elif self.preview_type == "click":
                 btn.connect("button-press-event", self._on_right_click)
                 btn.connect("leave-notify-event", self._on_leave)
-
             buttons.append(btn)
-
         super().__init__(
             name="statusbar-workspaces-container",
             orientation="h" if is_horizontal else "v",
@@ -121,11 +129,10 @@ class Workspaces(Box):
             h_align="fill",
         )
         self.add_style_class("statusbar-workspaces-container-vertical")
-
         if is_horizontal:
             self.add_style_class("statusbar-workspaces-container-horizontal")
             self.remove_style_class("statusbar-workspaces-container-vertical")
-
+        buttons_arg = buttons if numbering_workpieces else None
         workspaces_widget = HWorkspaces(
             name="statusbar-workspaces-text",
             invert_scroll=True,
@@ -136,42 +143,55 @@ class Workspaces(Box):
             h_expand=True,
             orientation="h" if is_horizontal else "v",
             spacing=0,
-            buttons=buttons if numbering_workpieces else None,
+            buttons=buttons_arg,
             buttons_factory=custom_buttons_factory if enable_buttons_factory else None,
         )
-
         self.children = [workspaces_widget]
 
-    def popup_toggle(
-        self,
-        action: Literal["show", "hide"] = "show",
-    ):
+    def popup_toggle(self, action: Literal["show", "hide"] = "show"):
         if self.popup is None:
             return
-
         if action == "show" and not self.is_popup_show:
-            # вместо show_all → вызываем корректный метод
             self.popup._show_window()
             if not getattr(self.popup, "_suspended", False):
                 self.is_popup_show = True
-
         elif action == "hide" and self.is_popup_show:
             self.popup._hide_window()
             self.is_popup_show = False
 
+    def _start_hide_timeout(self):
+        if self._hover_timeout_id:
+            GLib.source_remove(self._hover_timeout_id)
+        self._hover_timeout_id = GLib.timeout_add(150, self._hide_if_no_hover)
+
+    def _cancel_hide_timeout(self):
+        if self._hover_timeout_id:
+            try:
+                GLib.source_remove(self._hover_timeout_id)
+            except Exception:
+                pass
+            self._hover_timeout_id = 0
+
+    def _hide_if_no_hover(self):
+        self._hover_timeout_id = 0
+        if not self._hovering:
+            self.popup_toggle("hide")
+        return False
+
     def _on_enter(self, widget, event):
         if self.popup is None:
             return
-
+        self._hovering = True
         ws_id = widget.id
-        self.popup.set_update(ws_id)  # type: ignore
+        self.popup.set_update(ws_id)
+        self._cancel_hide_timeout()
         self.popup_toggle("show")
 
     def _on_leave(self, widget, event):
         if self.popup is None:
             return
-
-        self.popup_toggle("hide")
+        self._hovering = False
+        self._start_hide_timeout()
 
     def _on_right_click(self, widget, event):
         if self.preview_type_click == "right":
@@ -182,10 +202,8 @@ class Workspaces(Box):
             button_event = 1
         else:
             button_event = 3
-
         if event.button != button_event:
             return
-
         if self.popup is None:
             return
         ws_id = widget.id

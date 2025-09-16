@@ -6,4 +6,4 @@ from fabric.widgets.box import Box
 
 def cavalcade_handler(cfg: ConfigHandlerStatusBar) -> Stack:
     cavalcade = SpectrumRender(is_horizontal=cfg.bar.is_horizontal())
-    return Stack(children=[cavalcade.get_spectrum_box()])
+    return Stack(children=cavalcade.get_spectrum_box())

@@ -10,11 +10,10 @@ class MyCorner(Box):
         self,
         corner: Literal["top-left", "top-right", "bottom-left", "bottom-right"],
         name: str = "corner-container",
-        orientation_pos: bool = True,
     ):
         super().__init__(
             # style="margin-bottom: 15px;",
-            orientation="v" if orientation_pos else "h",
+            orientation="v",
             name=name,
             children=Corner(
                 name="corner",
@@ -29,8 +28,9 @@ class MyCorner(Box):
 
 
 class ScreenCorners(Window):
-    def __init__(self, is_horizontal: bool = True):
+    def __init__(self, enabled: bool = True):
         self.cfg = ConfigHandlerStatusBar()
+
         super().__init__(
             name="screen-corners",
             style_classes="screen-corners",
@@ -40,7 +40,7 @@ class ScreenCorners(Window):
             exclusivity=self.exclusivity_handler(),
             pass_through=True,
             child=Box(
-                orientation="v" if is_horizontal else "h",
+                orientation="v",
                 children=[
                     Box(
                         children=[
@@ -60,6 +60,9 @@ class ScreenCorners(Window):
                 ],
             ),
         )
+
+        if not enabled:
+            self.hide()
 
     def make_corner(self, orientation) -> Box:
         return Box(

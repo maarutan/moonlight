@@ -12,7 +12,7 @@ from fabric.widgets.centerbox import CenterBox
 
 
 class StatusBar(Window):
-    def __init__(self, **kwargs):
+    def __init__(self, enabled: bool = True):
         self.cfg = ConfigHandlerStatusBar()
         self.modules = ModulesHandler()
         self.bar_content = self._create_bar_content()
@@ -24,8 +24,10 @@ class StatusBar(Window):
             anchor=self.cfg.bar.position_handler(),
             margin=self.cfg.bar.margin(),
             layer=self.cfg.bar.layer(),
-            **kwargs,
         )
+
+        if not enabled:
+            self.hide()
 
     def _create_bar_content(self) -> CenterBox:
         box = CenterBox(

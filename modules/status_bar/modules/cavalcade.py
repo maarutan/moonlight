@@ -94,7 +94,7 @@ class Cava:
     def _io_callback(self, source, condition):
         chunk = self.byte_size * self.bars  # number of bytes for given format
         try:
-            data = os.read(self.fifo_fd, chunk)
+            data = os.read(self.fifo_fd, chunk)  # type: ignore
         except OSError as e:
             # logger.error("Error reading FIFO: {}".format(e))
             return False
@@ -199,7 +199,7 @@ class Spectrum:
             self.area.queue_draw()
 
     def redraw(self, widget, cr):
-        cr.set_source_rgba(*self.color)
+        cr.set_source_rgba(*self.color)  # type: ignore
         dx = self.sizes.padding
         for value in self.audio_sample:
             bar_width = self.sizes.area.width / self.sizes.number - self.sizes.padding
@@ -268,4 +268,5 @@ class SpectrumRender:
             box.set_size_request(40, 40)
 
         box.add_overlay(self.draw.area)
+        box.show_all()
         return box

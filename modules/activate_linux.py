@@ -5,7 +5,7 @@ from fabric.widgets.box import Box
 
 
 class ActivateLinux(Window):
-    def __init__(self):
+    def __init__(self, enabled: bool = False):
         title = Label(
             name="activate-linux-title",
             label="Activate Linux",
@@ -33,3 +33,6 @@ class ActivateLinux(Window):
             margin="0px 70px 70px 0px",
             child=box,
         )
+
+        if not enabled:
+            self.hide()

@@ -8,11 +8,18 @@ class DesktopClock(Window):
     A simple desktop clock widget.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(
+        self,
+        enabled: bool = True,
+        first_fromat: str = "%I:%M %p",
+        second_format: str = "%A, %d %B %Y",
+        anchor: str = "top left",
+        layer: str = "bottom",
+    ):
         super().__init__(
             name="desktop_clock",
-            layer="bottom",
-            anchor="center left",
+            layer=layer,
+            anchor=anchor,
             h_align="start",
             v_align="start",
             child=Box(
@@ -22,18 +29,18 @@ class DesktopClock(Window):
                     DateTime(
                         h_align="start",
                         v_align="start",
-                        formatters=["%I:%M:%S"],
+                        formatters=first_fromat,
                         name="clock",
                     ),
                     DateTime(
                         h_align="start",
                         v_align="start",
-                        formatters=["%m/%d/%y"],
+                        formatters=second_format,
                         interval=3600000,  # Update every hour
                         name="date",
                     ),
                 ],
             ),
-            all_visible=True,
-            **kwargs,
         )
+        if not enabled:
+            self.hide()
