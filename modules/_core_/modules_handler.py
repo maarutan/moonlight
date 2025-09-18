@@ -1,7 +1,7 @@
 from ._core_config_handler import CoreConfigHandler
 from fabric import Application
 from config import APP_NAME, MAIN_CSS_FILE
-from ..desktop_cava.desktop import CavaDesktop
+from ..cava_desktop import CavaDesktop
 
 from ._prep_modules import (
     screen_corners_handler,

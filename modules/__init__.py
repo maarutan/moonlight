@@ -8,6 +8,7 @@ from .desktop_clock import DesktopClock
 from .language_preview.language_preview import LanguagePreview
 from .battery_alert.alert import BatteryAlert
 from ._core_.modules_handler import ModulesHandler
+from .cavalade.cavalade import SpectrumRender
 from .screen_menu import ScreenMenu
 
 __all__ = [
@@ -22,5 +23,6 @@ __all__ = [
     "LanguagePreview",
     "Dock",
     "BatteryAlert",
+    "SpectrumRender",
     "ModulesHandler",
 ]

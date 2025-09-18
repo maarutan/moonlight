@@ -8,6 +8,7 @@ CURRENT_DIR = Path(__file__).parent
 APP_NAME = "moonlight"
 APP_NAME_CAP = "MoonLight"
 
+
 "===== ~~ Base Dir & Config ~~ ====="
 HOME = Path.home()
 DOT_CONFIG = HOME / ".config"
@@ -19,6 +20,8 @@ ASSETS = CURRENT_DIR.parent / "assets"
 DOCK_MENU_ICON = ASSETS / "Dock_Station" / "menu.png"
 STYLES_DIR = CURRENT_DIR.parent / "styles"
 MAIN_CSS_FILE = CURRENT_DIR.parent / "main.css"
+LOCAL_DIR = HOME / ".local" / "share"
+
 
 "===== ~~ Status Bar ~~ ====="
 "status bar dir:"
@@ -32,7 +35,9 @@ DOCK_STATION_CONFIG = DOCK_STATION_DIR / "config.jsonc"
 DOCK_STATION_PINS = DOCK_STATION_DIR / "pinned.json"
 
 "===== ~~ cava config ~~ ====="
-CAVALCADE_DIR = CURRENT_DIR / "cavalcade"
+CAVA_APP_DIR = APP_CONFIG_DIR / "cavalade"
+CAVALCADE_DIR = CURRENT_DIR / "cavalade"
+CAVA_LOCAL_DIR = LOCAL_DIR / APP_NAME / "cavalade"
 CAVA_CONFIG = CAVALCADE_DIR / "cava.ini"
 CAVA_DESKTOP = CAVALCADE_DIR / "desktop_cava.ini"
 

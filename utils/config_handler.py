@@ -11,7 +11,7 @@ class ConfigHandler:
         self,
         config_dir: Path | str,
         config_file: Path | str,
-        default_config: dict,
+        default_config: dict | None = None,
     ) -> None:
         self.json = JsonManager()
         self.fm = FileManager()

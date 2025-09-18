@@ -50,7 +50,8 @@ class JsonManager:
             clean = self._remove_trailing_commas(clean)
             return json.loads(clean)
 
-    def get_data(self, path: Path) -> dict:
+    def get_data(self, path: Path | str) -> dict:
+        path = Path(path)
         if path.exists():
             return self.read(path)
         return {}

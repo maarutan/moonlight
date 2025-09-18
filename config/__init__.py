@@ -1,5 +1,6 @@
 from .data import (
     APP_NAME,
+    CAVA_APP_DIR,
     CAVA_DESKTOP,
     DOCK_MENU_ICON,
     APP_CONFIG_DIR,
@@ -25,12 +26,15 @@ from .data import (
     DOCK_STATION_CONFIG,
     DOCK_STATION_DIR,
     RESOLVED_ICONS,
+    CAVA_LOCAL_DIR,
+    CAVALCADE_DIR,
     BATTERY_ICONS,
 )
 
 __all__ = [
     "APP_CONFIG_FILE",
     "APP_CONFIG_DIR",
+    "CAVALCADE_DIR",
     "APP_NAME",
     "DISCONNECT_CHARGING_SOUND",
     "CHARGING_SOUND",
@@ -56,4 +60,6 @@ __all__ = [
     "DOCK_STATION_PINS",
     "DOCK_MENU_ICON",
     "CAVA_DESKTOP",
+    "CAVA_LOCAL_DIR",
+    "CAVA_APP_DIR",
 ]
