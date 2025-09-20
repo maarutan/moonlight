@@ -19,6 +19,8 @@ class ScreenMenu(Window):
             anchor="top left bottom right",
             style="background: none;",
         )
+        self.popup_offset_x = 12
+        self.popup_offset_y = 8
 
         self.set_default_size(600, 400)
 
@@ -48,22 +50,38 @@ class ScreenMenu(Window):
         self.show_all()
 
     def on_click(self, widget, event):
+        popup_menu = PopupMenu(self.list_items)
         if event.button == 3:
             if self.active_popup and self.active_popup.get_parent():
                 self.fixed.remove(self.active_popup)
 
-            popup_menu = EventBox(child=PopupMenu(self.list_items))
-
-            self.fixed.put(popup_menu, int(event.x), int(event.y))
             popup_menu.show_all()
+
+            min_w, nat_w = popup_menu.get_preferred_width()
+            min_h, nat_h = popup_menu.get_preferred_height()
+
+            alloc = self.get_allocation()
+            win_w, win_h = alloc.width, alloc.height
+
+            x = int(event.x) + self.popup_offset_x
+            y = int(event.y) + self.popup_offset_y
+
+            if x + nat_w > win_w:
+                x = int(event.x) - nat_w - self.popup_offset_x
+
+            if y + nat_h > win_h:
+                y = int(event.y) - nat_h - self.popup_offset_y
+
+            self.fixed.put(popup_menu, x, y)
 
             self.active_popup = popup_menu
             self.drag_widget = popup_menu
 
-        elif event.button == 1 and self.drag_widget:  # левая кнопка = начать drag
+        elif event.button == 1 and self.drag_widget:
             self.dragging = True
             self.drag_offset_x = event.x_root
             self.drag_offset_y = event.y_root
+
         return True
 
     def on_motion(self, widget, event):

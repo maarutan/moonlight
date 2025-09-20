@@ -1,12 +1,9 @@
 #screen-popup-menu
+  transition: opacity 200ms ease-in-out
   padding: 15px 25px 25px 10px
   background: #1E1E2E
   border-radius: 15px
   border: solid 0.2px white
-
-#screen-popup-menu-item
-  padding: 5px
-  background: none
 
 .screen-popup-menu-hide
   transition: 0.4s
@@ -15,3 +12,10 @@
 .screen-popup-menu-show
   transition: 0.4s
   opacity: 1
+
+#screen-popup-menu-item
+  opacity: 0
+  transition: opacity 250ms ease-in-out
+
+  &.show
+    opacity: 1

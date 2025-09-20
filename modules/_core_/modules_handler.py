@@ -24,7 +24,6 @@ class ModulesHandler:
     def app(self) -> Application:
         return Application(
             f"{APP_NAME}",
-            screen_menu_handler(self.cfg),
             screen_corners_handler(self.cfg),
             activate_linux_handler(self.cfg),
             status_bar_handler(self.cfg),
@@ -33,6 +32,7 @@ class ModulesHandler:
             desktop_clock_handler(self.cfg),
             dock_station_handler(self.cfg),
             cava_desktop_handler(self.cfg),
+            screen_menu_handler(self.cfg),
         )
 
     def set_css(self) -> None:

@@ -279,6 +279,10 @@
   opacity: 1;
 }
 
+#screen-popup-menu {
+  transition: 0.5s;
+}
+
 * {
   margin: 0px;
   padding: 0px;
