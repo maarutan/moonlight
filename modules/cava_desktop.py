@@ -6,7 +6,7 @@ from config import CAVA_APP_DIR
 
 
 class CavaDesktop(Window):
-    def __init__(self):
+    def __init__(self, enable: bool = True):
         self.default_bar = 600
 
         self.cava_render = SpectrumRender(
@@ -26,5 +26,8 @@ class CavaDesktop(Window):
         )
 
         box = Stack(name="desktop-cava-stack", children=self.spectrum_box)
-        box.show_all()
-        self.add(box)
+        if enable:
+            box.show_all()
+            self.add(box)
+        else:
+            box.hide()

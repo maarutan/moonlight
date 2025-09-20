@@ -56,6 +56,7 @@ class TrayItems(Box):
             logger.warning("SystemTray class not available; tray will be inactive.")
             self.tray = None
         GLib.timeout_add_seconds(max(1, int(self.refresh_interval)), self._poll_tray)
+        self.show_all()
 
     def _find_window_map_entry(self, app_id_or_name: str) -> Optional[list]:
         if not app_id_or_name:

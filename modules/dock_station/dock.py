@@ -94,10 +94,15 @@ class Dock(Window):
         self.wrapper.add(EventBox(child=self.content))
 
         self.hover = EventBox()
+        # if self.is_horizontal:
+        #     self.hover.set_size_request(300, 0)
+        # else:
+        #     self.hover.set_size_request(0, 300)
         if self.is_horizontal:
-            self.hover.set_size_request(300, 0)
+            self.hover.set_size_request(self.dock_size * 2, 0)
         else:
-            self.hover.set_size_request(0, 300)
+            self.hover.set_size_request(0, self.dock_size * 2)
+
         self.hover.add_events(Gdk.EventMask.ENTER_NOTIFY_MASK)
         self.hover.connect("enter-notify-event", self.dock._on_hover_enter)
 

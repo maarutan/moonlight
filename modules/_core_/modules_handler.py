@@ -6,12 +6,13 @@ from ..cava_desktop import CavaDesktop
 from ._prep_modules import (
     screen_corners_handler,
     activate_linux_handler,
-    ScreenMenu,
+    screen_menu_handler,
     status_bar_handler,
     battery_alert_handler,
     language_preview_handler,
     desktop_clock_handler,
     dock_station_handler,
+    cava_desktop_handler,
 )
 
 
@@ -23,6 +24,7 @@ class ModulesHandler:
     def app(self) -> Application:
         return Application(
             f"{APP_NAME}",
+            screen_menu_handler(self.cfg),
             screen_corners_handler(self.cfg),
             activate_linux_handler(self.cfg),
             status_bar_handler(self.cfg),
@@ -30,8 +32,7 @@ class ModulesHandler:
             language_preview_handler(self.cfg),
             desktop_clock_handler(self.cfg),
             dock_station_handler(self.cfg),
-            # ScreenMenu(),
-            CavaDesktop(),
+            cava_desktop_handler(self.cfg),
         )
 
     def set_css(self) -> None:

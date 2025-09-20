@@ -12,6 +12,8 @@ from ._prep_cfg import (
     LanguagePreviewCfg,
     DesktopClockCfg,
     DockStationCfg,
+    CavaDesktopCfg,
+    ScreenMenuCfg,
 )
 
 
@@ -29,3 +31,5 @@ class CoreConfigHandler(ConfigHandler):
         self.language_preview = LanguagePreviewCfg(self)
         self.desktop_clock = DesktopClockCfg(self)
         self.dock_station = DockStationCfg(self)
+        self.screen_menu = ScreenMenuCfg(self)
+        self.cava_desktop = CavaDesktopCfg(self)

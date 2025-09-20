@@ -58,6 +58,7 @@ class TrayBox(Window):
         self._ignore_close_click = False
 
     def _make_content(self):
+        wrapper_on_main_box = EventBox(name="statusbar-tray-box-wrapper", spacing=0)
         main_box = Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         content = Grid(name="statusbar-tray-box", all_visible=True)
         tray = TrayItems(
@@ -86,6 +87,7 @@ class TrayBox(Window):
         main_box.add(
             EventBox(
                 child=CenterBox(
+                    name="statusbar-tray-box-title-container",
                     start_children=Label(
                         name="statusbar-tray-box-title", label="System Tray"
                     ),
@@ -94,7 +96,8 @@ class TrayBox(Window):
             )
         )
         main_box.pack_start(scrolled, True, True, 0)
-        return main_box
+        wrapper_on_main_box.add(main_box)
+        return wrapper_on_main_box
 
     def _on_close_clicked(self, *args):
         self.user_closed = True

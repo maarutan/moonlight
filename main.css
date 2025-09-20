@@ -61,8 +61,7 @@
   color: #a10000;
   border: 3px solid red;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-low
-  #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-low #battery-alert-progress-bar-icon {
   color: red;
   font-size: 34px;
 }
@@ -71,8 +70,7 @@
   color: #757500;
   border: 3px solid yellow;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-medium
-  #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-medium #battery-alert-progress-bar-icon {
   color: yellow;
   font-size: 34px;
 }
@@ -82,9 +80,17 @@
   border: 3px solid white;
   transition: 0.4s;
 }
-#battery-alert-progress-bar.battery-alert-progress-bar-high
-  #battery-alert-progress-bar-icon {
+#battery-alert-progress-bar.battery-alert-progress-bar-high #battery-alert-progress-bar-icon {
   color: white;
+}
+
+#desktop-cava {
+  background: none;
+  min-height: 300px;
+  margin: 200px;
+}
+#desktop-cava-stack {
+  padding: 300px 100px;
 }
 
 #screen-corners {
@@ -134,7 +140,7 @@
 
 #dock {
   transition: 0.4s;
-  background: #1e1e2e;
+  background: #1E1E2E;
   border: solid 0.2px white;
   border-radius: 15px;
   padding: 10px;
@@ -251,6 +257,28 @@
   color: #ffffff;
 }
 
+#screen-popup-menu {
+  padding: 15px 25px 25px 10px;
+  background: #1E1E2E;
+  border-radius: 15px;
+  border: solid 0.2px white;
+}
+
+#screen-popup-menu-item {
+  padding: 5px;
+  background: none;
+}
+
+.screen-popup-menu-hide {
+  transition: 0.4s;
+  opacity: 0;
+}
+
+.screen-popup-menu-show {
+  transition: 0.4s;
+  opacity: 1;
+}
+
 * {
   margin: 0px;
   padding: 0px;
@@ -272,9 +300,7 @@
   padding: 20px 0px;
 }
 
-#bar-modules-start,
-#bar-modules-center,
-#bar-modules-end {
+#bar-modules-start, #bar-modules-center, #bar-modules-end {
   border-radius: 15px;
   background-color: #1e1e2e;
   box-shadow: 0px 0px 3px 0px #000;
@@ -350,18 +376,35 @@
 }
 
 #statusbar-tray-box-container {
-  background: #1e1e2e;
-  border-radius: 10px;
-  border: solid 0.6px white;
+  background: none;
+}
+
+#statusbar-tray-box {
+  background: #1E1E2E;
 }
 
 #statusbar-tray-box-scrolled {
-  background: none;
+  background: #1E1E2E;
+  border-radius: 0 0 10px 10px;
+  border: solid 0.6px white;
+  border-top: none;
   padding: 5px;
 }
 
 #statusbar-tray-box-scrolled :nth-child(1) {
   padding: 3px;
+}
+
+#statusbar-tray-box-title-container {
+  border-radius: 10px 10px 0 0;
+  border: solid 0.6px white;
+  border-bottom: none;
+  background: #1E1E2E;
+}
+
+#statusbar-tray-box-wrapper {
+  border: solid 0.6px white;
+  border-radius: 10px;
 }
 
 #statusbar-tray-box-title {
@@ -422,7 +465,7 @@
 #statusbar-language-button {
   padding: 0px 10px;
   margin: 4px 2px;
-  background: #1e1e2e;
+  background: #1E1E2E;
 }
 
 #statusbar-language-button-language {
@@ -511,13 +554,3 @@
 }
 
 /*# sourceMappingURL=main.css.map */
-
-#desktop-cava {
-  background: none;
-  /* color: white; */
-  min-height: 300px;
-  margin: 200px;
-}
-#desktop-cava-stack {
-  padding: 300px 100px;
-}

@@ -1,16 +1,13 @@
 from math import pi
-from gi.repository import Gdk, Gtk  # type: ignore
+from gi.repository import Gdk, Gtk, GLib  # type: ignore
 from ..utils import AttributeDict
 
 
 class Spectrum:
-    def __init__(
-        self,
-        bars: int,
-    ):
+    def __init__(self, bars: int, fps: int = 30):
         self.silence_value = 0
-        self.audio_sample = []
-        self.color = "#ffffff"
+        self.audio_sample: list[float] = []
+        self.color = Gdk.RGBA(red=1.0, green=1.0, blue=1.0, alpha=1.0)
 
         self.bars = bars
         self.area = Gtk.DrawingArea()
@@ -25,24 +22,31 @@ class Spectrum:
         self.max_height = 12
 
         self.area.connect("configure-event", self.size_update)
-        self.color_update()
+
+        interval = int(1000 / fps)
+        GLib.timeout_add(interval, self._throttled_draw)
 
     def is_silence(self, value):
         self.silence_value = 0 if value > 0 else self.silence_value + 1
         return self.silence_value > self.silence
 
-    def update(self, data):
-        self.color_update()
+    def update(self, data: list[float]):
+        """Принимаем новые данные, без прямой отрисовки"""
         self.audio_sample = data
-        if not self.is_silence(self.audio_sample[0]):
-            self.area.queue_draw()
-        elif self.silence_value == (self.silence + 1):
-            self.audio_sample = [0] * self.sizes.number
-            self.area.queue_draw()
+
+    def _throttled_draw(self):
+        """Периодический вызов отрисовки (ограничение FPS)"""
+        if self.audio_sample:
+            if not self.is_silence(self.audio_sample[0]):
+                self.area.queue_draw()
+            elif self.silence_value == (self.silence + 1):
+                self.audio_sample = [0] * self.sizes.number
+                self.area.queue_draw()
+        return True
 
     def redraw(self, widget, cr):
         dx = self.sizes.padding
-        shadow_offset = 3  # смещение тени
+        shadow_offset = 3
 
         for value in self.audio_sample:
             bar_width = self.sizes.area.width / self.sizes.number - self.sizes.padding
@@ -50,8 +54,7 @@ class Spectrum:
             bar_height = max(self.sizes.bar.height * min(value, 1), self.sizes.zero) / 2
             bar_height = min(bar_height, self.max_height)
 
-            # ---- ТЕНЬ ----
-            cr.set_source_rgba(0, 0, 0, 0.4)  # чёрная тень с прозрачностью
+            cr.set_source_rgba(0, 0, 0, 0.4)
             cr.rectangle(
                 dx + shadow_offset,
                 (self.sizes.area.height / 2) - bar_height + shadow_offset,
@@ -75,8 +78,9 @@ class Spectrum:
             cr.close_path()
             cr.fill()
 
-            # ---- ОСНОВНОЙ БАР ----
-            cr.set_source_rgba(*self.color)
+            cr.set_source_rgba(
+                self.color.red, self.color.green, self.color.blue, self.color.alpha
+            )
             cr.rectangle(
                 dx,
                 (self.sizes.area.height / 2) - bar_height,
@@ -113,10 +117,3 @@ class Spectrum:
         tw = self.sizes.area.width - self.sizes.padding * (self.sizes.number - 1)
         self.sizes.bar.width = max(int(tw / self.sizes.number), 1)
         self.sizes.bar.height = self.sizes.area.height
-
-    def color_update(self):
-        color = "#ffffff"
-        red = int(color[1:3], 16) / 255
-        green = int(color[3:5], 16) / 255
-        blue = int(color[5:7], 16) / 255
-        self.color = Gdk.RGBA(red=red, green=green, blue=blue, alpha=1.0)

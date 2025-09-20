@@ -9,12 +9,14 @@ from .language_preview.language_preview import LanguagePreview
 from .battery_alert.alert import BatteryAlert
 from ._core_.modules_handler import ModulesHandler
 from .cavalade.cavalade import SpectrumRender
-from .screen_menu import ScreenMenu
+from .screen_menu.menu import ScreenMenu
+from .cava_desktop import CavaDesktop
 
 __all__ = [
     "MyCorner",
     "DesktopClock",
     "ScreenCorners",
+    "CavaDesktop",
     "ActivateLinux",
     "ScreenMenu",
     "PlayerWrapper",

@@ -38,13 +38,16 @@ class DockTools:
 
     def _on_wrapper_enter(self, *_):
         self.cancel_hide()
+        self.toggle("show")
 
     def _on_wrapper_leave(self, *_):
-        self.auto_hide_check()
+        self.cancel_hide()
+        self._cfg.hide_id = GLib.timeout_add(200, self.auto_hide_check)
 
     def delay_hide(self):
         self.cancel_hide()
         self.toggle("hide")
+        # self._cfg.hide_id = GLib.timeout_add(self._cfg.hide_timeout, self.hide_dock)
 
     def hide_dock(self):
         self.toggle("hide")
@@ -127,7 +130,7 @@ class DockTools:
 
     def refresh_ui(self):
         self.cancel_hide()
-        self.toggle("hide")
+        idle_add(lambda: self.toggle("hide"))
 
         def refresh() -> bool:
             self._cfg._update_state()

@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 import configparser
 
-from gi.repository import GLib  # type: ignore
+from gi.repository import GLib  # pyright: ignore
 from loguru import logger
 
 from ..utils import set_death_signal
@@ -25,13 +25,11 @@ class Cava:
         config_file: str | Path,
         config_dir: str | Path,
     ):
-        # путь к FIFO
         self.path = tempfile.mktemp(
             dir="/tmp",
             prefix="cava_",
         )
 
-        # обработка конфига
         self.cfg_dir = config_dir
         self.confh = ConfigHandlerCavalade(
             name=name,
@@ -39,22 +37,19 @@ class Cava:
             dir=self.cfg_dir,
         )
         self.bars = self.confh.cava.general()["bars"]
-        # пропатченный конфиг для запуска
+
         self.cfg_handled_file = self._patch_config(self.confh.config_file.as_posix())
 
-        # обработчик данных (назначается извне, см. SpectrumRender)
         self.data_handler = getattr(mainapp, "draw", None)
         if self.data_handler:
             self.data_handler = self.data_handler.update
 
-        # команда запуска cava
         self.command = ["cava", "-p", self.cfg_handled_file]
         self.state = self.NONE
 
         self.env = dict(os.environ)
         self.env["LC_ALL"] = "en_US.UTF-8"
 
-        # формат: 16-bit little-endian
         self.byte_type, self.byte_size, self.byte_norm = ("H", 2, 65535)
 
         if not os.path.exists(self.path):
@@ -65,6 +60,8 @@ class Cava:
         self.channel = None
         self.io_watch_id = None
         self.process = None
+        self.last_sample = None
+        GLib.timeout_add(33, self._emit_sample)
 
     def _patch_config(self, original_cfg: str) -> str:
         """Создать временный ini с нужным output (raw -> fifo)."""
@@ -104,13 +101,13 @@ class Cava:
         logger.debug(
             f"Activating GLib IOChannel for cava stream handler on {self.path}"
         )
-        # reader
+
         self.fifo_fd = os.open(self.path, os.O_RDONLY | os.O_NONBLOCK)
-        # dummy writer — без него сразу EOF
+
         self.fifo_dummy_fd = os.open(self.path, os.O_WRONLY | os.O_NONBLOCK)
 
         self.channel = GLib.IOChannel.unix_new(self.fifo_fd)
-        self.channel.set_encoding(None)  # raw-байты
+        self.channel.set_encoding(None)
         self.channel.set_buffered(False)
 
         self.io_watch_id = GLib.io_add_watch(
@@ -123,14 +120,16 @@ class Cava:
             data = os.read(self.fifo_fd or 0, chunk)
         except OSError:
             return True
-
         if len(data) < chunk:
             return True
 
         fmt = "<" + (self.byte_type * self.bars)
-        sample = [i / self.byte_norm for i in struct.unpack(fmt, data)]
-        if self.data_handler:
-            GLib.idle_add(self.data_handler, sample)
+        self.last_sample = [i / self.byte_norm for i in struct.unpack(fmt, data)]
+        return True
+
+    def _emit_sample(self):
+        if self.last_sample and self.data_handler:
+            self.data_handler(self.last_sample)
         return True
 
     def start(self):
