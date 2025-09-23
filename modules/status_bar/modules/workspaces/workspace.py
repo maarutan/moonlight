@@ -35,6 +35,8 @@ class Workspaces(Box):
                 missing_behavior=preview_missing_behavior,
             )
             self.popup.hide()
+            self.popup.connect("enter-notify-event", self.popup.hide)
+
         else:
             self.popup = None
         if numbering_workpieces is None:
