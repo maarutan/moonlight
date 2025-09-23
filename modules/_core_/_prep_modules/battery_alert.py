@@ -13,4 +13,4 @@ def battery_alert_handler(cfg: "CoreConfigHandler") -> BatteryAlert:
         high_icon=cfg.battery_alert.icons()["high"],
         hide_timeout=cfg.battery_alert.hide_timeout(),
         alert_progress=cfg.battery_alert.alert_progress(),
-    )
+    ).popup

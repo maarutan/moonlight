@@ -84,6 +84,12 @@
   color: white;
 }
 
+#battery-alert-percentage-label {
+  font-size: 40px;
+  font-weight: bolder;
+  margin: 0 15px;
+}
+
 #desktop-cava {
   background: none;
   min-height: 300px;
