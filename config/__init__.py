@@ -1,9 +1,12 @@
 from .data import (
+    PID_FILE,
+    APP_ASSETS,
     APP_NAME,
     CAVA_APP_DIR,
     CAVA_DESKTOP,
     DOCK_MENU_ICON,
     APP_CONFIG_DIR,
+    LOCAL_DIR,
     CONFIG_FILE,
     PLACEHOLDER_IMAGE,
     STATUS_BAR_DIR,
@@ -59,7 +62,10 @@ __all__ = [
     "MAIN_CSS_FILE",
     "DOCK_STATION_PINS",
     "DOCK_MENU_ICON",
+    "PID_FILE",
     "CAVA_DESKTOP",
     "CAVA_LOCAL_DIR",
     "CAVA_APP_DIR",
+    "LOCAL_DIR",
+    "APP_ASSETS",
 ]

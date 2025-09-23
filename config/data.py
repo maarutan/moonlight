@@ -63,3 +63,4 @@ BASE_LOCK = APP_ASSETS / "base_lock.json"
 
 "===== ~~ Templates ~~ ====="
 TEMP_DIR = Path(gettempdir())
+PID_FILE = TEMP_DIR / APP_NAME / "moonlight.pid"

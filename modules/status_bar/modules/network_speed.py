@@ -1,0 +1,105 @@
+from typing import Literal
+from fabric.widgets.box import Box
+from fabric.widgets.label import Label
+from fabric.widgets.button import Button
+from gi.repository import GLib  # type: ignore
+from utils import setup_cursor_hover
+
+from services import NetworkSpeed as network_speed
+
+SpeedType = Literal["download", "upload", "all"]
+IconPos = Literal["left", "right"]
+
+
+class NetworkSpeed(Box):
+    def __init__(
+        self,
+        is_horizontal: bool = True,
+        speed_type: SpeedType = "download",
+        icon_position: IconPos = "left",
+        icon_download: str = "󰇚",
+        icon_upload: str = "󰕒",
+        if_one_icon: str = "",
+        interval: int = 1,
+    ):
+        super().__init__(
+            name="status-bar-network-speed", h_align="center", v_align="center"
+        )
+
+        self.speed_type = speed_type
+        self.icon_position = icon_position
+        self.icon_download = icon_download
+        self.icon_upload = icon_upload
+        self.if_one_icon = if_one_icon
+
+        self.speed_label = Label(
+            name="status-bar-network-speed-label", label="0.00 B/s"
+        )
+        self.icon_label = Label(
+            name="status-bar-network-speed-icon", label=self.if_one_icon
+        )
+
+        self.main_box = Box(
+            name="status-bar-network-speed-main-box",
+            orientation="h" if is_horizontal else "v",
+            h_align="center",
+            v_align="center",
+        )
+        self.main_box.add(self.icon_label)
+        self.main_box.add(self.speed_label)
+
+        self.btn = Button(
+            name="status-bar-network-speed-btn", h_align="center", v_align="center"
+        )
+        setup_cursor_hover(self.btn)
+        self.btn.add(self.main_box)
+        self.btn.connect("clicked", self.toggle_mode)
+        self.add(self.btn)
+
+        self.update_ui()
+        GLib.timeout_add_seconds(interval, self.refresh)
+        self.show_all()
+
+    def refresh(self):
+        self.update_ui()
+        return True
+
+    def update_ui(self):
+        data = network_speed().get_network_speed()
+        if not data:
+            data = {"download": "0.00 B/s", "upload": "0.00 B/s"}
+
+        if self.speed_type == "download":
+            icon = (
+                f"{self.icon_download} "
+                if self.icon_position == "left"
+                else f" {self.icon_download}"
+            )
+            text = f"{data['download']}"
+        elif self.speed_type == "upload":
+            icon = (
+                f"{self.icon_upload} "
+                if self.icon_position == "left"
+                else f" {self.icon_upload}"
+            )
+            text = f"{data['upload']}"
+        else:  # all
+            if self.icon_position == "left":
+                text = f"↓ {data['download']} | ↑ {data['upload']}"
+            else:
+                text = f"{data['download']} ↓ | {data['upload']} ↑"
+            icon = ""
+
+        self.speed_label.set_text(text)
+        self.icon_label.set_text(icon)
+        self.main_box.show_all()
+        return False
+
+    def toggle_mode(self, *_):
+        if self.speed_type == "all":
+            self.speed_type = self.last_single_type
+        else:
+            self.last_single_type = self.speed_type
+            self.speed_type = "all"
+
+        self.update_ui()

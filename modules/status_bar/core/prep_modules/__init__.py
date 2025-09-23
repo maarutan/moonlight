@@ -2,7 +2,6 @@ from loguru import logger
 
 from .._config_handler import ConfigHandlerStatusBar
 
-from ...modules.screen_recorder import ScreenRecorder
 
 from .cavalcade import cavalcade_handler
 from .profile import profile_handler
@@ -15,9 +14,9 @@ from .windows_title import windows_title_handler
 from .metrics import metrics_handler
 from .screen_recorder import screen_recorder_handler
 from .battery import battery_handler
+from .check_update import check_update_handler
+from .network_speed import network_speed_handler
 
-# from .media_player_windows_title import mp_windows_title_handler
-from ...modules.battery.battery import Battery
 
 MODULES_REGISTRY = {
     "clock": clock_handler,
@@ -27,11 +26,13 @@ MODULES_REGISTRY = {
     "windows-title": windows_title_handler,
     # "media-player-with-windows-title": mp_windows_title_handler,
     "system-tray": system_tray_handler,
+    "network-speed": network_speed_handler,
     "memory": memory_ram_handler,
     "metrics": metrics_handler,
     "cavalcade": cavalcade_handler,
     "screen-recorder": screen_recorder_handler,
     "battery": battery_handler,
+    "check-update": check_update_handler,
 }
 
 

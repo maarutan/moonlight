@@ -1,6 +1,7 @@
 from .player import MprisPlayer, MprisPlayerManager
 from .screen_record import ScreenRecorderService
 from .battery import BatteryService, DeviceState
+from .networkspeed import NetworkSpeed
 
 __all__ = [
     "MprisPlayer",
@@ -8,4 +9,5 @@ __all__ = [
     "BatteryService",
     "DeviceState",
     "ScreenRecorderService",
+    "NetworkSpeed",
 ]

@@ -57,7 +57,8 @@ class FileManager:
         except Exception as e:
             print(f"Error FileMnager (write): {e}")
 
-    def read(self, path: Path):
+    def read(self, path: Path | str) -> str:
+        path = Path(path)
         if not path.exists():
             return ""
         try:

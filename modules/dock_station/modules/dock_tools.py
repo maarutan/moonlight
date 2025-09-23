@@ -2,9 +2,11 @@ from typing import TYPE_CHECKING, Literal
 from fabric.widgets.button import Button
 from gi.repository import GLib  # type: ignore
 from fabric.utils.helpers import idle_add
-
 from modules.dock_station.modules.items import Items
 from utils.widget_utils import setup_cursor_hover  # type: ignore
+
+import threading
+import time
 
 if TYPE_CHECKING:
     from ..dock import Dock
@@ -14,6 +16,8 @@ class DockTools:
     def __init__(self, cfg: "Dock"):
         self._cfg = cfg
         self.dock_position = self._cfg._anchor_handler()
+        self._last_event_ts = 0  # для дебаунса событий
+        self._event_delay_ms = 120  # минимум 120мс между auto_hide_check
 
     def cancel_hide(self):
         if self._cfg.hide_id:
@@ -47,69 +51,92 @@ class DockTools:
     def delay_hide(self):
         self.cancel_hide()
         self.toggle("hide")
-        # self._cfg.hide_id = GLib.timeout_add(self._cfg.hide_timeout, self.hide_dock)
 
     def hide_dock(self):
         self.toggle("hide")
         self._cfg.hide_id = None
         return False
 
+    # --------------------------
+    #   IPC Hyprland в потоке
+    # --------------------------
+    def _get_monitors_async(self, callback):
+        def worker():
+            try:
+                reply = self._cfg.conn.send_command("j/monitors").reply.decode()
+                monitors = self._cfg.json.loads(reply)
+                idle_add(callback, monitors)
+            except Exception:
+                idle_add(callback, None)
+
+        threading.Thread(target=worker, daemon=True).start()
+
     def auto_hide_check(self, *_):
+        # проверка времени (дебаунс)
+        now = time.time() * 1000
+        if now - self._last_event_ts < self._event_delay_ms:
+            return False
+        self._last_event_ts = now
+
         clients = list(self._cfg.clients_cache.values())
         ws = self._cfg.current_ws
         ws_clients = [w for w in clients if w["workspace"]["id"] == ws]
 
         if not ws_clients:
             self.toggle("show")
-            return
+            return False
 
-        try:
-            monitors = self._cfg.json.loads(
-                self._cfg.conn.send_command("j/monitors").reply.decode()
-            )
+        def on_monitors(monitors):
+            if not monitors:
+                self.toggle("show")
+                return False
+
             focused = next((m for m in monitors if m.get("focused")), None)
             if not focused:
                 self.toggle("show")
-                return
+                return False
+
             monitor_height = focused["height"]
             monitor_width = focused["width"]
-        except Exception:
+
+            if self.dock_position == "bottom":
+                dock_x1, dock_x2 = 0, monitor_width
+                dock_y1, dock_y2 = monitor_height - self._cfg.dock_size, monitor_height
+            elif self.dock_position == "top":
+                dock_x1, dock_x2 = 0, monitor_width
+                dock_y1, dock_y2 = 0, self._cfg.dock_size
+            elif self.dock_position == "left":
+                dock_x1, dock_x2 = 0, self._cfg.dock_size
+                dock_y1, dock_y2 = 0, monitor_height
+            elif self.dock_position == "right":
+                dock_x1, dock_x2 = monitor_width - self._cfg.dock_size, monitor_width
+                dock_y1, dock_y2 = 0, monitor_height
+            else:
+                self.toggle("show")
+                return False
+
+            for window in ws_clients:
+                if window.get("fullscreen"):
+                    continue
+                pos_x, pos_y = window["at"]
+                size_x, size_y = window["size"]
+
+                win_left, win_right = pos_x, pos_x + size_x
+                win_top, win_bottom = pos_y, pos_y + size_y
+
+                intersects_x = not (win_right <= dock_x1 or win_left >= dock_x2)
+                intersects_y = not (win_bottom <= dock_y1 or win_top >= dock_y2)
+
+                if intersects_x and intersects_y:
+                    self.delay_hide()
+                    return False
+
             self.toggle("show")
-            return
+            return False
 
-        if self.dock_position == "bottom":
-            dock_x1, dock_x2 = 0, monitor_width
-            dock_y1, dock_y2 = monitor_height - self._cfg.dock_size, monitor_height
-        elif self.dock_position == "top":
-            dock_x1, dock_x2 = 0, monitor_width
-            dock_y1, dock_y2 = 0, self._cfg.dock_size
-        elif self.dock_position == "left":
-            dock_x1, dock_x2 = 0, self._cfg.dock_size
-            dock_y1, dock_y2 = 0, monitor_height
-        elif self.dock_position == "right":
-            dock_x1, dock_x2 = monitor_width - self._cfg.dock_size, monitor_width
-            dock_y1, dock_y2 = 0, monitor_height
-        else:
-            self.toggle("show")
-            return
-
-        for window in ws_clients:
-            if window.get("fullscreen"):
-                continue
-            pos_x, pos_y = window["at"]
-            size_x, size_y = window["size"]
-
-            win_left, win_right = pos_x, pos_x + size_x
-            win_top, win_bottom = pos_y, pos_y + size_y
-
-            intersects_x = not (win_right <= dock_x1 or win_left >= dock_x2)
-            intersects_y = not (win_bottom <= dock_y1 or win_top >= dock_y2)
-
-            if intersects_x and intersects_y:
-                self.delay_hide()
-                return
-
-        self.toggle("show")
+        # получаем список мониторов асинхронно
+        self._get_monitors_async(on_monitors)
+        return False
 
     def _init_subscriptions(self, *_):
         for ev in (
@@ -128,6 +155,9 @@ class DockTools:
         self._cfg._update_state()
         self.auto_hide_check()
 
+    # --------------------------
+    #   Обновление UI
+    # --------------------------
     def refresh_ui(self):
         self.cancel_hide()
         idle_add(lambda: self.toggle("hide"))
@@ -135,11 +165,13 @@ class DockTools:
         def refresh() -> bool:
             self._cfg._update_state()
 
-            for child in list(self._cfg.view.get_children()):
-                self._cfg.view.remove(child)
+            # вместо полного пересоздания, чистим только если надо
+            if getattr(self._cfg, "items", None):
+                self._cfg.view.remove(self._cfg.items)
 
             self._cfg.items = Items(self._cfg)
             setup_cursor_hover(self._cfg.items)
+
             if self._cfg.menu_position == "left":
                 if getattr(self._cfg, "result_menu", None):
                     self._cfg.view.add(self._cfg.result_menu)

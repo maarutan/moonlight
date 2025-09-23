@@ -14,6 +14,8 @@ from .prep_cfg import (
     ClockCfg,
     MediaPlayerWindowsTitleCfg,
     BatteryCfg,
+    CheckUpdateCfg,
+    NetworkSpeedCfg,
 )
 from config import (
     STATUS_BAR_DIR,
@@ -41,3 +43,5 @@ class ConfigHandlerStatusBar(ConfigHandler):
         self.metrics = MetricsCfg(self)
         self.screen_recorder = ScreenRecorderCfg(self)
         self.battery = BatteryCfg(self)
+        self.check_update = CheckUpdateCfg(self)
+        self.network_speed = NetworkSpeedCfg(self)

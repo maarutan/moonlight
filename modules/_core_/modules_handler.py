@@ -1,7 +1,9 @@
-from ._core_config_handler import CoreConfigHandler
+import os
 from fabric import Application
-from config import APP_NAME, MAIN_CSS_FILE
+from config import APP_NAME, MAIN_CSS_FILE, PID_FILE
+from utils import FileManager
 from ..cava_desktop import CavaDesktop
+from ._core_config_handler import CoreConfigHandler
 
 from ._prep_modules import (
     screen_corners_handler,
@@ -19,7 +21,9 @@ from ._prep_modules import (
 class ModulesHandler:
     def __init__(self) -> None:
         self.cfg = CoreConfigHandler()
+        self.fm = FileManager()
         self.Application = self.app()
+        self.fm.write(PID_FILE, str(os.getpid()))
 
     def app(self) -> Application:
         return Application(

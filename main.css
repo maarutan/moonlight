@@ -258,15 +258,11 @@
 }
 
 #screen-popup-menu {
+  transition: opacity 200ms ease-in-out;
   padding: 15px 25px 25px 10px;
   background: #1E1E2E;
   border-radius: 15px;
   border: solid 0.2px white;
-}
-
-#screen-popup-menu-item {
-  padding: 5px;
-  background: none;
 }
 
 .screen-popup-menu-hide {
@@ -279,8 +275,12 @@
   opacity: 1;
 }
 
-#screen-popup-menu {
-  transition: 0.5s;
+#screen-popup-menu-item {
+  transition: opacity 250ms ease-in-out;
+  background: none;
+}
+#screen-popup-menu-item.show {
+  opacity: 1;
 }
 
 * {
@@ -555,6 +555,21 @@
 
 #statusbar-screen-recorder-icon.mig {
   color: white;
+}
+
+#statusbar-check-update-btn {
+  background: none;
+  padding: 5px 10px;
+}
+
+#statusbar-check-update-icon {
+  color: yellow;
+}
+
+#status-bar-network-speed-btn {
+  transition: 0.4s;
+  background: none;
+  padding: 5px 10px;
 }
 
 /*# sourceMappingURL=main.css.map */

@@ -19,13 +19,20 @@
 # Github.com: https://github.com/maarutan
 # License: MIT
 #
+
+import os, sys, signal
 from modules import ModulesHandler
 
 modules = ModulesHandler()
 app = modules.Application
 
 
+def handle_sighup(*_):
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
 def main():
+    signal.signal(signal.SIGHUP, handle_sighup)
     modules.set_css()
     app.run()
 

@@ -52,6 +52,7 @@ class PopupMenu(EventBox):
 
         GLib.timeout_add(delay, add_next_button)
         self.add(EventBox(child=self.box))
+        self.show_all()
 
     def on_leave(self, widget, event):
         self.remove_style_class("screen-popup-menu-show")

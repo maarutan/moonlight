@@ -11,11 +11,15 @@ from .media_player_windows_title import MediaPlayerWindowsTitleCfg
 from .metrics import MetricsCfg
 from .screen_recorder import ScreenRecorderCfg
 from .battery import BatteryCfg
+from .check_update import CheckUpdateCfg
+from .network_speed import NetworkSpeedCfg
 
 __all__ = [
     "StatusBarCfg",
     "WorkspacesCfg",
     "ModulesCfg",
+    "NetworkSpeedCfg",
+    "CheckUpdateCfg",
     "BatteryCfg",
     "SystemTrayCfg",
     "MetricsCfg",
