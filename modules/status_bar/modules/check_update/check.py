@@ -20,30 +20,41 @@ class CheckUpdate(Box):
         icon_position: str = "left",
         interval: int = 60,
     ):
-        self.icon_position = icon_position
-
         super().__init__(
             name="statusbar-check-update",
             h_align="center",
             v_align="center",
         )
 
+        self.is_horizontal = is_horizontal
+        self.icon_position = icon_position
+        self.pkg_manager = pkg_manager
+
         icon: Callable[[str], Label] = lambda name: Label(
             name="statusbar-check-update-icon",
             label=name,
         )
 
-        main_box = Box(
+        self.main_box = Box(
             name="statusbar-check-update-main-box",
             orientation="h" if is_horizontal else "v",
             h_align="center",
             v_align="center",
         )
+
         btn = Button(
             name="statusbar-check-update-btn",
-            child=main_box,
+            child=self.main_box,
             on_clicked=lambda *_: exec_shell_command_async(on_clicked),
         )
+
+        if self.is_horizontal:
+            btn.remove_style_class("statusbar-check-update-btn-vertical")
+            btn.add_style_class("statusbar-check-update-btn-horizontal")
+        else:
+            btn.remove_style_class("statusbar-check-update-btn-horizontal")
+            btn.add_style_class("statusbar-check-update-btn-vertical")
+
         setup_cursor_hover(btn, "pointer")
         self.add(btn)
 
@@ -51,16 +62,16 @@ class CheckUpdate(Box):
 
         for distr_cls in [Arch, Debian, Fedora]:
             distr = distr_cls()
-            if distr.pkg_manager == pkg_manager:
+            if distr.pkg_manager == self.pkg_manager:
                 icon_widget = icon(getattr(distr, "icon", ""))
                 if self.icon_position == "left":
-                    main_box.add(icon_widget)
-                    main_box.add(Label(" "))
-                    main_box.add(self.update_label)
+                    self.main_box.add(icon_widget)
+                    self.main_box.add(Label(" ")) if self.is_horizontal else None
+                    self.main_box.add(self.update_label)
                 else:
-                    main_box.add(self.update_label)
-                    main_box.add(Label(" "))
-                    main_box.add(icon_widget)
+                    self.main_box.add(self.update_label)
+                    self.main_box.add(Label(" ")) if self.is_horizontal else None
+                    self.main_box.add(icon_widget)
                 self.distr = distr
                 break
 

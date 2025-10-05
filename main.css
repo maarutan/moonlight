@@ -565,6 +565,13 @@
 
 #statusbar-check-update-btn {
   background: none;
+}
+
+.statusbar-check-update-btn-vertical {
+  padding: 5px 10px;
+}
+
+.statusbar-check-update-btn-horizontal {
   padding: 5px 10px;
 }
 

@@ -21,14 +21,19 @@
 #
 
 import os, sys, signal
+from gi.repository import GLib  # type: ignore
 from modules import ModulesHandler
 
 modules = ModulesHandler()
 app = modules.Application
 
 
-def handle_sighup(*_):
+def restart():
     os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
+def handle_sighup(*_):
+    GLib.idle_add(restart)
 
 
 def main():
@@ -42,6 +47,7 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(f"[ERROR] {e}")
+
 
 # ---------------------------------------------------------------------------->
 # ---------------------------------------------------------------------->

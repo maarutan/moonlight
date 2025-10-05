@@ -98,7 +98,7 @@ class IconResolver:
             else self.default_icon
         )
 
-    def get_icon_from_appinfo(self, appinfo: Gio.DesktopAppInfo, size: int = 16):
+    def get_icon_from_appinfo(self, appinfo: Gio.AppInfo, size: int = 16):
         try:
             icon = appinfo.get_icon()
             if icon:
