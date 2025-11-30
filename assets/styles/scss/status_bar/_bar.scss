@@ -1,0 +1,9 @@
+@use "../theme.scss";
+@use "workspaces";
+@use "workspaces_previoew";
+@use "custom";
+
+#status-bar {
+  background: theme.$bg-primary;
+  color: theme.$text-primary;
+}

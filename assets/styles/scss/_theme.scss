@@ -1,0 +1,106 @@
+// 🌙 Catppuccin Mocha — Pure Static SCSS
+// https://github.com/catppuccin/catppuccin
+
+// Base palette
+$base: #1e1e2e;
+$mantle: #181825;
+$crust: #11111b;
+
+$text: #cdd6f4;
+$subtext1: #bac2de;
+$subtext0: #a6adc8;
+
+$overlay2: #9399b2;
+$overlay1: #7f849c;
+$overlay0: #6c7086;
+
+$surface2: #585b70;
+$surface1: #45475a;
+$surface0: #313244;
+
+$red: #f38ba8;
+$orange: #fab387;
+$yellow: #f9e2af;
+$green: #a6e3a1;
+$aqua: #94e2d5;
+$blue: #89b4fa;
+$purple: #cba6f7;
+$pink: #f5c2e7;
+$gray: #7f849c;
+
+// ─────────────────────────────
+// 🎨 Logical UI Tokens (Flat values only)
+// ─────────────────────────────
+
+// Background layers
+$bg-primary: #1e1e2e;
+$bg-secondary: #181825;
+$bg-tertiary: #11111b;
+
+// Text colors
+$text-primary: #cdd6f4;
+$text-secondary: #bac2de;
+$text-disabled: #6c7086;
+
+// Borders and outlines
+$border-color: #45475a;
+$border-strong: #585b70;
+$border-accent: #89b4fa;
+
+// Shadows (flat rgba)
+$shadow-color: rgba(0, 0, 0, 0.45);
+$shadow-soft: rgba(0, 0, 0, 0.25);
+$shadow-md: rgba(0, 0, 0, 0.35);
+$shadow-lg: rgba(0, 0, 0, 0.45);
+
+// Accents and focus
+$accent: #89b4fa;
+$accent-hover: #a3c0fb; // lighten 5%
+$accent-active: #b4e0ff;
+$accent-disabled: #3c4763; // ручная смесь accent+base≈40%
+
+// Selections and highlights
+// $blue = #89b4fa → rgb(137,180,250)
+$selection-bg: rgba(137, 180, 250, 0.25);
+$selection-border: #89b4fa;
+$selection-text: #cdd6f4;
+
+// Hover / Active states
+// $overlay1 = #7f849c → rgb(127,132,156)
+// $overlay2 = #9399b2 → rgb(147,153,178)
+$hover-bg: rgba(127, 132, 156, 0.15);
+$active-bg: rgba(147, 153, 178, 0.25);
+
+// Inputs
+$input-bg: #313244;
+$input-border: #45475a;
+$input-text: #cdd6f4;
+$input-placeholder: #6c7086;
+
+// Buttons
+$btn-bg: #45475a;
+$btn-hover: #585b70;
+$btn-active: #89b4fa;
+$btn-text: #cdd6f4;
+$btn-disabled: #6c7086;
+
+// Alerts
+$alert-error: #f38ba8;
+$alert-warning: #fab387;
+$alert-success: #a6e3a1;
+$alert-info: #89b4fa;
+
+// Selection dropdowns
+$select-bg: #313244;
+$select-hover: #45475a;
+$select-border: #89b4fa;
+
+// Tooltips / Popups
+$popup-bg: #45475a;
+$popup-border: #585b70;
+$popup-shadow: rgba(0, 0, 0, 0.35);
+
+// Cards / Containers
+$card-bg: #313244;
+$card-border: #45475a;
+$card-shadow: rgba(0, 0, 0, 0.25);

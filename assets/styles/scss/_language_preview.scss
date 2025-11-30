@@ -1,0 +1,40 @@
+@use "theme";
+
+#language-preview {
+  background: transparent;
+  color: theme.$text;
+  font-size: 1.4rem;
+  letter-spacing: 0.1rem;
+  font-weight: bolder;
+}
+
+#language-preview,
+#language-preview-box {
+  min-width: 14rem;
+  min-height: 9rem;
+}
+
+#language-preview-box {
+  background: theme.$base;
+  min-width: 14rem;
+  min-height: 9rem;
+  border-radius: 20px;
+  border: 1px solid theme.$border-color;
+  padding: 0.8rem;
+}
+
+.language-preview-full,
+.language-preview-full-is-active {
+  margin-top: 1rem;
+}
+
+.language-preview-wrapper-is-active,
+.language-preview-wrapper {
+  padding: 2.8rem 1.8rem;
+  border-radius: 1rem;
+}
+
+.language-preview-wrapper-is-active {
+  background: theme.$surface1;
+  box-shadow: 0px 0px 20px 0 theme.$shadow-color;
+}

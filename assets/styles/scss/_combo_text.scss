@@ -1,0 +1,40 @@
+@use "theme";
+
+combobox {
+  background: theme.$surface2;
+  border: 1px solid theme.$border-color;
+  border-radius: 0.5rem;
+  color: theme.$text;
+
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.combo-text button,
+combobox button.combo {
+  color: theme.$text;
+  font-weight: 500;
+  background: none;
+  border: none;
+  min-width: 10rem;
+  padding: 0.4rem 0.6rem;
+}
+
+combobox button.combo .arrow {
+  color: theme.$accent;
+}
+
+combobox window.popup menu {
+  background: theme.$surface1;
+  border: 1px solid theme.$border-color;
+}
+
+combobox window.popup menu menuitem {
+  padding: 0.4rem 0.6rem;
+  color: theme.$text;
+}
+
+combobox window.popup menu menuitem:hover {
+  background: theme.$surface0;
+}

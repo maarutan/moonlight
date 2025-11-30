@@ -1,0 +1,19 @@
+@use "../theme.scss";
+
+#sm_user-dashboard-definition {
+  font-size: 1.2rem;
+  color: theme.$blue;
+  background: theme.$bg-primary;
+  font-weight: bolder;
+  padding: 5px 20px;
+}
+
+#sm_user-dashboard-description {
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  color: theme.$base;
+  background: theme.$blue;
+  padding: 0 10px;
+  border-radius: 7px;
+  font-weight: 500;
+}

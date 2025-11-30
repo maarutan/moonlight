@@ -1,0 +1,157 @@
+@use "../theme.scss";
+
+#start-menu {
+  background: theme.$base;
+  border-radius: 8px;
+  border: 1px solid theme.$border-color;
+  color: theme.$text;
+  box-shadow: 0px 0px 50px 0 theme.$shadow-color;
+}
+#sm_title-box {
+  padding: 5px;
+  margin: 5px;
+}
+#sm_title-label {
+  color: theme.$text;
+  font-weight: bolder;
+  font-size: 1.3rem;
+  margin-left: 40px;
+}
+
+#sm_close-button {
+  color: theme.$base;
+  font-weight: bolder;
+  box-shadow: none;
+  background: theme.$red;
+  text-shadow: none;
+  border: none;
+  padding: 0 4.5px;
+  margin: 0 20px;
+  border-radius: 50%;
+  border: 1px solid theme.$base;
+  &:hover {
+    background: theme.$surface0;
+    color: theme.$red;
+    border: 1px solid theme.$border-color;
+  }
+}
+
+#sm_sides {
+  margin: 0 40px;
+  padding: 0 40px;
+  padding-top: 20px;
+  margin-top: 20px;
+  padding-bottom: 20px;
+  // margin-bottom: 40px;
+
+  border: 2px solid theme.$border-color;
+  border-radius: 10px;
+}
+
+#sm_center-line {
+  min-width: 1px;
+  border-radius: 10px;
+  background: theme.$text;
+  margin: 100px 0;
+}
+#sm_items-side-button {
+  background: none;
+  color: theme.$text;
+  box-shadow: none;
+  border: none;
+  padding: 5px 0px;
+  border: 1px solid theme.$base;
+  box-shadow: none;
+  text-shadow: none;
+
+  & label {
+    color: theme.$text;
+    font-weight: 500;
+    font-size: 1.3rem;
+  }
+
+  &:hover {
+    background: theme.$surface0;
+    color: theme.$text;
+    border: 1px solid theme.$border-color;
+  }
+  &.active {
+    background: theme.$selection-bg;
+    color: theme.$text;
+    border: 1px solid theme.$border-color;
+  }
+}
+
+.start-menu-hidden {
+  transition: 0.5s;
+  margin: -400px;
+  opacity: 0;
+}
+.start-menu-show {
+  transition: 0.5s;
+  margin: 0px;
+  opacity: 1;
+}
+#sm_scroll-window slider {
+  color: theme.$base;
+  background: none;
+  padding: 0;
+  margin: 10px;
+  border: none;
+  box-shadow: none;
+  text-shadow: none;
+  text-decoration: none;
+}
+#sm_scroll-window trough {
+  background: theme.$base;
+  border: none;
+}
+
+#sm_scroll-window .vertical {
+  border: none;
+}
+
+#sm_scroll-window trough slider {
+  background: theme.$surface0;
+
+  &:hover {
+    background: theme.$surface2;
+  }
+}
+
+#sm_items-side-config-box {
+  min-width: 50rem;
+}
+#sm_scroll-window {
+  padding: 1.3rem;
+}
+
+#sm_reload-button,
+#sm_close-button_2 {
+  background: theme.$surface0;
+  min-width: 200px;
+  box-shadow: none;
+  border: 0.2px solid theme.$border-color;
+  color: theme.$text;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+
+  &:hover {
+    background: theme.$surface2;
+  }
+}
+#sm_reload-button {
+  margin-right: 8rem;
+  margin-left: 2rem;
+}
+#sm_close-button_2 {
+  background: theme.$red;
+  color: theme.$base;
+  &:hover {
+    background: theme.$surface0;
+    color: theme.$red;
+    border: 1px solid theme.$border-color;
+  }
+}

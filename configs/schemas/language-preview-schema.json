@@ -1,0 +1,58 @@
+{
+  "language-preview": {
+    "type:type": "<class 'dict'>",
+    "type:properties": {
+      "enabled": {
+        "type:type": "<class 'bool'>"
+      },
+      "layer": {
+        "type:enum": [
+          "top",
+          "bottom"
+        ]
+      },
+      "margin": {
+        "type:type": "<class 'str'>"
+      },
+      "position": {
+        "type:enum": [
+          "top center",
+          "top",
+          "top left",
+          "top right",
+          "bottom center",
+          "bottom",
+          "bottom left",
+          "bottom right",
+          "left center",
+          "left",
+          "left top",
+          "left bottom",
+          "right center",
+          "right",
+          "right top",
+          "right bottom",
+          "center",
+          "center top",
+          "center bottom",
+          "center left",
+          "center right"
+        ]
+      },
+      "default_fullnames": {
+        "type:type": "<class 'dict'>"
+      },
+      "replacer": {
+        "type:type": "<class 'dict'>"
+      }
+    },
+    "type:required": [
+      "enabled",
+      "layer",
+      "margin",
+      "position",
+      "default_fullnames",
+      "replacer"
+    ]
+  }
+}

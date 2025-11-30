@@ -1,0 +1,41 @@
+@use "theme";
+
+#ms_line {
+  min-height: 0.4px;
+  background: theme.$overlay2;
+  margin: 10px 0;
+  border-radius: 20px;
+}
+#module-select-add-btn {
+  background: theme.$surface1;
+  padding: 5px 30px;
+  border-radius: 8px;
+  border: 1px solid theme.$border-color;
+  &:hover {
+    background: theme.$surface0;
+    border-radius: 8px;
+  }
+}
+
+#module-select-close-btn {
+  padding: 5px 30px;
+  background: theme.$red;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px theme.$red;
+
+  #sm_section-config-close-box :nth-child(1),
+  #module-select-close-label {
+    color: theme.$base;
+    text-shadow: none;
+  }
+
+  &:hover {
+    background: theme.$surface0;
+    color: theme.$text;
+
+    #sm_section-config-close-box :nth-child(1),
+    #module-select-close-label {
+      color: theme.$text;
+    }
+  }
+}

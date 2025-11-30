@@ -1,0 +1,43 @@
+@use "../theme.scss";
+
+.status-bar-custom-label {
+  transition: 0.25s color ease;
+  color: theme.$text;
+  border-radius: 6px;
+  background: none;
+
+  &:hover {
+    color: theme.$blue;
+  }
+}
+
+.status-bar-custom-label-horizontal {
+  padding: 2px 8px;
+}
+
+.status-bar-custom-label-vertical {
+  padding: 6px 2px;
+}
+
+.status-bar-custom-button {
+  transition: 0.3s ease;
+  background: theme.$surface0;
+  color: theme.$btn-text;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px theme.$shadow-lg;
+
+  &:hover {
+    background: theme.$base;
+    box-shadow: inset 0 0 0 1px theme.$blue;
+    color: theme.$text;
+  }
+}
+
+.status-bar-custom-button-horizontal {
+  padding: 6px 12px;
+}
+
+.status-bar-custom-button-vertical {
+  padding: 10px 6px;
+}

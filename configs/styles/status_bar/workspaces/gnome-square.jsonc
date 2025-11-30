@@ -1,0 +1,91 @@
+// workspace theme
+// [    [] [----] [] [] []    ]
+// -----------------------------------------------------------------
+// Copyright (c) 2025 maarutan \ Arzymatov Marat. All Rights Reserved.
+// moonlight
+// theme : square
+{
+  "import": ["../theme.scss"],
+
+  "#sb_workspaces-container": {
+    "transition": "0.4s",
+    "padding": "5px 10px",
+    "margin": "5px 10px",
+    "border-radius": "6px",
+    "background": "theme.$bg-secondary",
+    "box-shadow": "theme.$shadow-soft",
+    "border": "1px solid theme.$border-color"
+  },
+
+  "#sb_workspaces button": {
+    "transition": "0.3s",
+    "padding": "2px",
+    "margin": "0 3px",
+    "border": "none",
+    "border-bottom": "3px solid theme.$border-color",
+    "min-width": "25px",
+    "min-height": "8px",
+    "border-radius": "4px",
+    "color": "theme.$text-primary",
+    "background": "theme.$btn-bg",
+    "box-shadow": "none"
+  },
+
+  "#sb_workspaces button:hover": {
+    "background": "theme.$btn-hover",
+    "color": "theme.$text-secondary"
+  },
+
+  "#sb_workspaces button.active": {
+    "text-shadow": "none",
+    "min-width": "60px",
+    "background": "theme.$accent",
+    "color": "theme.$bg-primary",
+    "border-bottom": "3px solid theme.$accent-active"
+  },
+
+  "#sb_workspaces button.active:hover": {
+    "background": "theme.$accent-hover"
+  },
+
+  ".sb_workspaces-container-vertical": {
+    "padding": "10px 5px",
+    "margin": "10px 5px",
+    "background": "theme.$bg-secondary",
+    "border-radius": "8px"
+  },
+
+  ".sb_workspaces-container-vertical #sb_workspaces button": {
+    "margin": "3px 0"
+  },
+
+  ".sb_workspaces-container-vertical #sb_workspaces button.active": {
+    "min-width": "25px",
+    "min-height": "60px",
+    "background": "theme.$accent",
+    "border-bottom": "none"
+  },
+
+  "#sb_magic-workspace-button": {
+    "border": "none",
+    "box-shadow": "none",
+    "padding": "0px 2px",
+    "margin": "0px 2px",
+    "background": "none",
+    "color": "theme.$accent"
+  },
+
+  "#sb_magic-workspace-button:hover": {
+    "color": "theme.$accent-hover"
+  },
+
+  "#sb_workspaces-container button:not(.empty)": {
+    "border-bottom": "3px solid theme.$alert-warning",
+    "box-shadow": "none"
+  },
+
+  "#sb_workspaces-container button:not(.empty).active": {
+    "border-bottom": "3px solid theme.$accent-active",
+    "box-shadow": "none"
+  }
+}

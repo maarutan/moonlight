@@ -1,0 +1,48 @@
+@use "theme";
+
+.collapsible-box {
+  background: theme.$surface2;
+  border-radius: 0.5rem;
+  border: 1px solid theme.$border-color;
+  margin: 0.3rem 0;
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    box-shadow 250ms ease;
+
+  &:hover {
+    background: theme.$surface1;
+    border-color: theme.$border-strong;
+    box-shadow: 0rem 0rem 0.3rem theme.$shadow-color;
+  }
+
+  button {
+    box-shadow: none;
+    background: none;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.5rem;
+    transition: background-color 200ms ease;
+
+    &:hover {
+      background: theme.$surface0;
+      border-radius: 0.3rem 0.3rem 0 0;
+      &,
+      .collapsible-box {
+        background: theme.$surface0;
+      }
+    }
+
+    &:active {
+      background: theme.$surface1;
+    }
+  }
+
+  label {
+    font-weight: 500;
+    font-size: 1.25rem;
+    letter-spacing: 0.05rem;
+    color: theme.$text;
+    transition: color 150ms ease;
+  }
+}

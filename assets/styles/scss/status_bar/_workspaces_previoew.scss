@@ -1,0 +1,15 @@
+@use "../theme.scss";
+
+#sb_workspaces-preview {
+  transition: 0.4s;
+  background: theme.$shadow-color;
+  border: 1px solid theme.$border-color;
+  border-radius: 14px;
+  padding: 6px;
+}
+
+#sb_workspaces-preview-image {
+  transition: 0.4s;
+  margin: 20px;
+  border-radius: 30px;
+}

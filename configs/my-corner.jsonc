@@ -1,0 +1,12 @@
+{
+  "my-corner": {
+    "enabled": true,
+    "screen_corner": {
+      "size": 40
+    },
+    "my_corner": {
+      "enabled": true,
+      "size": 40
+    }
+  }
+}

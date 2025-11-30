@@ -1,0 +1,36 @@
+{
+  "screen-menu": {
+    "type:type": "<class 'dict'>",
+    "type:properties": {
+      "enabled": {
+        "type:type": "<class 'bool'>"
+      },
+      "items": {
+        "type:type": "<class 'list'>",
+        "type:items": {
+          "type:type": "<class 'dict'>",
+          "type:properties": {
+            "icon": {
+              "type:type": "<class 'str'>"
+            },
+            "name": {
+              "type:type": "<class 'str'>"
+            },
+            "cmd": {
+              "type:type": "<class 'str'>"
+            }
+          },
+          "type:required": [
+            "icon",
+            "name",
+            "cmd"
+          ]
+        }
+      }
+    },
+    "type:required": [
+      "enabled",
+      "items"
+    ]
+  }
+}

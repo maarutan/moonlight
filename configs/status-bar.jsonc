@@ -1,0 +1,55 @@
+{
+  "status-bar": {
+    "enabled": true,
+    "position": "top",
+    "layer": "top",
+    "margin": "0px 0px 0px 0px",
+    "transparent": false,
+    "if-vertical": {},
+    "widgets": {
+      "layout": {
+        "start": [
+          "workspaces"
+        ],
+        "center": [
+          "datetime"
+        ],
+        "end": []
+      },
+      "workspaces": {
+        "style": {
+          "theme": "gnome",
+          "custom-style-path": ""
+        },
+        "max-visible-workspaces": 5,
+        "enable-buttons-factory": true,
+        "numbering-enabled": false,
+        "numbering": [
+          "一",
+          "二",
+          "三",
+          "四",
+          "五",
+          "六",
+          "七",
+          "八",
+          "九",
+          "〇"
+        ],
+        "workspace-preview": {
+          "enabled": true,
+          "size": 400,
+          "event": "hover",
+          "event_click": "right",
+          "missing-behavior": "hide"
+        },
+        "magic-workspace": {
+          "enabled": true,
+          "icon": "✨"
+        },
+        "if-vertical": {}
+      },
+      "custom": {}
+    }
+  }
+}

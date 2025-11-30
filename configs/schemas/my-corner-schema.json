@@ -1,0 +1,31 @@
+{
+  "my-corner": {
+    "properties": {
+      "enabled": {
+        "type": "<class 'bool'>"
+      },
+      "screen_corner": {
+        "type": "<class 'dict'>",
+        "properties": {
+          "enabled": {
+            "type": "<class 'bool'>"
+          },
+          "size": {
+            "type": "<class 'int'>"
+          }
+        }
+      },
+      "my_corner": {
+        "type": "<class 'dict'>",
+        "properties": {
+          "enabled": {
+            "type": "<class 'bool'>"
+          },
+          "size": {
+            "type": "<class 'int'>"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "language-preview": {
+    "enabled": true,
+    "layer": "top",
+    "margin": "40px 40px 40px 40px",
+    "position": "top right",
+    "default_fullnames": {
+      "en": "English",
+      "ru": "Русский"
+    },
+    "replacer": {
+      "us": "en"
+    }
+  }
+}
