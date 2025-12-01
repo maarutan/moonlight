@@ -9,7 +9,7 @@ from .widgets.battery.battery import BatteryWidget
 from .widgets.workspaces.workspaces import Workspaces
 from .widgets.settings_button import SettingsButton
 from .widgets.custom import CustomWidget
-from .widgets.time import ClockWidget
+from .widgets.clock import ClockWidget
 
 
 from functools import partial
