@@ -9,10 +9,8 @@
 
   "#sb_workspaces-container": {
     "transition": "0.4s",
-    "padding": "5px 10px",
-    "margin": "5px 10px",
     "border-radius": "6px",
-    "background": "theme.$bg-secondary",
+    "background": "theme.$surface0",
     "box-shadow": "theme.$shadow-soft",
     "border": "1px solid theme.$border-color"
   },
@@ -47,10 +45,14 @@
   "#sb_workspaces button.active:hover": {
     "background": "theme.$accent-hover"
   },
+  ".sb_workspaces-container-horizontal": {
+    "padding": "5px 10px",
+    "margin": "0px 10px"
+  },
 
   ".sb_workspaces-container-vertical": {
     "padding": "10px 5px",
-    "margin": "10px 5px",
+    "margin": "0px 5px",
     "background": "theme.$bg-secondary",
     "border-radius": "8px"
   },

@@ -55,6 +55,13 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 },
                 "if-vertical": {},
             },
+            "network-speed": {
+                "status": {
+                    "download": {"show": "true", "icon": "󰇚"},
+                    "upload": {"show": "false", "icon": "󰕒"},
+                },
+                "if-vertical": {},
+            },
             "custom": {},
         },
     }
@@ -164,6 +171,34 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                             },
                         },
                         "type:required": ["procentage"],
+                    },
+                    "network-speed": {
+                        "type:type": dict,
+                        "type:properties": {
+                            "status": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "download": {
+                                        "type:type": dict,
+                                        "type:properties": {
+                                            "show": {"type:type": bool},
+                                            "icon": {"type:type": str},
+                                        },
+                                    },
+                                    "upload": {
+                                        "type:type": dict,
+                                        "type:properties": {
+                                            "show": {"type:type": bool},
+                                            "icon": {"type:type": str},
+                                        },
+                                    },
+                                },
+                            },
+                            "if-vertical": {
+                                "type:type": dict,
+                                "type:properties": {},
+                            },
+                        },
                     },
                     "custom": {"type:type": dict},
                 },

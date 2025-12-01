@@ -46,6 +46,7 @@
 
 .sb_workspaces-container-vertical #sb_workspaces button.active {
   min-height: 60px;
+  min-width: 17px;
 }
 
 .sb_workspaces-container-vertical #sb_magic-workspace-button {
@@ -105,6 +106,14 @@
 
 .status-bar-custom-button-vertical {
   padding: 10px 6px;
+}
+
+.sb_network-speed-horizontal {
+  padding: 0 10px;
+}
+
+.sb_network-speed-vertical {
+  padding: 10px 0;
 }
 
 #status-bar {

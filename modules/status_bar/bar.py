@@ -1,16 +1,20 @@
 from fabric.widgets.wayland import WaylandWindow as Window
+from shared.windget_container import BaseWidget
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.box import Box
-from fabric.widgets.datetime import DateTime
-from fabric.widgets.label import Label
-from shared.windget_container import BaseWidget
-from .config import StatusBarConfig
+
+
+from .widgets.networkspeed.speed import NetworkSpeedWidget
 from .widgets.battery.battery import BatteryWidget
 from .widgets.workspaces.workspaces import Workspaces
 from .widgets.settings_button import SettingsButton
 from .widgets.custom import CustomWidget
+
+
 from functools import partial
 from loguru import logger
+
+from .config import StatusBarConfig
 
 widget_name = "status-bar"
 confh = StatusBarConfig(widget_name)
@@ -23,21 +27,17 @@ else:
     class StatusBar(Window, BaseWidget):
         """Dynamic status bar built from JSONC config."""
 
-        # 🔹 Глобальный реестр системных виджетов
         widgets_registry: dict[str, type] = {
-            "datetime": DateTime,
             "settings": SettingsButton,
+            "workspaces": Workspaces,
             "battery": BatteryWidget,
+            "network-speed": NetworkSpeedWidget,
         }
 
         def __init__(self):
             self.confh = confh
             self.widget_name = widget_name
 
-            # 🧩 Добавляем workspaces
-            self.register_widget("workspaces", lambda: Workspaces(self))  # type: ignore
-
-            # 🧩 Регистрируем кастомные виджеты
             custom_section = self.confh.get_option(
                 f"{self.widget_name}.widgets.custom", {}
             )
@@ -47,15 +47,12 @@ else:
                     partial(CustomWidget, self, name),  # type: ignore
                 )
 
-            # 🧱 anchor + layout
             anchor = self._anchor_handler()
             layout = self._make_layout()
             orientation = "h" if self.is_horizontal() else "v"
 
-            # 🧱 merge config
             config = self._get_effective_config(orientation)
 
-            # 🧱 создаём layout
             container = CenterBox(
                 name="status-bar-inner",
                 orientation=orientation,
@@ -85,7 +82,6 @@ else:
                 ),
             )
 
-            # 🔸 Стиль
             style_props = {}
             if config.get("transparent", True):
                 style_props["background"] = "transparent"
@@ -94,7 +90,6 @@ else:
                 style_props["border-radius"] = rounded
             style = "; ".join(f"{k}: {v}" for k, v in style_props.items()) or None
 
-            # 🪟 Создаём окно
             super().__init__(
                 name=widget_name,
                 anchor=anchor,
@@ -106,7 +101,6 @@ else:
             )
             self.show_all()
 
-        # === merge base + if-vertical overrides ===
         def _get_effective_config(self, orientation: str) -> dict:
             base = {
                 "margin": self.confh.get_option(
@@ -124,7 +118,6 @@ else:
                     base.update(overrides)
             return base
 
-        # === строим layout ===
         def _make_layout(self) -> dict:
             layout_config = self.confh.get_option(f"{widget_name}.widgets.layout", {})
             layout = {"start": [], "center": [], "end": []}
@@ -139,7 +132,7 @@ else:
                 for name in widgets:
                     widget_cls = self.widgets_registry.get(name)
                     if widget_cls:
-                        layout[section].append(widget_cls())
+                        layout[section].append(widget_cls(self))
                     else:
                         logger.warning(
                             f"[{widget_name}] Unknown widget '{name}' in layout '{section}'"
@@ -147,7 +140,6 @@ else:
 
             return layout
 
-        # === определяем позицию и ориентацию ===
         def _anchor_handler(self) -> str:
             curr_pos = self.confh.get_option(f"{widget_name}.position", "top").lower()
             self._is_horizontal = curr_pos in ("top", "bottom")
