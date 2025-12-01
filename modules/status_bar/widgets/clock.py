@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from ..bar import StatusBar
 
 
-class TimeWidget(Box):
+class ClockWidget(Box):
     def __init__(self, init_class: "StatusBar"):
         self.conf = init_class
 
