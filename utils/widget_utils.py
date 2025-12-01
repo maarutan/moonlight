@@ -33,3 +33,13 @@ def setup_cursor_hover(
             "leave-notify-event": on_leave_notify_event,
         },
     )
+
+
+def merge(base: dict, override: dict) -> dict:
+    result = base.copy()
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(result.get(key), dict):
+            result[key] = merge(result[key], value)
+        else:
+            result[key] = value
+    return result

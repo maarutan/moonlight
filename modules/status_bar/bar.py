@@ -4,11 +4,12 @@ from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.box import Box
 
 
-from .widgets.networkspeed.speed import NetworkSpeedWidget
+from .widgets.networkspeed import NetworkSpeedWidget
 from .widgets.battery.battery import BatteryWidget
 from .widgets.workspaces.workspaces import Workspaces
 from .widgets.settings_button import SettingsButton
 from .widgets.custom import CustomWidget
+from .widgets.time import TimeWidget
 
 
 from functools import partial
@@ -32,6 +33,7 @@ else:
             "workspaces": Workspaces,
             "battery": BatteryWidget,
             "network-speed": NetworkSpeedWidget,
+            "time": TimeWidget,
         }
 
         def __init__(self):

@@ -3,21 +3,11 @@ from fabric.widgets.label import Label
 from fabric.widgets.eventbox import EventBox
 from fabric.utils.helpers import idle_add, GLib
 from services.networkspeed import NetworkSpeedService
-from utils.widget_utils import setup_cursor_hover
+from utils.widget_utils import setup_cursor_hover, merge
 from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
-    from ...bar import StatusBar
-
-
-def merge(base: dict, override: dict) -> dict:
-    result = base.copy()
-    for key, value in override.items():
-        if isinstance(value, dict) and isinstance(result.get(key), dict):
-            result[key] = merge(result[key], value)
-        else:
-            result[key] = value
-    return result
+    from ..bar import StatusBar
 
 
 class NetworkSpeedWidget(Box):

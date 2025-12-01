@@ -116,6 +116,16 @@
   padding: 10px 0;
 }
 
+#sb_time {
+  padding: 0px 5px;
+  border-radius: 0px;
+  box-shadow: none;
+  background: transparent;
+  color: #cdd6f4;
+  border: 0px;
+  text-shadow: none;
+}
+
 #status-bar {
   background: #1e1e2e;
   color: #cdd6f4;

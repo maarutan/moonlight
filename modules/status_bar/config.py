@@ -62,6 +62,12 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 },
                 "if-vertical": {},
             },
+            "time": {
+                "format": "%I:%M %p",
+                "if-vertical": {
+                    "format": "%I\n%M\n%p",
+                },
+            },
             "custom": {},
         },
     }
@@ -194,6 +200,16 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                                     },
                                 },
                             },
+                            "if-vertical": {
+                                "type:type": dict,
+                                "type:properties": {},
+                            },
+                        },
+                    },
+                    "time": {
+                        "type:type": dict,
+                        "type:properties": {
+                            "format": {"type:type": str},
                             "if-vertical": {
                                 "type:type": dict,
                                 "type:properties": {},

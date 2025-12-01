@@ -3,6 +3,7 @@
 @use "workspaces_previoew";
 @use "custom";
 @use "networkspeed";
+@use "time";
 
 #status-bar {
   background: theme.$bg-primary;
