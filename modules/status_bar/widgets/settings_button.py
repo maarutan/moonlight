@@ -5,7 +5,7 @@ from ...settings.start_menu import StartMenu
 
 
 class SettingsButton(Button):
-    def __init__(self):
+    def __init__(self, init_class):
         self.settings = StartMenu()
         super().__init__(
             label="⚙️",

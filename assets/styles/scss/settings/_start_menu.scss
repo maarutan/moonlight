@@ -82,16 +82,6 @@
   }
 }
 
-.start-menu-hidden {
-  transition: 0.5s;
-  margin: -400px;
-  opacity: 0;
-}
-.start-menu-show {
-  transition: 0.5s;
-  margin: 0px;
-  opacity: 1;
-}
 #sm_scroll-window slider {
   color: theme.$base;
   background: none;

@@ -62,11 +62,20 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 },
                 "if-vertical": {},
             },
-            "time": {
+            "clock": {
                 "format": "%I:%M %p",
                 "if-vertical": {
                     "format": "%I\n%M\n%p",
                 },
+            },
+            "system-tray": {
+                "collapse": {
+                    "enabled": False,
+                    "columns": 4,
+                    "button-size": 24,
+                },
+                "icon-size": 32,
+                "if-vertical": {},
             },
             "custom": {},
         },
@@ -206,7 +215,7 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                             },
                         },
                     },
-                    "time": {
+                    "clock": {
                         "type:type": dict,
                         "type:properties": {
                             "format": {"type:type": str},

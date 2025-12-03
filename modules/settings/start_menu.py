@@ -8,6 +8,7 @@ from fabric.widgets.button import Button
 from fabric.utils.helpers import exec_shell_command, GLib
 from fabric.hyprland import Hyprland, HyprlandEvent
 from utils.constants import Const
+from utils.events import event_close_popup
 from utils.widget_utils import setup_cursor_hover
 from .core.items_side import ItemsSide
 from .core.config_items_side import ItemsSideConfig
@@ -106,16 +107,7 @@ class StartMenu(Window):
         self.hypr = Hyprland(commands_only=False)
 
         self.hypr.connect("event::changefloatingmode", self._on_hypr_event)
-        hide_if_move_events = [
-            "activewindow",
-            "moveworkspace",
-            "fullscreen",
-            "changeFloatingMode",
-            "openWindow",
-            "closeWindow",
-        ]
-        for e in hide_if_move_events:
-            self.hypr.connect(f"event::{e}", lambda: self.utils.toggle("hide"))
+        event_close_popup(lambda: self.utils.toggle("hide"))
 
         self._refresh_layer()
         self.add_keybinding("Escape", lambda: self.utils.toggle("hide"))

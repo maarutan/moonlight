@@ -1,5 +1,8 @@
 import math
+from fabric.widgets.eventbox import EventBox  # type: ignore
 from fabric.utils.helpers import Gtk, GLib, cairo  # type: ignore
+from utils.hex_to_rgb import hex_to_rgb
+from utils.colors_parse import colors
 
 
 class ArrowIcon(Gtk.DrawingArea):
@@ -72,7 +75,7 @@ class ArrowIcon(Gtk.DrawingArea):
         angle_rad = math.radians(self._angle)
         cr.rotate(angle_rad)
 
-        size = min(w, h) * 0.4  # масштаб
+        size = min(w, h) * 0.4
         p1 = (size, 0)
         p2 = (-size, -size)
         p3 = (-size, size)
@@ -88,5 +91,58 @@ class ArrowIcon(Gtk.DrawingArea):
 
         cr.fill()
         cr.restore()
+
+        return False
+
+
+class ArrowIconTwo(EventBox):
+    def __init__(self, size=24):
+        super().__init__()
+        self.set_size_request(size, size)
+        self.size = size
+        self.angle = 0
+        self.target_angle = 0
+        self.animation_speed = 0.1
+
+        self.darea = Gtk.DrawingArea()
+        self.add(self.darea)
+        self.darea.connect("draw", self.on_draw)
+
+        GLib.timeout_add(16, self.animate)  # ~60 FPS
+
+    def on_click(self, *_):
+        self.target_angle = math.pi if self.target_angle == 0 else 0
+
+    def open(self):
+        self.target_angle = math.pi
+
+    def close(self):
+        self.target_angle = 0
+
+    def animate(self):
+        diff = self.target_angle - self.angle
+        if abs(diff) < 0.01:
+            self.angle = self.target_angle
+        else:
+            self.angle += diff * self.animation_speed
+
+        self.darea.queue_draw()
+        return True
+
+    def on_draw(self, widget, cr):
+        cr.set_line_width(2)
+        cr.set_source_rgb(*hex_to_rgb(colors["text"]))
+
+        cx, cy = self.size / 2, self.size / 2
+        length = self.size / 3
+
+        cr.translate(cx, cy)
+        cr.rotate(self.angle)
+        cr.translate(-cx, -cy)
+
+        cr.move_to(cx - length, cy - length / 2)
+        cr.line_to(cx, cy + length / 2)
+        cr.line_to(cx + length, cy - length / 2)
+        cr.stroke()
 
         return False

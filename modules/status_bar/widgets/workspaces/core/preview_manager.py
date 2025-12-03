@@ -1,7 +1,11 @@
 from typing import TYPE_CHECKING, Optional, Literal
 from fabric.utils.helpers import GLib
 from fabric.hyprland.service import Hyprland
+
 from ..modules.preview import WorkspacesPreview
+
+from utils.events import event_close_popup
+from utils.widget_utils import bar_margin_handler, bar_anchor_handler
 
 
 if TYPE_CHECKING:
@@ -25,7 +29,7 @@ class PreviewManager:
         self._hovering = False
         self._hover_timeout_id = 0
         self.is_popup_show = False
-        self.confh = init_class
+        self.conf = init_class
         self.hypr = Hyprland()
         self.popup: Optional[WorkspacesPreview] = None
 
@@ -38,19 +42,7 @@ class PreviewManager:
                 missing_behavior=missing_behavior,  # type: ignore
             )
             self.popup._hide_window()
-        hide_events = [
-            "activewindow",
-            "moveworkspace",
-            "fullscreen",
-            "changefloatingmode",
-            "openwindow",
-            "closewindow",
-            "movewindow",
-            "activelayout",
-            "workspace",
-        ]
-        for e in hide_events:
-            self.hypr.connect(f"event::{e}", lambda: self.toggle("hide"))
+        event_close_popup(lambda: self.toggle("hide"))
 
     def bind(self, btn) -> None:
         if not self.enabled or self.popup is None:
@@ -129,11 +121,11 @@ class PreviewManager:
 
     def preview_anchor_handler(self) -> str:
         dflt = "top left"
-        position = self.confh.cfg.get_option(
-            f"{self.confh.iclass.widget_name}.position", "top"
+        position = self.conf.conf.confh.get_option(
+            f"{self.conf.conf.widget_name}.position", "top"
         ).lower()
-        layout_config = self.confh.cfg.get_option(
-            f"{self.confh.iclass.widget_name}.widgets.layout", {}
+        layout_config = self.conf.conf.confh.get_option(
+            f"{self.conf.conf.widget_name}.widgets.layout", {}
         )
         section = "start"
         for sec_name, widgets in layout_config.items():
@@ -164,42 +156,26 @@ class PreviewManager:
         return anchors.get(section, {}).get(position, dflt)
 
     def preview_margin_handler(self) -> str:
-        dflt = "top left"
-        position = self.confh.cfg.get_option(
-            f"{self.confh.iclass.widget_name}.position", "top"
-        ).lower()
-        layout_config = self.confh.cfg.get_option(
-            f"{self.confh.iclass.widget_name}.widgets.layout", {}
+        return bar_margin_handler(
+            position=self.conf.conf.confh.get_option(
+                f"{self.conf.conf.widget_name}.position", "top"
+            ).lower(),
+            layout_config=self.conf.conf.confh.get_option(
+                f"{self.conf.conf.widget_name}.widgets.layout", {}
+            ),
+            default_value="top-left",
+            widget_name="workspaces",
+            px=30,
         )
-        section = "start"
-        for sec_name, widgets in layout_config.items():
-            for w in widgets:
-                if isinstance(w, str) and "workspaces" in w:
-                    section = sec_name
-                    break
 
-        px = 30
-        m = f"{px}px"
-
-        margin = {
-            "start": {
-                "top": f"{m} 0 {m} {m}",
-                "bottom": f"{m} 0 {m} {m}",
-                "left": f"{m} {m} 0 {m}",
-                "right": f"{m} {m} 0 {m}",
-            },
-            "center": {
-                "top": f"0 0 {m} 0",
-                "bottom": f"{m} 0 0 0",
-                "left": f"{m} {m} {m} {m}",
-                "right": f"{m} {m} {m} {m}",
-            },
-            "end": {
-                "top": f"0 {m} {m} 0",
-                "bottom": f"{m} {m} 0 0",
-                "left": f"{m} 0 {m} {m}",
-                "right": f"{m} {m} {m} 0",
-            },
-        }
-
-        return margin.get(section, {}).get(position, dflt)
+    def preview_anchor_handler(self) -> str:
+        return bar_anchor_handler(
+            position=self.conf.conf.confh.get_option(
+                f"{self.conf.conf.widget_name}.position", "top"
+            ).lower(),
+            layout_config=self.conf.conf.confh.get_option(
+                f"{self.conf.conf.widget_name}.widgets.layout", {}
+            ),
+            default_value="top-left",
+            widget_name="workspaces",
+        )

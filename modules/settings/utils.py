@@ -10,8 +10,8 @@ class Utils:
         self.cfg = init_class
         self._hide_timeout_id: Optional[int] = None
 
-        self.hide_class = "start-menu-hidden"
-        self.show_class = "start-menu-show"
+        self.hide_class = "popup-hide"
+        self.show_class = "popup-show"
 
     def toggle(self, action: Literal["show", "hide", "auto"] = "auto"):
         from ..status_bar.bar import confh, widget_name

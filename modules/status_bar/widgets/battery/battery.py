@@ -48,7 +48,7 @@ class BatteryWidget(Box):
 
         enabled = cfg.get("enabled", True)
         position = cfg.get("position", "right")
-        event = cfg.get("event", "hover")
+        event_type = cfg.get("event", "hover")
 
         percentage_label = Label(f"{percent}%")
 
@@ -70,21 +70,20 @@ class BatteryWidget(Box):
             )
             self.children = child_box
 
-            if event == "show":
-                percentage_label.set_text(f"{percent}%")
+            if event_type == "hover":
+                percentage_label.hide()
 
-            elif event == "hover":
-                percentage_label.set_text("")
-                child_box.connect(
-                    "enter-notify-event",
-                    lambda *_: percentage_label.set_text(f"{percent}%"),
-                )
-                child_box.connect(
-                    "leave-notify-event", lambda *_: percentage_label.set_text("")
-                )
+                def on_enter(_widget, _event):
+                    percentage_label.show()
+                    percentage_label.set_text(f"{percent}%")
+
+                def on_leave(_widget, _event):
+                    percentage_label.hide()
+
+                child_box.connect("enter-notify-event", on_enter)
+                child_box.connect("leave-notify-event", on_leave)
 
             else:
                 percentage_label.set_text(f"{percent}%")
-
         else:
             self.children = [battery_icon]

@@ -10,6 +10,8 @@ from .widgets.workspaces.workspaces import Workspaces
 from .widgets.settings_button import SettingsButton
 from .widgets.custom import CustomWidget
 from .widgets.clock import ClockWidget
+from .widgets.system_tray.systemtray import SystemTrayWidget
+from fabric.system_tray.widgets import SystemTray
 
 
 from functools import partial
@@ -34,6 +36,7 @@ else:
             "battery": BatteryWidget,
             "network-speed": NetworkSpeedWidget,
             "clock": ClockWidget,
+            "system-tray": SystemTrayWidget,
         }
 
         def __init__(self):

@@ -7,7 +7,10 @@ if TYPE_CHECKING:
 
 
 class ClockWidget(Box):
-    def __init__(self, init_class: "StatusBar"):
+    def __init__(
+        self,
+        init_class: "StatusBar",
+    ):
         self.conf = init_class
 
         super().__init__(
@@ -20,7 +23,7 @@ class ClockWidget(Box):
         )
 
         config = (
-            self.conf.confh.get_option(f"{self.conf.widget_name}.widgets.time") or {}
+            self.conf.confh.get_option(f"{self.conf.widget_name}.widgets.clock") or {}
         )
 
         self.conf_format = config.get("format", "")

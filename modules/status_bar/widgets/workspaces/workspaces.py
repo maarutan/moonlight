@@ -6,7 +6,6 @@ from fabric.widgets.label import Label
 from .core.style_manager import StyleManager
 from .core.preview_manager import PreviewManager
 from .core.buttons_factory import ButtonsFactory
-from .config import ConfigResolver
 
 if TYPE_CHECKING:
     from ...bar import StatusBar
@@ -15,6 +14,7 @@ if TYPE_CHECKING:
 class Workspaces(Box):
     def __init__(self, init_class: "StatusBar") -> None:
         orientation: Literal["h", "v"] = "h" if init_class.is_horizontal() else "v"
+
         super().__init__(
             name="sb_workspaces-container",
             orientation=orientation,
@@ -27,30 +27,42 @@ class Workspaces(Box):
         else:
             self.add_style_class("sb_workspaces-container-vertical")
 
-        self.iclass = init_class
-        self.cfg = init_class.confh
+        self.conf = init_class
 
-        spec = ConfigResolver(self.cfg, orientation).resolve()  # type: ignore
-        StyleManager(self.cfg, "status-bar.widgets.workspaces").apply()
+        StyleManager(
+            self.conf.confh, f"{self.conf.widget_name}.widgets.workspaces"
+        ).apply()
+        config = (
+            self.conf.confh.get_option(f"{self.conf.widget_name}.widgets.workspaces")
+            or {}
+        )
+        self.conf_style = config.get("style", {})
+        self.conf_max_visible = config.get("max-visible-workspaces", 10)
+        self.conf_factory = config.get("factory-buttons-enabled", True)
+        self.conf_numbering_enabled = config.get("numbering-enabled", True)
+        self.conf_numbering = config.get("numbering", [])
+        self.conf_magic = config.get("magic-workspace", {})
+        self.conf_preview = config.get("workspace-preview", {})
+        self.conf_if_vertical = config.get("if-vertical", {})
 
         self.preview_manager = PreviewManager(
             init_class=self,
-            enabled=spec.preview.enabled,
-            event=spec.preview.event,
-            click_button=spec.preview.event_click,
-            image_size=spec.preview.size,
-            max_visible=spec.max_visible,
-            missing_behavior=spec.preview.missing_behavior,
+            enabled=self.conf_preview.get("enabled", False),
+            event=self.conf_preview.get("event", "hover"),
+            click_button=self.conf_preview.get("event_click", "right"),
+            image_size=self.conf_preview.get("size", 400),
+            max_visible=self.conf_max_visible,
+            missing_behavior=self.conf_preview.get("missing-behavior", "show"),
         )
 
         bf = ButtonsFactory(
-            orientation=spec.orientation,
-            max_visible=spec.max_visible,
-            numbering_enabled=spec.numbering_enabled,
-            numbering=spec.numbering,
-            enable_factory=spec.enable_factory,
-            magic_enabled=spec.magic.enabled,
-            magic_icon=spec.magic.icon,
+            orientation=orientation,
+            max_visible=self.conf_max_visible,
+            numbering_enabled=self.conf_numbering_enabled,
+            numbering=self.conf_numbering,
+            enable_factory=self.conf_factory,
+            magic_enabled=self.conf_magic.get("enabled", False),
+            magic_icon=self.conf_magic.get("icon", ""),
             bind_preview=self.preview_manager.bind,
         )
 

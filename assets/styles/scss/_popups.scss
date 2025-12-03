@@ -1,0 +1,11 @@
+.popup-hide,
+.popup-show {
+  transition: 0.5s;
+}
+.popup-hide {
+  margin: -400px;
+}
+
+.popup-show {
+  margin: 0px;
+}

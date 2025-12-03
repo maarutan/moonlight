@@ -6,14 +6,23 @@ from utils.constants import Const
 from utils.style_handler import StyleHandler
 from utils.jsonc import Jsonc
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ....config import StatusBarConfig
+
 
 class StyleManager:
-    def __init__(self, cfg, base: str):
-        self.cfg = cfg
+    def __init__(
+        self,
+        sb_conf: "StatusBarConfig",
+        base: str,
+    ):
+        self.confh = sb_conf
         self.base = base
 
     def resolve(self) -> Tuple[Path, str]:
-        style_opt = self.cfg.get_option(f"{self.base}.style", {"theme": "gnome"})
+        style_opt = self.confh.get_option(f"{self.base}.style", {"theme": "gnome"})
         current_dir = Path(Const.STATUS_BAR_CONFIG).parent
         base_dir = Const.CONFIG_STYLES_STATUSBAR_WORKSPACE / "workspaces"
         if isinstance(style_opt, dict):

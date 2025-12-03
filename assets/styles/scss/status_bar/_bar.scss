@@ -4,6 +4,7 @@
 @use "custom";
 @use "networkspeed";
 @use "time";
+@use "system-tray";
 
 #status-bar {
   background: theme.$bg-primary;
