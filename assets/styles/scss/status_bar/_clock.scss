@@ -1,10 +1,10 @@
 @use "../theme.scss";
 
 #sb_time {
-  padding: 0px 5px;
-  border-radius: 0px;
+  padding: 3px 5px;
+  border-radius: 5px;
   box-shadow: none;
-  background: transparent;
+  background: theme.$base;
   color: theme.$text;
   border: 0px;
   text-shadow: none;

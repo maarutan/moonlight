@@ -4,9 +4,10 @@
 @use "workspaces_previoew";
 @use "custom";
 @use "networkspeed";
-@use "time";
+@use "clock";
 @use "system-tray";
 @use "language";
+@use "battery";
 
 #status-bar {
   background: theme.$bg-primary;

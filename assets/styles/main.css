@@ -108,6 +108,13 @@
   padding: 10px 6px;
 }
 
+#sb_network-speed {
+  background: #1e1e2e;
+  margin: 4px;
+  padding: 7px;
+  border-radius: 5px;
+}
+
 .sb_network-speed-horizontal {
   padding: 0 10px;
 }
@@ -117,10 +124,10 @@
 }
 
 #sb_time {
-  padding: 0px 5px;
-  border-radius: 0px;
+  padding: 3px 5px;
+  border-radius: 5px;
   box-shadow: none;
-  background: transparent;
+  background: #1e1e2e;
   color: #cdd6f4;
   border: 0px;
   text-shadow: none;
@@ -141,14 +148,12 @@
 }
 
 #sb_system-tray-button {
-  background: none;
+  background: #1e1e2e;
   color: #cdd6f4;
   box-shadow: none;
   border: none;
   margin: 4px;
-  padding: 4px;
-  border-radius: 8px;
-  border-radius: 0;
+  border-radius: 5px;
 }
 #sb_system-tray-button:hover {
   background: #313244;
@@ -194,9 +199,23 @@
   color: #cdd6f4;
   text-shadow: none;
   box-shadow: none;
+  margin: 4px;
 }
 #sb_language-button:hover {
   background: #313244;
+}
+
+#sb_battery {
+  background: #1e1e2e;
+  border-radius: 8px;
+}
+
+.sb_battery-horizontal {
+  padding: 0 10px;
+}
+
+.sb_battery-vertical {
+  padding: 10px 0;
 }
 
 #status-bar {

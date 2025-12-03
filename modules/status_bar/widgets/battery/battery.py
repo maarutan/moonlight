@@ -23,6 +23,11 @@ class BatteryWidget(Box):
             orientation="h" if self.conf.is_horizontal() else "v",
         )
 
+        if self.conf.is_horizontal():
+            self.add_style_class("sb_battery-horizontal")
+        else:
+            self.add_style_class("sb_battery-vertical")
+
         self.battery_helper = BatteryHelper()
         self.battery_cfg = f"{self.conf.widget_name}.widgets.battery"
         self.battery_cfg_dict = self.conf.confh.get_option(self.battery_cfg, {})

@@ -13,14 +13,12 @@
   }
 }
 #sb_system-tray-button {
-  background: none;
+  background: theme.$base;
   color: theme.$text;
   box-shadow: none;
   border: none;
   margin: 4px;
-  padding: 4px;
-  border-radius: 8px;
-  border-radius: 0;
+  border-radius: 5px;
   &:hover {
     background: theme.$surface0;
   }
