@@ -14,7 +14,7 @@ class ClockWidget(Box):
         self.conf = init_class
 
         super().__init__(
-            name="sb_time",
+            name="sb_clock",
             v_expand=True,
             h_expand=True,
             v_align="center",
@@ -36,7 +36,7 @@ class ClockWidget(Box):
 
         self.add(
             DateTime(
-                name="sb_time",
+                name="sb_clock",
                 formatters=final_format,
             )
         )
