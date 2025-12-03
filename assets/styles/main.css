@@ -112,6 +112,7 @@
   background: #1e1e2e;
   margin: 4px;
   padding: 7px;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
   border-radius: 5px;
 }
 
@@ -123,13 +124,14 @@
   padding: 10px 0;
 }
 
-#sb_time {
+#sb_clock {
   padding: 3px 5px;
   border-radius: 5px;
   box-shadow: none;
   background: #1e1e2e;
   color: #cdd6f4;
   border: 0px;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
   text-shadow: none;
 }
 
@@ -141,6 +143,7 @@
   background: #1e1e2e;
   color: #cdd6f4;
   box-shadow: none;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
   border: none;
 }
 .sb_system-tray-items:hover {
@@ -151,6 +154,7 @@
   background: #1e1e2e;
   color: #cdd6f4;
   box-shadow: none;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
   border: none;
   margin: 4px;
   border-radius: 5px;
@@ -164,6 +168,7 @@
   color: #cdd6f4;
   border-radius: 8px;
   border: 1px solid #45475a;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
   padding: 10px;
   margin: 10px;
 }
@@ -200,6 +205,7 @@
   text-shadow: none;
   box-shadow: none;
   margin: 4px;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
 }
 #sb_language-button:hover {
   background: #313244;
@@ -208,6 +214,7 @@
 #sb_battery {
   background: #1e1e2e;
   border-radius: 8px;
+  box-shadow: 0px 0px 7px 0px rgba(0, 0, 0, 0.45);
 }
 
 .sb_battery-horizontal {

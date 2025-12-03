@@ -7,6 +7,7 @@
   background: theme.$base;
   color: theme.$text;
   box-shadow: none;
+  box-shadow: 0px 0px 7px 0px theme.$shadow-color;
   border: none;
   &:hover {
     background: theme.$surface0;
@@ -16,6 +17,7 @@
   background: theme.$base;
   color: theme.$text;
   box-shadow: none;
+  box-shadow: 0px 0px 7px 0px theme.$shadow-color;
   border: none;
   margin: 4px;
   border-radius: 5px;
@@ -28,6 +30,7 @@
   color: theme.$text;
   border-radius: 8px;
   border: 1px solid theme.$border-color;
+  box-shadow: 0px 0px 7px 0px theme.$shadow-color;
   padding: 10px;
   margin: 10px;
 }
