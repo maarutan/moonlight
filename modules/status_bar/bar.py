@@ -11,7 +11,7 @@ from .widgets.settings_button import SettingsButton
 from .widgets.custom import CustomWidget
 from .widgets.clock import ClockWidget
 from .widgets.system_tray.systemtray import SystemTrayWidget
-from fabric.system_tray.widgets import SystemTray
+from .widgets.language import LanguageWidget
 
 
 from functools import partial
@@ -37,6 +37,7 @@ else:
             "network-speed": NetworkSpeedWidget,
             "clock": ClockWidget,
             "system-tray": SystemTrayWidget,
+            "language": LanguageWidget,
         }
 
         def __init__(self):

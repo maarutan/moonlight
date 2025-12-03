@@ -77,6 +77,11 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 "icon-size": 32,
                 "if-vertical": {},
             },
+            "language": {
+                "number-letters": 2,
+                "register": "lower",
+                "if-vertical": {},
+            },
             "custom": {},
         },
     }
@@ -224,6 +229,50 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                                 "type:properties": {},
                             },
                         },
+                    },
+                    "system-tray": {
+                        "type:type": dict,
+                        "type:properties": {
+                            "collapse": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "enabled": {"type:type": bool},
+                                    "columns": {"type:type": int},
+                                    "button-size": {"type:type": int},
+                                },
+                            },
+                            "icon-size": {"type:type": int},
+                            "if-vertical": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "collapse": {
+                                        "type:type": dict,
+                                        "type:properties": {
+                                            "enabled": {"type:type": bool},
+                                            "columns": {"type:type": int},
+                                            "button-size": {"type:type": int},
+                                        },
+                                    },
+                                    "icon-size": {"type:type": int},
+                                },
+                            },
+                        },
+                        "type:required": ["collapse", "icon-size"],
+                    },
+                    "language": {
+                        "type:type": dict,
+                        "type:properties": {
+                            "number-letters": {"type:type": int},
+                            "register": {"type:enum": ["lower", "upper"]},
+                            "if-vertical": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "number-letters": {"type:type": int},
+                                    "register": {"type:enum": ["lower", "upper"]},
+                                },
+                            },
+                        },
+                        "type:required": ["number-letters", "register"],
                     },
                     "custom": {"type:type": dict},
                 },

@@ -1,10 +1,12 @@
 @use "../theme.scss";
+
 @use "workspaces";
 @use "workspaces_previoew";
 @use "custom";
 @use "networkspeed";
 @use "time";
 @use "system-tray";
+@use "language";
 
 #status-bar {
   background: theme.$bg-primary;

@@ -1,0 +1,13 @@
+@use "../theme.scss";
+
+#sb_language-button {
+  background: theme.$base;
+  border: none;
+  color: theme.$text;
+  text-shadow: none;
+  box-shadow: none;
+
+  &:hover {
+    background: theme.$surface0;
+  }
+}

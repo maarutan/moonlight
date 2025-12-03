@@ -188,6 +188,17 @@
   color: #f38ba8;
 }
 
+#sb_language-button {
+  background: #1e1e2e;
+  border: none;
+  color: #cdd6f4;
+  text-shadow: none;
+  box-shadow: none;
+}
+#sb_language-button:hover {
+  background: #313244;
+}
+
 #status-bar {
   background: #1e1e2e;
   color: #cdd6f4;
