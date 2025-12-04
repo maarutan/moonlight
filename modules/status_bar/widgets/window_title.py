@@ -14,8 +14,6 @@ from utils.widget_utils import merge
 if TYPE_CHECKING:
     from ..bar import StatusBar
 
-DEFAULT_WINDOW = "Desktop"
-
 
 class WindowTitleWidget(Box):
     def __init__(self, init_class: "StatusBar"):
@@ -43,6 +41,7 @@ class WindowTitleWidget(Box):
         )
         self.conf_title_length: int = int(config.get("title-length", 20) or 20)
 
+        self.conf_unknown_title: str = str(config.get("unknown-title", "Unknown"))
         self.conf_icon = config.get("icon", {}) or {}
         self.conf_icon_enabled: bool = bool(self.conf_icon.get("enabled", True))
         self.conf_icon_size: int = int(self.conf_icon.get("size", 32) or 32)
@@ -73,7 +72,7 @@ class WindowTitleWidget(Box):
         self.hypr.connect("event::activewindow", callback=on_active_window)
 
         dummy_event = SimpleNamespace(data=["", ""])
-        idle_add(lambda: on_active_window(None, dummy_event))
+        idle_add(lambda: on_active_window(None, dummy_event))  # type:ignore
 
         self.show_all()
 
@@ -83,8 +82,8 @@ class WindowTitleWidget(Box):
         window_title: str,
         size: int,
     ) -> Box:
-        window_class = (window_class or "").strip() or DEFAULT_WINDOW
-        window_title = (window_title or "").strip() or DEFAULT_WINDOW
+        window_class = (window_class or "").strip() or self.conf_unknown_title
+        window_title = (window_title or "").strip() or self.conf_unknown_title
 
         is_horizontal = self.conf.is_horizontal()
         if not is_horizontal:
@@ -103,8 +102,8 @@ class WindowTitleWidget(Box):
 
         icon_widget: Optional[Box] = None
         if self.conf_icon_enabled:
-            if window_class == DEFAULT_WINDOW:
-                icon_widget = Image(
+            if window_class == self.conf_unknown_title:
+                icon_widget = Image(  # type: ignore
                     image_file=Const.PLACEHOLDER_IMAGE_GHOST.as_posix(),
                     size=size,
                 )

@@ -86,6 +86,7 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 "type": "class",
                 "vertical-length": 3,
                 "title-length": 20,
+                "unknown-title": "(づ｡◕‿‿◕｡)づ",
                 "icon": {
                     "enabled": True,
                     "size": 32,
@@ -189,7 +190,7 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                                 "type:properties": {
                                     "enabled": {"type:type": bool},
                                     "position": {"type:enum": ["left", "right"]},
-                                    "event": {"type:enum": ["hover", "click"]},
+                                    "event": {"type:enum": ["hover", "show"]},
                                 },
                             },
                             "if-vertical": {
@@ -197,7 +198,7 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                                 "type:properties": {
                                     "enabled": {"type:type": bool},
                                     "position": {"type:enum": ["left", "right"]},
-                                    "event": {"type:enum": ["hover", "click"]},
+                                    "event": {"type:enum": ["hover", "show"]},
                                 },
                             },
                         },
@@ -291,6 +292,7 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                             "type": {"type:enum": ["class", "title"]},
                             "vertical-length": {"type:type": int},
                             "title-length": {"type:type": int},
+                            "unknown-title": {"type:type": str},
                             "icon": {
                                 "type:type": dict,
                                 "type:properties": {
@@ -305,6 +307,7 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                                     "type": {"type:enum": ["class", "title"]},
                                     "vertical-length": {"type:type": int},
                                     "title-length": {"type:type": int},
+                                    "unknown-title": {"type:type": str},
                                     "icon": {
                                         "type:type": dict,
                                         "type:properties": {
