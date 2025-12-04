@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from fabric import Application
 
+
+from .activate_linux.activate_linux import ActivateLinux
 from .language_preview.preview import LanguagePreview
 from .settings.start_menu import StartMenu
 from utils.constants import Const
@@ -23,6 +25,7 @@ class Handler:
             ScreenCorners,
             StatusBar,
             LanguagePreview,
+            ActivateLinux,
             # ----------- always last -----------
         ]
 

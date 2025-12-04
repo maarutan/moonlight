@@ -57,8 +57,8 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
             },
             "network-speed": {
                 "status": {
-                    "download": {"show": "true", "icon": "󰇚"},
-                    "upload": {"show": "false", "icon": "󰕒"},
+                    "download": {"show": True, "icon": "󰇚"},
+                    "upload": {"show": False, "icon": "󰕒"},
                 },
                 "if-vertical": {},
             },
