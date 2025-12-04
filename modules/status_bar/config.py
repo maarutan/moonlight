@@ -341,7 +341,7 @@ class StatusBarConfig(ConfigHandler):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            config_path=Const.STATUS_BAR_CONFIG,
+            config_path=Const.CONFIG_FILE,
             default_config_path=Const.DEFAULT_CONFIG_DIRECTORY / f"{name}.jsonc",
             default_config=DEFAULT_STATUSBAR_CONFIG(name),
             json_schema=SCHEME_STATUS_BAR_CONFIG(name),

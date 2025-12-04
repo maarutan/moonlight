@@ -64,6 +64,8 @@ class Const:
     BATTERY_CHARGING_SOUND = BATTERY_ICONS_DIR / "charging.mp3"
     BATTERY_DISCHARGING_SOUND = BATTERY_ICONS_DIR / "discharging.mp3"
 
+    CONFIG_FILE = HYPRLAND_APP_CONFIG_DIRECTORY / "config.jsonc"
+
     # -
     # --
     # ---

@@ -43,7 +43,7 @@ class MyCornerConfig(ConfigHandler):
         self.confbar = confh
         super().__init__(
             name=name,
-            config_path=Const.MY_CORNER_CONFIG,
+            config_path=Const.CONFIG_FILE,
             default_config_path=Const.DEFAULT_CONFIG_DIRECTORY / f"{name}.jsonc",
             default_config=DEFAULT_MY_CORNER_CONFIG(name),
             json_schema=MY_CORNER_SCHEMA(name),

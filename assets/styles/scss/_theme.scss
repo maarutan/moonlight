@@ -1,51 +1,50 @@
-// 🌙 Catppuccin Mocha — Pure Static SCSS
-// https://github.com/catppuccin/catppuccin
+// 🎨 Gruvbox Theme — Pure Static SCSS
+// https://github.com/morhetz/gruvbox
 
 // Base palette
-$base: #1e1e2e;
-$mantle: #181825;
-$crust: #11111b;
+$base: #282828;
+$mantle: #1d2021;
+$crust: #141617;
 
-$text: #cdd6f4;
-$subtext1: #bac2de;
-$subtext0: #a6adc8;
+$text: #ebdbb2;
+$subtext1: #d5c4a1;
+$subtext0: #bdae93;
 
-$overlay2: #9399b2;
-$overlay1: #7f849c;
-$overlay0: #6c7086;
+$overlay2: #a89984;
+$overlay1: #928374;
+$overlay0: #7c6f64;
 
-$surface2: #585b70;
-$surface1: #45475a;
-$surface0: #313244;
+$surface2: #665c54;
+$surface1: #504945;
+$surface0: #3c3836;
 
-$red: #f38ba8;
-$orange: #fab387;
-$yellow: #f9e2af;
-$green: #a6e3a1;
-$aqua: #94e2d5;
-$blue: #89b4fa;
-$purple: #cba6f7;
-$pink: #f5c2e7;
-$gray: #7f849c;
+$red: #fb4934;
+$orange: #fe8019;
+$yellow: #fabd2f;
+$green: #b8bb26;
+$aqua: #8ec07c;
+$blue: #83a598;
+$purple: #d3869b;
+$gray: #928374;
 
 // ─────────────────────────────
 // 🎨 Logical UI Tokens (Flat values only)
 // ─────────────────────────────
 
 // Background layers
-$bg-primary: #1e1e2e;
-$bg-secondary: #181825;
-$bg-tertiary: #11111b;
+$bg-primary: #282828;
+$bg-secondary: #1d2021;
+$bg-tertiary: #141617;
 
 // Text colors
-$text-primary: #cdd6f4;
-$text-secondary: #bac2de;
-$text-disabled: #6c7086;
+$text-primary: #ebdbb2;
+$text-secondary: #d5c4a1;
+$text-disabled: #928374;
 
 // Borders and outlines
-$border-color: #45475a;
-$border-strong: #585b70;
-$border-accent: #89b4fa;
+$border-color: #504945;
+$border-strong: #665c54;
+$border-accent: #fabd2f;
 
 // Shadows (flat rgba)
 $shadow-color: rgba(0, 0, 0, 0.45);
@@ -54,53 +53,53 @@ $shadow-md: rgba(0, 0, 0, 0.35);
 $shadow-lg: rgba(0, 0, 0, 0.45);
 
 // Accents and focus
-$accent: #89b4fa;
-$accent-hover: #a3c0fb; // lighten 5%
-$accent-active: #b4e0ff;
-$accent-disabled: #3c4763; // ручная смесь accent+base≈40%
+$accent: #fe8019;
+$accent-hover: #ff9a42; // осветлён вручную (lighten 5%)
+$accent-active: #fabd2f;
+$accent-disabled: #704d1a; // ручная смесь accent+base≈40%
 
 // Selections and highlights
-// $blue = #89b4fa → rgb(137,180,250)
-$selection-bg: rgba(137, 180, 250, 0.25);
-$selection-border: #89b4fa;
-$selection-text: #cdd6f4;
+// $blue = #83a598 → rgb(131,165,152)
+$selection-bg: rgba(131, 165, 152, 0.25);
+$selection-border: #83a598;
+$selection-text: #ebdbb2;
 
 // Hover / Active states
-// $overlay1 = #7f849c → rgb(127,132,156)
-// $overlay2 = #9399b2 → rgb(147,153,178)
-$hover-bg: rgba(127, 132, 156, 0.15);
-$active-bg: rgba(147, 153, 178, 0.25);
+// $overlay1 = #928374 → rgb(146,131,116)
+// $overlay2 = #a89984 → rgb(168,153,132)
+$hover-bg: rgba(146, 131, 116, 0.15);
+$active-bg: rgba(168, 153, 132, 0.25);
 
 // Inputs
-$input-bg: #313244;
-$input-border: #45475a;
-$input-text: #cdd6f4;
-$input-placeholder: #6c7086;
+$input-bg: #3c3836;
+$input-border: #504945;
+$input-text: #ebdbb2;
+$input-placeholder: #928374;
 
 // Buttons
-$btn-bg: #45475a;
-$btn-hover: #585b70;
-$btn-active: #89b4fa;
-$btn-text: #cdd6f4;
-$btn-disabled: #6c7086;
+$btn-bg: #504945;
+$btn-hover: #665c54;
+$btn-active: #fabd2f;
+$btn-text: #ebdbb2;
+$btn-disabled: #928374;
 
 // Alerts
-$alert-error: #f38ba8;
-$alert-warning: #fab387;
-$alert-success: #a6e3a1;
-$alert-info: #89b4fa;
+$alert-error: #fb4934;
+$alert-warning: #fe8019;
+$alert-success: #b8bb26;
+$alert-info: #83a598;
 
 // Selection dropdowns
-$select-bg: #313244;
-$select-hover: #45475a;
-$select-border: #89b4fa;
+$select-bg: #3c3836;
+$select-hover: #504945;
+$select-border: #fabd2f;
 
 // Tooltips / Popups
-$popup-bg: #45475a;
-$popup-border: #585b70;
+$popup-bg: #504945;
+$popup-border: #665c54;
 $popup-shadow: rgba(0, 0, 0, 0.35);
 
 // Cards / Containers
-$card-bg: #313244;
-$card-border: #45475a;
+$card-bg: #3c3836;
+$card-border: #504945;
 $card-shadow: rgba(0, 0, 0, 0.25);

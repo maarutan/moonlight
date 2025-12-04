@@ -48,7 +48,7 @@ class ScreenMenuConfig(ConfigHandler):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            config_path=Const.SCREEN_MENU_CONFIG,
+            config_path=Const.CONFIG_FILE,
             default_config_path=Const.DEFAULT_CONFIG_DIRECTORY / f"{name}.jsonc",
             default_config=DEFAULT_SCREEN_MENU_CONFIG(name),
             json_schema=SCHEME_SCREEN_MENU_CONFIG(name),

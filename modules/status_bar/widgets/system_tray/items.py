@@ -26,7 +26,7 @@ class SystemTrayItems(SystemTray):
             name="sb_system-tray-items",
             h_align="start",
             v_align="start",
-            orientation="v",
+            orientation="h" if self.conf.is_horizontal() else "v",
             **kwargs,
         )
 
