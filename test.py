@@ -1,72 +1,93 @@
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GLib, GObject, cairo
-import math
+from gi.repository import Gtk
+from typing import Optional
+
+from fabric.utils.helpers import get_desktop_applications, DesktopApp
+from typing import List
 
 
-class ArrowButton(Gtk.EventBox):
-    def __init__(self, size=24):
-        super().__init__()
-        self.set_size_request(size, size)
-        self.size = size
-        self.angle = 0
-        self.target_angle = 0
-        self.animation_speed = 0.1
+def find_app_by_partial_name(
+    query: str, include_hidden: bool = False
+) -> List[DesktopApp]:
+    q = query.casefold()
+    found = []
+    for app in get_desktop_applications(include_hidden):
+        if (app.name and q in app.name.casefold()) or (
+            app.display_name and q in app.display_name.casefold()
+        ):
+            found.append(app)
+    return found
 
-        self.darea = Gtk.DrawingArea()
-        self.add(self.darea)
-        self.darea.connect("draw", self.on_draw)
 
-        self.connect("button-press-event", self.on_click)
+class AppIconWidget(Gtk.Box):
+    """
+    Виджет для отображения иконки и имени приложения по его имени или части имени.
+    """
 
-        GLib.timeout_add(16, self.animate)  # ~60 FPS
+    def __init__(
+        self, app_name: str, include_hidden: bool = False, icon_size: int = 48
+    ):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
 
-    def on_click(self, widget, event):
-        if self.target_angle == 0:
-            self.target_angle = math.pi  # вниз
+        self.app_name = app_name
+        self.include_hidden = include_hidden
+        self.icon_size = icon_size
+
+        # Найти приложение (берем первое совпадение)
+        self.app: Optional[DesktopApp] = self._find_app()
+
+        # Иконка
+        if self.app:
+            pixbuf = self.app.get_icon_pixbuf(self.icon_size)
+            if pixbuf:
+                img = Gtk.Image.new_from_pixbuf(pixbuf)
+            else:
+                img = Gtk.Image.new()  # пустая иконка
+            self.pack_start(img, False, False, 0)
+
+            # Текст с именем
+            label_text = (
+                f"{self.app.display_name or self.app.name}\n({self.app.window_class})"
+            )
+            label = Gtk.Label(label=label_text, xalign=0)
+            self.pack_start(label, True, True, 0)
         else:
-            self.target_angle = 0  # вверх
-        return True
+            label = Gtk.Label(
+                label=f"Приложение '{self.app_name}' не найдено", xalign=0
+            )
+            self.pack_start(label, True, True, 0)
 
-    def animate(self):
-        diff = self.target_angle - self.angle
-        if abs(diff) < 0.01:
-            self.angle = self.target_angle
-        else:
-            self.angle += diff * self.animation_speed
+        self.show_all()
 
-        self.darea.queue_draw()
-        return True
-
-    def on_draw(self, widget, cr):
-        cr.set_line_width(2)
-        cr.set_source_rgb(0, 0, 0)
-
-        cx, cy = self.size / 2, self.size / 2
-        length = self.size / 3
-
-        cr.translate(cx, cy)
-        cr.rotate(self.angle)
-        cr.translate(-cx, -cy)
-
-        cr.move_to(cx - length, cy - length / 2)
-        cr.line_to(cx, cy + length / 2)
-        cr.line_to(cx + length, cy - length / 2)
-        cr.stroke()
-
-        return False
+    def _find_app(self) -> Optional[DesktopApp]:
+        """Ищем приложение по частичному совпадению имени."""
+        matches = find_app_by_partial_name(self.app_name, self.include_hidden)
+        return matches[0] if matches else None
 
 
-# тест окна
-win = Gtk.Window(title="ArrowButton Demo")
-win.connect("destroy", Gtk.main_quit)
+class AppWindow(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="AppIconWidget Example")
+        self.set_default_size(400, 100)
 
-box = Gtk.Box(spacing=10)
-win.add(box)
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.add(box)
 
-arrow_btn = ArrowButton(48)
-box.pack_start(arrow_btn, False, False, 0)
+        # Виджеты для разных приложений
+        firefox_widget = AppIconWidget("firefox")
+        terminal_widget = AppIconWidget("terminal")
+        telegram = AppIconWidget("telegram")
+        kitty = AppIconWidget("kitty")
 
-win.show_all()
-Gtk.main()
+        box.pack_start(telegram, False, False, 0)
+        box.pack_start(firefox_widget, False, False, 0)
+        box.pack_start(kitty, False, False, 0)
+
+
+if __name__ == "__main__":
+    win = AppWindow()
+    win.connect("destroy", Gtk.main_quit)
+    win.show_all()
+    Gtk.main()

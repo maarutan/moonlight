@@ -14,7 +14,7 @@ class ClockWidget(Box):
         self.conf = init_class
 
         super().__init__(
-            name="sb_clock",
+            # name="sb_clock",
             v_expand=True,
             h_expand=True,
             v_align="center",
@@ -34,9 +34,12 @@ class ClockWidget(Box):
         else:
             final_format = self.conf_if_vertical.get("format", self.conf_format)
 
-        self.add(
-            DateTime(
-                name="sb_clock",
-                formatters=final_format,
-            )
+        datetime = DateTime(
+            name="sb_clock",
+            formatters=final_format,
         )
+
+        if not self.conf.is_horizontal():
+            datetime.add_style_class("sb_clock-vertical")
+
+        self.add(datetime)

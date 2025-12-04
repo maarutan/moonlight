@@ -12,6 +12,7 @@ from .widgets.custom import CustomWidget
 from .widgets.clock import ClockWidget
 from .widgets.system_tray.systemtray import SystemTrayWidget
 from .widgets.language import LanguageWidget
+from .widgets.window_title import WindowTitleWidget
 
 
 from functools import partial
@@ -38,6 +39,7 @@ else:
             "clock": ClockWidget,
             "system-tray": SystemTrayWidget,
             "language": LanguageWidget,
+            "window-title": WindowTitleWidget,
         }
 
         def __init__(self):

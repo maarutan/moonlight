@@ -1,0 +1,12 @@
+@use "../theme.scss";
+
+#sb_window-title-box,
+#sb_window-title-box-vertical {
+  background: theme.$base;
+  box-shadow: 0px 0px 7px 0px theme.$shadow-color;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+#sb_window-title-box-vertical {
+  padding: 10px 7px;
+}

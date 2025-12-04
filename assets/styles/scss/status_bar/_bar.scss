@@ -8,6 +8,7 @@
 @use "system-tray";
 @use "language";
 @use "battery";
+@use "window_title";
 
 #status-bar {
   background: theme.$bg-primary;

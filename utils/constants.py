@@ -61,6 +61,8 @@ class Const:
     THEME_SCSS = CURRENT_STYLE_DIRECTORY / "_theme.scss"
     BATTERY_ICONS_DIR = ASSETS_DIRECTORY / "battery"
     BATTERY_ICON_SVG = BATTERY_ICONS_DIR / "battery.svg"
+    BATTERY_CHARGING_SOUND = BATTERY_ICONS_DIR / "charging.mp3"
+    BATTERY_DISCHARGING_SOUND = BATTERY_ICONS_DIR / "discharging.mp3"
 
     # -
     # --

@@ -82,6 +82,17 @@ DEFAULT_STATUSBAR_CONFIG = lambda name: {
                 "register": "lower",
                 "if-vertical": {},
             },
+            "window-title": {
+                "type": "class",
+                "vertical-length": 3,
+                "title-length": 20,
+                "icon": {
+                    "enabled": True,
+                    "size": 32,
+                    "position": "left",
+                },
+                "if-vertical": {},
+            },
             "custom": {},
         },
     }
@@ -273,6 +284,46 @@ SCHEME_STATUS_BAR_CONFIG = lambda name: {
                             },
                         },
                         "type:required": ["number-letters", "register"],
+                    },
+                    "window-title": {
+                        "type:type": dict,
+                        "type:properties": {
+                            "type": {"type:enum": ["class", "title"]},
+                            "vertical-length": {"type:type": int},
+                            "title-length": {"type:type": int},
+                            "icon": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "enabled": {"type:type": bool},
+                                    "size": {"type:type": int},
+                                    "position": {"type:enum": ["left", "right"]},
+                                },
+                            },
+                            "if-vertical": {
+                                "type:type": dict,
+                                "type:properties": {
+                                    "type": {"type:enum": ["class", "title"]},
+                                    "vertical-length": {"type:type": int},
+                                    "title-length": {"type:type": int},
+                                    "icon": {
+                                        "type:type": dict,
+                                        "type:properties": {
+                                            "enabled": {"type:type": bool},
+                                            "size": {"type:type": int},
+                                            "position": {
+                                                "type:enum": ["left", "right"]
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        "type:required": [
+                            "type",
+                            "vertical-length",
+                            "title-length",
+                            "icon",
+                        ],
                     },
                     "custom": {"type:type": dict},
                 },

@@ -31,6 +31,9 @@ class SystemTrayButton(Button):
             name="sb_system-tray-button",
             on_clicked=self.on_click,
         )
+        if not self.conf.is_horizontal():
+            self.add_style_class("sb_system-tray-button-vertical")
+
         setup_cursor_hover(self)
         self.add(self.arrow)
 
