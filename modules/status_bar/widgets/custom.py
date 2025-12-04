@@ -11,16 +11,20 @@ if TYPE_CHECKING:
 
 
 class CustomWidget(Box):
-    def __init__(self, init_class: "StatusBar", widget_name: str):
+    def __init__(self, init_class: "StatusBar", widget_name: str, *args, **kwargs):
         self.cfg = init_class
         self.widget_name = self.cfg.widget_name
         self.confh = self.cfg.confh
         self.custom_name = widget_name
 
+        spacing = kwargs.pop("spacing", 6)
+
         super().__init__(
             orientation="h" if self.cfg.is_horizontal() else "v",
-            spacing=6,
+            spacing=spacing,
             name=f"custom-{widget_name}",
+            *args,
+            **kwargs,
         )
 
         base_cfg = self.confh.get_option(
@@ -52,14 +56,14 @@ class CustomWidget(Box):
         orientation = "h" if self.cfg.is_horizontal() else "v"
 
         if orientation == "h":
-            value_label.add_style_class(f"status-bar-custom-label-horizontal")
+            value_label.add_style_class("status-bar-custom-label-horizontal")
         else:
-            value_label.add_style_class(f"status-bar-custom-label-vertical")
+            value_label.add_style_class("status-bar-custom-label-vertical")
 
         if w_type == "button":
             inner = Box(
                 orientation=orientation,
-                spacing=6,
+                spacing=spacing,
                 name=f"custom-{widget_name}-inner",
             )
             inner.pack_start(value_label, False, False, 0)
@@ -80,15 +84,15 @@ class CustomWidget(Box):
                 )
 
             if orientation == "h":
-                container.add_style_class(f".status-bar-custom-button-horizontal")
+                container.add_style_class("status-bar-custom-button-horizontal")
             else:
-                container.add_style_class(f".status-bar-custom-button-vertical")
+                container.add_style_class("status-bar-custom-button-vertical")
 
             setup_cursor_hover(container)
         else:
             container = Box(
                 orientation=orientation,
-                spacing=6,
+                spacing=spacing,
                 name=f"custom-{widget_name}-box",
             )
             container.pack_start(value_label, False, False, 0)

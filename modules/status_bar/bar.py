@@ -25,12 +25,10 @@ confh = StatusBarConfig(widget_name)
 enabled = confh.get_option(f"{widget_name}.enabled", True)
 
 if not enabled:
-    StatusBar = None  # pyright: ignore[reportAssignmentType]
+    StatusBar = None  # type: ignore
 else:
 
     class StatusBar(Window, BaseWidget):
-        """Dynamic status bar built from JSONC config."""
-
         widgets_registry: dict[str, type] = {
             "settings": SettingsButton,
             "workspaces": Workspaces,
@@ -140,7 +138,10 @@ else:
                 for name in widgets:
                     widget_cls = self.widgets_registry.get(name)
                     if widget_cls:
-                        layout[section].append(widget_cls(self))
+                        if isinstance(widget_cls, type):
+                            layout[section].append(widget_cls(self))
+                        else:
+                            layout[section].append(widget_cls())
                     else:
                         logger.warning(
                             f"[{widget_name}] Unknown widget '{name}' in layout '{section}'"
@@ -162,7 +163,6 @@ else:
         def is_horizontal(self) -> bool:
             return getattr(self, "_is_horizontal", True)
 
-        # === API ===
         @classmethod
         def register_widget(cls, name: str, widget_class: type):
             cls.widgets_registry[name] = widget_class
