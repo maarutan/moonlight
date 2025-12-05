@@ -1,0 +1,11 @@
+{
+  "day-info-desktop": {
+    "enabled": true,
+    "layer": "bottom",
+    "anchor": "top-left",
+    "margin": "280px 40px 40px 50px",
+    "weekday-enabled": true,
+    "day-format": "%d %B %Y",
+    "time-format": "%H:%M %p"
+  }
+}

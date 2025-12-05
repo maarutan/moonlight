@@ -1,0 +1,12 @@
+{
+  "cavalade": {
+    "cava_desktop": {
+      "type:type": "<class 'dict'>",
+      "type:properties": {
+        "enabled": {
+          "type:type": "<class 'bool'>"
+        }
+      }
+    }
+  }
+}

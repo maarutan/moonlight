@@ -1,0 +1,8 @@
+@use "theme";
+
+#day-info-day,
+#day-info-time {
+  font-size: 1.5rem;
+  color: theme.$text;
+  text-shadow: 0 3px 0px theme.$shadow-color;
+}

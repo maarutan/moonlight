@@ -66,6 +66,10 @@ class Const:
 
     CONFIG_FILE = HYPRLAND_APP_CONFIG_DIRECTORY / "config.jsonc"
 
+    LOCAL_DIR = HOME_DIRECTORY / ".local" / "share" / APPLICATION_NAME
+    CAVA_LOCAL_DIR = LOCAL_DIR / "cavalade"
+    CAVA_DEFAULT_CONFIG = DEFAULT_CONFIG_DIRECTORY / "cavalade" / "cava.ini"
+
     # -
     # --
     # ---

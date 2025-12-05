@@ -762,4 +762,11 @@ combobox window.popup menu menuitem:hover {
   transition: 0.2s;
 }
 
+#day-info-day,
+#day-info-time {
+  font-size: 1.5rem;
+  color: #ebdbb2;
+  text-shadow: 0 3px 0px rgba(0, 0, 0, 0.45);
+}
+
 /*# sourceMappingURL=main.css.map */

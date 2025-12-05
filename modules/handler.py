@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from fabric import Application
 
+from .day_info_desktop.day_info import DayInfoDesktop
 
 from .activate_linux.activate_linux import ActivateLinux
 from .language_preview.preview import LanguagePreview
@@ -11,22 +12,27 @@ from utils.decorators import singletonclass
 from loguru import logger
 from gi.repository import Gtk, Gdk  # pyright: ignore[reportMissingModuleSource]
 from dartsass._main import _dart_sass_path, compile
+from .cava_desktop.cava_desktop import CavaDesktop
 
 from .status_bar.bar import StatusBar
 from .screen_menu.menu import ScreenMenu
 from .my_corner.corners import ScreenCorners
+from fabric.widgets.stack import Stack
+from fabric.widgets.wayland import WaylandWindow as Window
 
 
 @singletonclass
 class Handler:
     def __init__(self) -> None:
         modules = [
-            ScreenMenu,
             ScreenCorners,
             StatusBar,
             LanguagePreview,
             ActivateLinux,
+            DayInfoDesktop,
+            CavaDesktop,
             # ----------- always last -----------
+            ScreenMenu,
         ]
 
         Const.APP_PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
