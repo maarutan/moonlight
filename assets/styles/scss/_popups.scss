@@ -5,7 +5,12 @@
 .popup-hide {
   margin: -400px;
 }
-
 .popup-show {
   margin: 0px;
+}
+.popup-hide.hor-left {
+  margin-left: 400px;
+}
+.popup-show.hor-right {
+  margin-right: 400px;
 }

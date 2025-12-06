@@ -10,7 +10,7 @@ widget_name = "my-corner"
 confh = MyCornerConfig(widget_name)
 enabled = confh.get_option(f"{widget_name}.enabled", True)
 
-if not confh.get_option(f"{widget_name}.my_corner.enabled", True):
+if not confh.get_option(f"{widget_name}.corners.enabled", True):
     MyCorner = None  # pyright: ignore[reportAssignmentType]
 else:
 
@@ -18,20 +18,21 @@ else:
         def __init__(
             self,
             corner: Literal["top-left", "top-right", "bottom-left", "bottom-right"],
-            name: str = "corner-container",
+            corner_name: str = "corner",
+            corner_container_name: str = "corner-container",
         ):
             super().__init__(
                 # style="margin-bottom: 15px;",
                 orientation="v",
-                name=name,
+                name=corner_container_name,
                 children=Corner(
-                    name="corner",
+                    name=corner_name,
                     orientation=corner,
                     h_expand=False,
                     v_expand=False,
                     h_align="center",
                     v_align="center",
-                    size=confh.get_option(f"{widget_name}.my_corner.size", 40),
+                    size=confh.get_option(f"{widget_name}.corners.size", 40),
                 ),
             )
 

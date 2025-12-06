@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from fabric import Application
 
+from .applications.app_launcher.launcher import AppLauncher
+
 from .day_info_desktop.day_info import DayInfoDesktop
 
 from .activate_linux.activate_linux import ActivateLinux
@@ -33,6 +35,7 @@ class Handler:
             CavaDesktop,
             # ----------- always last -----------
             ScreenMenu,
+            AppLauncher,
         ]
 
         Const.APP_PID_FILE.write_text(str(os.getpid()), encoding="utf-8")
