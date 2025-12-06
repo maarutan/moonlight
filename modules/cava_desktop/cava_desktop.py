@@ -9,6 +9,8 @@ confh = CavaDesktopConfig(widget_name)
 
 cavalade = SpectrumRender(
     name=widget_name,
+    height=200,
+    width=1000,
 )
 
 enabled = confh.get_option(f"{widget_name}.enabled", True)

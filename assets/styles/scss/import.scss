@@ -12,4 +12,6 @@
 @use "module_selector";
 @use "popups";
 @use "activate_linux";
-@use "_day_info_desktop";
+@use "day_info_desktop";
+@use "drop_shadow";
+@use "application/app.scss";

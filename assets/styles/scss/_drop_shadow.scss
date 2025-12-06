@@ -1,0 +1,8 @@
+@use "theme";
+
+#drop-shadow {
+  background: none;
+}
+#drop-shadow-box {
+  background: theme.$base;
+}

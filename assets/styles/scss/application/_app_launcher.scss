@@ -1,0 +1,86 @@
+@use "../theme.scss";
+
+#app_launcher {
+  background: none;
+  min-width: 1600px;
+  min-height: 1600px;
+  color: theme.$text;
+}
+
+#al_box {
+  background: none;
+  margin: 500px;
+  margin-top: 800px;
+  margin-left: 0;
+}
+
+#al_box {
+  transition: 0.2s;
+}
+
+#al_box.popup-hide {
+  margin-right: -1000px;
+  box-shadow: none;
+}
+
+#al_box.popup-show {
+  margin-right: 500px;
+}
+#al_entry {
+  background: theme.$bg-tertiary;
+  caret-color: transparent;
+  color: theme.$text;
+  border-radius: 0 10px 10px 0;
+  min-width: 1000px;
+  border: 0.5px solid theme.$blue;
+  border-left: none;
+  box-shadow: 0px 0px 5px 0 theme.$blue;
+  font-size: 1.5rem;
+  padding: 10px;
+  font-weight: bolder;
+}
+#al_scrolled {
+  background: none;
+  color: theme.$text;
+  font-weight: bolder;
+  &.al_scrolled-bg-show {
+    background: theme.$bg-tertiary;
+  }
+}
+
+#al_scrolled trough,
+#al_scrolled slider,
+#al_scrolled trough slider {
+  background: transparent;
+  color: transparent;
+  border: none;
+  min-width: 0px;
+  min-height: 0px;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  outline: transparent;
+}
+
+#al_app-slot {
+  background: theme.$bg-tertiary;
+  border: none;
+  box-shadow: none;
+  color: theme.$text;
+  text-shadow: none;
+  &:focus {
+    background: theme.$surface0;
+    margin: 10px;
+    margin-top: 4px;
+
+    box-shadow: 0px 0px 7px 0px theme.$shadow-color;
+  }
+}
+#al_app-window-corner {
+  background: theme.$bg-tertiary;
+  border-radius: 0px;
+}
+#al_app-window-corner-con {
+  min-width: 0px;
+  min-height: 0px;
+}
