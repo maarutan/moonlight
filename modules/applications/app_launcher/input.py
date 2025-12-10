@@ -1,4 +1,5 @@
 # input.py
+from fabric.utils import Gdk
 from fabric.widgets.box import Box
 from shared.animated_entry import Entry
 from fabric.utils.helpers import idle_add
@@ -23,12 +24,11 @@ class ALInput(Box):
 
         self.entry.set_caret_boldness(2)
         self.entry.set_caret_color_hex(colors["text"])
+
+        self.entry.set_property("activates-default", False)
+        self.entry.set_property("has-frame", True)
+        self.entry.connect("focus-in-event", lambda w, e: True)
+
         idle_add(lambda: self.entry.grab_focus())
 
         self.add(self.entry)
-
-    def set_fixed_width(self, width: int):
-        try:
-            self.set_min_content_width(width)
-        except Exception:
-            pass

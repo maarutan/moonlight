@@ -6,7 +6,10 @@ from typing import Callable
 hypr = Hyprland()
 
 
-def event_close_popup(callback: Callable):
+def event_close_popup(
+    callback: Callable,
+    ignore_event: str = "",
+):
     events = [
         "activewindow",
         "moveworkspace",
@@ -16,6 +19,8 @@ def event_close_popup(callback: Callable):
         "closeWindow",
     ]
     for e in events:
+        if e == ignore_event:
+            continue
         hypr.connect(f"event::{e}", callback)
 
 

@@ -777,12 +777,29 @@ combobox window.popup menu menuitem:hover {
   text-shadow: 0 3px 0px rgba(0, 0, 0, 0.45);
 }
 
-#drop-shadow {
-  background: none;
+#day-info-weekday {
+  font-size: 6rem;
+  color: #cdd6f4;
+  text-shadow: 0 5px 0px rgba(0, 0, 0, 0.45);
+  font-family: "anurati";
+  letter-spacing: 2rem;
 }
 
-#drop-shadow-box {
-  background: #1e1e2e;
+#drop-shadow {
+  transition: 0.5s;
+  background: none;
+}
+#drop-shadow #drop-shadow-box {
+  transition: 0.5s;
+  background: #181825;
+}
+#drop-shadow .drop-shadow-show {
+  transition: 0.5s;
+  opacity: 0.8;
+}
+#drop-shadow .drop-shadow-hide {
+  transition: 0.5s;
+  opacity: 0;
 }
 
 #app_launcher {
@@ -856,7 +873,7 @@ combobox window.popup menu menuitem:hover {
   color: #cdd6f4;
   text-shadow: none;
 }
-#al_app-slot:focus {
+#al_app-slot.selected, #al_app-slot:focus, #al_app-slot:hover {
   background: #313244;
   margin: 10px;
   margin-top: 4px;

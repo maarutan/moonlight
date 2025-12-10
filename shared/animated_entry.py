@@ -128,31 +128,55 @@ class Entry(Gtk.Entry, Widget):
         layout = self.get_layout()
         if layout is None:
             return False
+
+        # cursor-position — это позиция в символах (Python str)
         try:
-            idx = int(self.get_property("cursor-position"))
+            char_idx = int(self.get_property("cursor-position"))
         except Exception:
-            idx = 0
+            char_idx = 0
+
+        text = self.get_text() or ""
+        # защитные границы
+        if char_idx < 0:
+            char_idx = 0
+        if char_idx > len(text):
+            char_idx = len(text)
+
+        # Pango ожидает UTF-8 byte offsets / layout indices — превратим char index в byte index
         try:
-            layout_index = self.text_index_to_layout_index(idx)
+            byte_index = len(text[:char_idx].encode("utf-8"))
         except Exception:
-            layout_index = idx
+            byte_index = char_idx  # fallback (на всякий случай)
+
+        # получаем позицию курсора в Pango-координатах (Pango units)
         try:
-            strong, weak = layout.get_cursor_pos(layout_index)
+            strong, weak = layout.get_cursor_pos(byte_index)
             pango_x = (
-                strong.x if strong is not None else (weak.x if weak is not None else 0)
+                (
+                    strong.x
+                    if strong is not None
+                    else (weak.x if weak is not None else 0)
+                )
+                if (strong is not None or weak is not None)
+                else 0
             )
         except Exception:
             try:
-                rect = layout.index_to_pos(layout_index)
+                rect = layout.index_to_pos(byte_index)
                 pango_x = rect.x
             except Exception:
                 pango_x = 0
+
         px_x = pango_x / Pango.SCALE
+
+        # сдвиг layout внутри Entry
         try:
             off_x, off_y = self.get_layout_offsets()
         except Exception:
             off_x, off_y = (0, 0)
+
         target = off_x + px_x
+
         if self._anim_x is None:
             self._anim_x = float(target)
         self._target_x = float(target)

@@ -1,6 +1,11 @@
-from typing import Any, Literal, Optional
-from gi.repository import Gdk  # type:ignore
-from fabric.utils import bulk_connect
+from typing import (
+    Any,
+    Literal,
+    Optional,
+    Callable,
+    Tuple,
+)
+from fabric.utils import Gtk, bulk_connect, Gdk
 
 
 def setup_cursor_hover(
@@ -126,3 +131,123 @@ def bar_anchor_handler(
         position,
         default_value,
     )
+
+
+from typing import Callable, List, Tuple
+from gi.repository import Gdk, Gtk
+
+
+def _parse_single_keybind(s: str) -> Tuple[int, int]:
+    parts = s.strip().replace("+", " ").split()
+    mods = 0
+    key_name = None
+
+    for p in parts:
+        ps = p.lower()
+        if ps in ("ctrl", "control"):
+            mods |= Gdk.ModifierType.CONTROL_MASK
+        elif ps in ("shift",):
+            mods |= Gdk.ModifierType.SHIFT_MASK
+        elif ps in ("alt", "mod1"):
+            mods |= Gdk.ModifierType.MOD1_MASK
+        elif ps in ("meta",):
+            mods |= Gdk.ModifierType.META_MASK
+        else:
+            key_name = ps
+
+    if key_name is None:
+        key_name = "tab"
+
+    keyval = Gdk.keyval_from_name(key_name)
+    if keyval == 0 and key_name in ("tab",):
+        keyval = Gdk.KEY_Tab
+
+    return mods, keyval
+
+
+def setup_keybinds(
+    widget: Gtk.Widget, keybinds: str, callback: Callable, debug: bool = False
+):
+    """
+    Универсальная функция. Если debug=True — печатает keyval/state при каждом key-press.
+    widget должен быть Gtk.Entry (если нужно перехватывать Tab) или любой Gtk.Widget.
+    keybinds: "Tab", "shift tab", "ctrl j, ctrl k" и т.п.
+    callback: функция(event) или функция().
+    """
+    MASK_OF_INTEREST = (
+        Gdk.ModifierType.CONTROL_MASK
+        | Gdk.ModifierType.SHIFT_MASK
+        | Gdk.ModifierType.MOD1_MASK
+        | Gdk.ModifierType.META_MASK
+    )
+
+    binds = [b.strip() for b in keybinds.split(",") if b.strip()]
+    parsed: List[Tuple[int, int]] = []
+    for b in binds:
+        mods, keyval = _parse_single_keybind(b)
+        if keyval != 0:
+            parsed.append((mods, keyval))
+
+    # более специфичные (с большим числом модификаторов) идут первыми
+    parsed.sort(key=lambda t: bin(int(t[0])).count("1"), reverse=True)
+
+    # безопасно получить имя ISO_Left_Tab, если оно есть
+    try:
+        ISO_LEFT = Gdk.KEY_ISO_Left_Tab
+    except Exception:
+        ISO_LEFT = None
+
+    def _handler(widget_obj, event):
+        # отладка: показываем raw keyval и name + state (включая полные биты)
+        if debug:
+            try:
+                name = Gdk.keyval_name(event.keyval)
+            except Exception:
+                name = str(event.keyval)
+            print(
+                f"[KB DBG] keyval={event.keyval} name={name} raw_state={int(event.state)}"
+            )
+
+        # отфильтруем по маске интересующих битов (CapsLock/NumLock игнорируем)
+        state = int(event.state) & int(MASK_OF_INTEREST)
+
+        for mods, expected_keyval in parsed:
+            # проверка keyval — для Tab учитываем два варианта
+            if expected_keyval == Gdk.KEY_Tab:
+                if ISO_LEFT is not None:
+                    key_ok = event.keyval in (Gdk.KEY_Tab, ISO_LEFT)
+                else:
+                    key_ok = event.keyval == Gdk.KEY_Tab
+            else:
+                key_ok = event.keyval == expected_keyval
+
+            if not key_ok:
+                continue
+
+            # проверяем, что все нужные модификаторы присутствуют
+            if (state & mods) != mods:
+                # если ожидали никакие модификаторы (mods==0) — это условие верно ((state & 0) == 0)
+                continue
+
+            # всё совпало — вызываем callback
+            try:
+                callback(event)
+            except TypeError:
+                try:
+                    callback()
+                except Exception:
+                    pass
+            except Exception:
+                try:
+                    callback()
+                except Exception:
+                    pass
+
+            # возвращаем True — останавливаем дальнейшую обработку (важно для Entry)
+            return True
+
+        return False
+
+    # подключаем точно к переданному виджету — если это Entry, это гарантирует перехват Tab
+    handler_id = widget.connect("key-press-event", _handler)
+    return handler_id

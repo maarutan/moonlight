@@ -14,27 +14,29 @@ class ALTools:
         self.is_hidden = False
         self.hide_timeout = 200
 
-    def force_close(self):
-        self.is_hidden = False  # сброс флага
-        self.toggle("hide")
-
     def close(self) -> None:
         self.toggle("hide")
 
         def close_widget():
-            self.conf.shadow.hide()
+            self.conf.shadow.toggle("hide")
             self.conf.hide()
-            self.conf.close()
             return False
 
         GLib.timeout_add(self.hide_timeout, close_widget)
 
     def events(self) -> None:
         self.conf.add_keybinding("Escape", self.close)
-        event_close_popup(self.close)
+        event_close_popup(self.close, ignore_event="activewindow")
         click_widget(self.conf.shadow, self.close)
 
-    def toggle(self, action: Literal["show", "hide", "auto"] = "auto") -> None:
+    def toggle(
+        self,
+        action: Literal[
+            "show",
+            "hide",
+            "auto",
+        ] = "auto",
+    ) -> None:
         if action == "auto":
             action = "show" if self.is_hidden else "hide"
 
@@ -44,14 +46,20 @@ class ALTools:
         if action == "show":
             self.is_hidden = False
             self.conf.main_box.add_style_class("popup-show")
-            self.conf.shadow.show()
+            self.conf.shadow.toggle("show")
+            self.conf.show()
 
         elif action == "hide":
             self.is_hidden = True
             self.conf.main_box.add_style_class("popup-hide")
+            self.conf.input.entry.set_text("")
             GLib.timeout_add(
                 self.hide_timeout,
-                lambda: (self.conf.shadow.hide(), self.conf.hide(), False),
+                lambda: (
+                    self.conf.shadow.toggle("hide"),
+                    self.conf.hide(),
+                    False,
+                ),
             )
 
     def _cancel_animation(self) -> bool:
@@ -68,3 +76,9 @@ class ALTools:
             pass
 
         return False
+
+    def down(self) -> None:
+        self.conf.app_window.apps_box.select_down()
+
+    def up(self) -> None:
+        self.conf.app_window.apps_box.select_up()

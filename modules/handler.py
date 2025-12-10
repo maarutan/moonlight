@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from fabric import Application
 
+
 from .applications.app_launcher.launcher import AppLauncher
 
 from .day_info_desktop.day_info import DayInfoDesktop
@@ -21,6 +22,9 @@ from .screen_menu.menu import ScreenMenu
 from .my_corner.corners import ScreenCorners
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
+from utils.load_fonts import load_fonts_from_dir
+
+load_fonts_from_dir()
 
 
 @singletonclass

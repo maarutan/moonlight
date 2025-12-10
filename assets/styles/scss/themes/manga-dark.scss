@@ -1,0 +1,108 @@
+// ─────────────────────────────
+// 🌑 Manga Dark — Pure Mono SCSS
+// ─────────────────────────────
+
+// Базовые слои (фоны)
+$base: #1a1a1a;
+$mantle: #131313;
+$crust: #0c0c0c;
+
+// Текст
+$text: #f2f2f2;
+$subtext1: #dcdcdc;
+$subtext0: #c4c4c4;
+
+// Overlay (полутоновые промежуточные оттенки)
+$overlay2: #a8a8a8;
+$overlay1: #8f8f8f;
+$overlay0: #747474;
+
+// Surface (ещё темней/светлей)
+$surface2: #5c5c5c;
+$surface1: #464646;
+$surface0: #2f2f2f;
+
+// Акценты (мягкие градации серого — но заметные)
+$red: #d4d4d4;
+$orange: #c8c8c8;
+$yellow: #e0e0e0;
+$green: #cfcfcf;
+$aqua: #d9d9d9;
+$blue: #ececec; // «акцентный» светлый
+$purple: #dedede;
+$pink: #e6e6e6;
+$gray: #8f8f8f;
+
+// ─────────────────────────────
+// 🎨 Logical UI Tokens
+// ─────────────────────────────
+
+// Фоны
+$bg-primary: #1a1a1a;
+$bg-secondary: #131313;
+$bg-tertiary: #0c0c0c;
+
+// Текст
+$text-primary: #f2f2f2;
+$text-secondary: #dcdcdc;
+$text-disabled: #747474;
+
+// Границы
+$border-color: #464646;
+$border-strong: #5c5c5c;
+$border-accent: #ececec;
+
+// Тени
+$shadow-color: rgba(0, 0, 0, 0.45);
+$shadow-soft: rgba(0, 0, 0, 0.25);
+$shadow-md: rgba(0, 0, 0, 0.35);
+$shadow-lg: rgba(0, 0, 0, 0.45);
+
+// Акцент
+$accent: #ececec;
+$accent-hover: #f2f2f2;
+$accent-active: #ffffff;
+$accent-disabled: #2a2a2a;
+
+// Выделение
+$selection-bg: rgba(255, 255, 255, 0.2);
+$selection-border: #ececec;
+$selection-text: #ffffff;
+
+// Hover / Active
+$hover-bg: rgba(255, 255, 255, 0.08);
+$active-bg: rgba(255, 255, 255, 0.15);
+
+// Inputs
+$input-bg: #2f2f2f;
+$input-border: #464646;
+$input-text: #f2f2f2;
+$input-placeholder: #747474;
+
+// Buttons
+$btn-bg: #464646;
+$btn-hover: #5c5c5c;
+$btn-active: #ececec;
+$btn-text: #f2f2f2;
+$btn-disabled: #747474;
+
+// Alerts (в моно-версии просто уровни серого)
+$alert-error: #c4c4c4;
+$alert-warning: #d0d0d0;
+$alert-success: #e0e0e0;
+$alert-info: #f0f0f0;
+
+// Dropdowns
+$select-bg: #2f2f2f;
+$select-hover: #464646;
+$select-border: #ececec;
+
+// Tooltip / Popup
+$popup-bg: #464646;
+$popup-border: #5c5c5c;
+$popup-shadow: rgba(0, 0, 0, 0.35);
+
+// Cards
+$card-bg: #2f2f2f;
+$card-border: #464646;
+$card-shadow: rgba(0, 0, 0, 0.25);

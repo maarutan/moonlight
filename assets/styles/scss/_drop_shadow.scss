@@ -1,8 +1,21 @@
 @use "theme";
 
 #drop-shadow {
+  transition: 0.5s;
   background: none;
-}
-#drop-shadow-box {
-  background: theme.$base;
+
+  #drop-shadow-box {
+    transition: 0.5s;
+    background: theme.$mantle;
+  }
+
+  .drop-shadow-show {
+    transition: 0.5s;
+    opacity: 0.8;
+  }
+
+  .drop-shadow-hide {
+    transition: 0.5s;
+    opacity: 0;
+  }
 }

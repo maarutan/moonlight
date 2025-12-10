@@ -4,7 +4,6 @@ from fabric.widgets.label import Label
 from fabric.widgets.svg import Svg
 from fabric.widgets.box import Box
 from time import strftime
-from .weekdays import DAYS
 
 from .config import DayInfoDesktopConfig
 
@@ -64,12 +63,10 @@ else:
         def _what_day(self) -> str:
             return strftime("%A").lower()
 
-        def weekday_label(self) -> Svg | None:
+        def weekday_label(self) -> Label | None:
+            weekday = Label(name="day-info-weekday", label=self._what_day().upper())
             if self.conf_weekday_enabled:
-                for day, svg in DAYS.items():
-                    if day == self._what_day():
-                        return Svg(name="day-info-svg", svg_string=svg, size=(900, 100))
-            return None
+                return weekday
 
         def day_label(self) -> Label:
             day_label = Label(

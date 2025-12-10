@@ -68,7 +68,9 @@
   box-shadow: none;
   color: theme.$text;
   text-shadow: none;
-  &:focus {
+  &.selected,
+  &:focus,
+  &:hover {
     background: theme.$surface0;
     margin: 10px;
     margin-top: 4px;

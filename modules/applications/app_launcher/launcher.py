@@ -1,13 +1,15 @@
-from fabric.utils import idle_add
+from fabric.utils import Gdk, Gtk
 from fabric.widgets.centerbox import CenterBox
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.widgets.box import Box
-from fabric.widgets.label import Label
+from modules.applications.app_launcher.cli import ALCli
 from modules.my_corner.corners import MyCorner
 from shared.dropshadow import DropShadow
+from utils.widget_utils import setup_keybinds
+
+from .app_window import ALAppWindow
 from .tools import ALTools
 from .input import ALInput
-from .app_window import ALAppWindow
 
 
 class AppLauncher(Window):
@@ -22,6 +24,7 @@ class AppLauncher(Window):
 
         self.tools = ALTools(self)
         self.input = ALInput()
+        self.app_window = ALAppWindow(self)
         self.shadow = DropShadow()
         self.main_box = Box(
             name="al_box",
@@ -34,13 +37,27 @@ class AppLauncher(Window):
                 CenterBox(
                     h_expand=True,
                     start_children=MyCorner("top-left"),
-                    end_children=ALAppWindow(self),
+                    end_children=self.app_window,
                 ),
             ],
         )
+        self.tools.toggle("hide")
 
-        self.show_all()
-        self.tools.events()
+        setup_keybinds(
+            self.input.entry,
+            "shift tab, tab",
+            lambda e=None: print("got it"),
+            debug=True,
+        )
 
-        self.shadow.show()
+        setup_keybinds(self.input.entry, "Tab", lambda e=None: print("Tab"))
+        setup_keybinds(self.input.entry, "shift tab", lambda e=None: print("Shift+Tab"))
+        setup_keybinds(self.input.entry, "tab", self.tools.down)
+        setup_keybinds(self.input.entry, "shift tab", self.tools.up)
+        setup_keybinds(self.input.entry, "ctrl j", self.tools.down)
+        setup_keybinds(self.input.entry, "ctrl k", self.tools.up)
+
         self.add(self.main_box)
+        ALCli(self)
+
+        self.tools.events()

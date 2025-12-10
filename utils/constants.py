@@ -69,6 +69,8 @@ class Const:
     LOCAL_DIR = HOME_DIRECTORY / ".local" / "share" / APPLICATION_NAME
     CAVA_LOCAL_DIR = LOCAL_DIR / "cavalade"
     CAVA_DEFAULT_CONFIG = DEFAULT_CONFIG_DIRECTORY / "cavalade" / "cava.ini"
+    APP_LAUNCHER_PID = TEMP_DIRECTORY / APPLICATION_NAME / "app_launcher.pid"
+    FONT_DIR_ASSETS = ASSETS_DIRECTORY / "fonts"
 
     # -
     # --
@@ -78,6 +80,24 @@ class Const:
     @classmethod
     def init(cls):
         _auto_create_paths(cls)
+
+    @classmethod
+    def add_const(cls, name: str, path: Path):
+        if hasattr(cls, name):
+            raise ValueError(f"Const '{name}' already exists!")
+
+        if not isinstance(path, Path):
+            raise TypeError("path must be a pathlib.Path instance")
+
+        if path.suffix:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.touch(exist_ok=True)
+        else:
+            path.mkdir(parents=True, exist_ok=True)
+
+        setattr(cls, name, path)
+
+        return path
 
 
 def _auto_create_paths(cls: type):
