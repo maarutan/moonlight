@@ -43,17 +43,9 @@ class AppLauncher(Window):
         )
         self.tools.toggle("hide")
 
-        setup_keybinds(
-            self.input.entry,
-            "shift tab, tab",
-            lambda e=None: print("got it"),
-            debug=True,
-        )
-
-        setup_keybinds(self.input.entry, "Tab", lambda e=None: print("Tab"))
-        setup_keybinds(self.input.entry, "shift tab", lambda e=None: print("Shift+Tab"))
-        setup_keybinds(self.input.entry, "tab", self.tools.down)
         setup_keybinds(self.input.entry, "shift tab", self.tools.up)
+        setup_keybinds(self.input.entry, "tab", self.tools.down)
+
         setup_keybinds(self.input.entry, "ctrl j", self.tools.down)
         setup_keybinds(self.input.entry, "ctrl k", self.tools.up)
 

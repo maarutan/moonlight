@@ -69,6 +69,7 @@ class Const:
     LOCAL_DIR = HOME_DIRECTORY / ".local" / "share" / APPLICATION_NAME
     CAVA_LOCAL_DIR = LOCAL_DIR / "cavalade"
     CAVA_DEFAULT_CONFIG = DEFAULT_CONFIG_DIRECTORY / "cavalade" / "cava.ini"
+    CAVA_PIDS = TEMP_DIRECTORY / APPLICATION_NAME / "cava.pid"
     APP_LAUNCHER_PID = TEMP_DIRECTORY / APPLICATION_NAME / "app_launcher.pid"
     FONT_DIR_ASSETS = ASSETS_DIRECTORY / "fonts"
 

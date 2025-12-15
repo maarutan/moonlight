@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 from fabric import Application
+from fabric.utils import idle_add
+
+from modules.notification.notify_widget import NotificationWidget
 
 
 from .applications.app_launcher.launcher import AppLauncher
@@ -40,6 +43,7 @@ class Handler:
             # ----------- always last -----------
             ScreenMenu,
             AppLauncher,
+            NotificationWidget,
         ]
 
         Const.APP_PID_FILE.write_text(str(os.getpid()), encoding="utf-8")

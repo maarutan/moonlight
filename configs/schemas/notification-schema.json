@@ -1,5 +1,5 @@
 {
-  "cava_desktop": {
+  "notification": {
     "type:type": "<class 'dict'>",
     "type:properties": {
       "enabled": {
@@ -13,6 +13,15 @@
       },
       "margin": {
         "type:type": "<class 'str'>"
+      },
+      "image-size": {
+        "type:type": "<class 'int'>"
+      },
+      "default-timeout": {
+        "type:type": "<class 'int'>"
+      },
+      "max-width": {
+        "type:type": "<class 'int'>"
       }
     }
   }

@@ -890,4 +890,79 @@ combobox window.popup menu menuitem:hover {
   min-height: 0px;
 }
 
+#notification-popup {
+  background: transparent;
+  color: #cdd6f4;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+#notification-box {
+  transition: 0.4s;
+  background: #1e1e2e;
+  margin: 5px;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.45);
+  border: 1px solid #45475a;
+  opacity: 1;
+}
+#notification-box.notification-closed {
+  margin: -10px;
+  padding: 0;
+  opacity: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+}
+
+#notification-content {
+  padding: 3px 10px;
+}
+
+#notification-body {
+  padding: 3px 5px;
+}
+
+#notification_close-button {
+  background: #f38ba8;
+  color: #1e1e2e;
+  font-weight: bolder;
+  box-shadow: none;
+  text-shadow: none;
+  border: none;
+  padding: 0 4.5px;
+  margin: 0 20px;
+  border-radius: 50%;
+}
+
+#notification-content-body {
+  padding: 10px 0px;
+}
+
+#notification-progress-bar {
+  border: solid #89b4fa;
+  color: #45475a;
+  border-radius: 30px;
+}
+
+#notification-progress-bar-box {
+  padding: 0 20px;
+}
+
+#notification-action-button {
+  background: #45475a;
+  color: #cdd6f4;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.45);
+  border: none;
+  font-weight: 400;
+  margin: 3px;
+  text-shadow: none;
+  padding: 3px 10px;
+  border-radius: 8px;
+}
+#notification-action-button:hover {
+  background: #313244;
+}
+
 /*# sourceMappingURL=main.css.map */

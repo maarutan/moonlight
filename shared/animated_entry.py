@@ -43,7 +43,7 @@ class Entry(Gtk.Entry, Widget):
         max_length: int = 0,
         name: str | None = None,
         visible: bool = True,
-        all_visible: bool = False,
+        all_visible: bool | None = None,
         style: str | None = None,
         style_classes: Iterable[str] | str | None = None,
         tooltip_text: str | None = None,
@@ -59,12 +59,12 @@ class Entry(Gtk.Entry, Widget):
         size: Iterable[int] | int | None = None,
         **kwargs,
     ):
-        Gtk.Entry.__init__(self)
+        Gtk.Entry.__init__(self)  # сначала GTK
         Widget.__init__(
             self,
             name,
             visible,
-            all_visible,
+            all_visible,  # type: ignore
             style,
             style_classes,
             tooltip_text,
@@ -76,13 +76,31 @@ class Entry(Gtk.Entry, Widget):
             size,
             **kwargs,
         )
+
         if text is not None:
-            self.set_text(text)
+            try:
+                self.set_text(text)
+            except Exception:
+                pass
         if placeholder is not None:
-            self.set_placeholder_text(placeholder)
-        self.set_max_length(max_length)
-        self.set_editable(editable)
-        self.set_visibility(not password)
+            try:
+                self.set_placeholder_text(placeholder)
+            except Exception:
+                pass
+
+        try:
+            self.set_max_length(max_length)
+        except Exception:
+            pass
+        try:
+            self.set_editable(editable)
+        except Exception:
+            pass
+        try:
+            self.set_visibility(not password)
+        except Exception:
+            pass
+
         self._blink_period = 0.9
         self._move_tau = 0.06
         self._blink_tau = 0.06
@@ -94,9 +112,16 @@ class Entry(Gtk.Entry, Widget):
         self._timer_id = None
         self._caret_boldness = 0.0
         self._caret_rgba = _hex_to_rgba("#FFFFFF")
+
         self.connect_after("draw", self._on_draw_after)
-        self.connect("notify::cursor-position", lambda *a: self._update_target_x())
-        self.connect("changed", lambda *a: self._update_target_x())
+        try:
+            self.connect("notify::cursor-position", lambda *a: self._update_target_x())
+        except Exception:
+            pass
+        try:
+            self.connect("changed", lambda *a: self._update_target_x())
+        except Exception:
+            pass
         self.connect("size-allocate", lambda *a: self._update_target_x())
         self.connect("realize", lambda *a: self._start_timer())
         self.connect("unrealize", lambda *a: self._stop_timer())
@@ -128,37 +153,23 @@ class Entry(Gtk.Entry, Widget):
         layout = self.get_layout()
         if layout is None:
             return False
-
-        # cursor-position — это позиция в символах (Python str)
         try:
             char_idx = int(self.get_property("cursor-position"))
         except Exception:
             char_idx = 0
-
         text = self.get_text() or ""
-        # защитные границы
         if char_idx < 0:
             char_idx = 0
         if char_idx > len(text):
             char_idx = len(text)
-
-        # Pango ожидает UTF-8 byte offsets / layout indices — превратим char index в byte index
         try:
             byte_index = len(text[:char_idx].encode("utf-8"))
         except Exception:
-            byte_index = char_idx  # fallback (на всякий случай)
-
-        # получаем позицию курсора в Pango-координатах (Pango units)
+            byte_index = char_idx
         try:
             strong, weak = layout.get_cursor_pos(byte_index)
             pango_x = (
-                (
-                    strong.x
-                    if strong is not None
-                    else (weak.x if weak is not None else 0)
-                )
-                if (strong is not None or weak is not None)
-                else 0
+                strong.x if strong is not None else (weak.x if weak is not None else 0)
             )
         except Exception:
             try:
@@ -166,17 +177,12 @@ class Entry(Gtk.Entry, Widget):
                 pango_x = rect.x
             except Exception:
                 pango_x = 0
-
         px_x = pango_x / Pango.SCALE
-
-        # сдвиг layout внутри Entry
         try:
             off_x, off_y = self.get_layout_offsets()
         except Exception:
             off_x, off_y = (0, 0)
-
         target = off_x + px_x
-
         if self._anim_x is None:
             self._anim_x = float(target)
         self._target_x = float(target)

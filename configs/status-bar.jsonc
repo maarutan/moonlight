@@ -49,6 +49,59 @@
         },
         "if-vertical": {}
       },
+      "battery": {
+        "procentage": {
+          "enabled": true,
+          "position": "left",
+          "event": "hover"
+        },
+        "if-vertical": {}
+      },
+      "network-speed": {
+        "status": {
+          "download": {
+            "show": true,
+            "icon": "󰇚"
+          },
+          "upload": {
+            "show": false,
+            "icon": "󰕒"
+          }
+        },
+        "if-vertical": {}
+      },
+      "clock": {
+        "format": "%I:%M %p",
+        "if-vertical": {
+          "format": "%I\n%M\n%p"
+        }
+      },
+      "system-tray": {
+        "collapse": {
+          "enabled": false,
+          "columns": 4,
+          "button-size": 24
+        },
+        "icon-size": 32,
+        "if-vertical": {}
+      },
+      "language": {
+        "number-letters": 2,
+        "register": "lower",
+        "if-vertical": {}
+      },
+      "window-title": {
+        "type": "class",
+        "vertical-length": 3,
+        "title-length": 20,
+        "unknown-title": "(づ｡◕‿‿◕｡)づ",
+        "icon": {
+          "enabled": true,
+          "size": 32,
+          "position": "left"
+        },
+        "if-vertical": {}
+      },
       "custom": {}
     }
   }

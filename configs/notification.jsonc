@@ -1,0 +1,11 @@
+{
+  "notification": {
+    "enabled": true,
+    "anchor": "top-right",
+    "layer": "overlay",
+    "margin": "8px 8px 8px 8px",
+    "image-size": 64,
+    "default-timeout": 5000,
+    "max-width": 360
+  }
+}

@@ -13,6 +13,35 @@
           "right"
         ]
       },
+      "layer": {
+        "type:enum": [
+          "top",
+          "bottom"
+        ]
+      },
+      "margin": {
+        "type:type": "<class 'str'>"
+      },
+      "transparent": {
+        "type:type": "<class 'bool'>"
+      },
+      "if-vertical": {
+        "type:type": "<class 'dict'>",
+        "type:properties": {
+          "layer": {
+            "type:enum": [
+              "top",
+              "bottom"
+            ]
+          },
+          "margin": {
+            "type:type": "<class 'str'>"
+          },
+          "transparent": {
+            "type:type": "<class 'bool'>"
+          }
+        }
+      },
       "widgets": {
         "type:type": "<class 'dict'>",
         "type:properties": {
@@ -182,6 +211,262 @@
                 }
               }
             }
+          },
+          "battery": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "procentage": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "enabled": {
+                    "type:type": "<class 'bool'>"
+                  },
+                  "position": {
+                    "type:enum": [
+                      "left",
+                      "right"
+                    ]
+                  },
+                  "event": {
+                    "type:enum": [
+                      "hover",
+                      "show"
+                    ]
+                  }
+                }
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "enabled": {
+                    "type:type": "<class 'bool'>"
+                  },
+                  "position": {
+                    "type:enum": [
+                      "left",
+                      "right"
+                    ]
+                  },
+                  "event": {
+                    "type:enum": [
+                      "hover",
+                      "show"
+                    ]
+                  }
+                }
+              }
+            },
+            "type:required": [
+              "procentage"
+            ]
+          },
+          "network-speed": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "status": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "download": {
+                    "type:type": "<class 'dict'>",
+                    "type:properties": {
+                      "show": {
+                        "type:type": "<class 'bool'>"
+                      },
+                      "icon": {
+                        "type:type": "<class 'str'>"
+                      }
+                    }
+                  },
+                  "upload": {
+                    "type:type": "<class 'dict'>",
+                    "type:properties": {
+                      "show": {
+                        "type:type": "<class 'bool'>"
+                      },
+                      "icon": {
+                        "type:type": "<class 'str'>"
+                      }
+                    }
+                  }
+                }
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {}
+              }
+            }
+          },
+          "clock": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "format": {
+                "type:type": "<class 'str'>"
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {}
+              }
+            }
+          },
+          "system-tray": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "collapse": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "enabled": {
+                    "type:type": "<class 'bool'>"
+                  },
+                  "columns": {
+                    "type:type": "<class 'int'>"
+                  },
+                  "button-size": {
+                    "type:type": "<class 'int'>"
+                  }
+                }
+              },
+              "icon-size": {
+                "type:type": "<class 'int'>"
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "collapse": {
+                    "type:type": "<class 'dict'>",
+                    "type:properties": {
+                      "enabled": {
+                        "type:type": "<class 'bool'>"
+                      },
+                      "columns": {
+                        "type:type": "<class 'int'>"
+                      },
+                      "button-size": {
+                        "type:type": "<class 'int'>"
+                      }
+                    }
+                  },
+                  "icon-size": {
+                    "type:type": "<class 'int'>"
+                  }
+                }
+              }
+            },
+            "type:required": [
+              "collapse",
+              "icon-size"
+            ]
+          },
+          "language": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "number-letters": {
+                "type:type": "<class 'int'>"
+              },
+              "register": {
+                "type:enum": [
+                  "lower",
+                  "upper"
+                ]
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "number-letters": {
+                    "type:type": "<class 'int'>"
+                  },
+                  "register": {
+                    "type:enum": [
+                      "lower",
+                      "upper"
+                    ]
+                  }
+                }
+              }
+            },
+            "type:required": [
+              "number-letters",
+              "register"
+            ]
+          },
+          "window-title": {
+            "type:type": "<class 'dict'>",
+            "type:properties": {
+              "type": {
+                "type:enum": [
+                  "class",
+                  "title"
+                ]
+              },
+              "vertical-length": {
+                "type:type": "<class 'int'>"
+              },
+              "title-length": {
+                "type:type": "<class 'int'>"
+              },
+              "unknown-title": {
+                "type:type": "<class 'str'>"
+              },
+              "icon": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "enabled": {
+                    "type:type": "<class 'bool'>"
+                  },
+                  "size": {
+                    "type:type": "<class 'int'>"
+                  },
+                  "position": {
+                    "type:enum": [
+                      "left",
+                      "right"
+                    ]
+                  }
+                }
+              },
+              "if-vertical": {
+                "type:type": "<class 'dict'>",
+                "type:properties": {
+                  "type": {
+                    "type:enum": [
+                      "class",
+                      "title"
+                    ]
+                  },
+                  "vertical-length": {
+                    "type:type": "<class 'int'>"
+                  },
+                  "title-length": {
+                    "type:type": "<class 'int'>"
+                  },
+                  "unknown-title": {
+                    "type:type": "<class 'str'>"
+                  },
+                  "icon": {
+                    "type:type": "<class 'dict'>",
+                    "type:properties": {
+                      "enabled": {
+                        "type:type": "<class 'bool'>"
+                      },
+                      "size": {
+                        "type:type": "<class 'int'>"
+                      },
+                      "position": {
+                        "type:enum": [
+                          "left",
+                          "right"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "type:required": [
+              "type",
+              "vertical-length",
+              "title-length",
+              "icon"
+            ]
           },
           "custom": {
             "type:type": "<class 'dict'>"

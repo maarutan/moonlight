@@ -4,6 +4,7 @@ import struct
 import subprocess
 import tempfile
 import configparser
+import fcntl
 
 from gi.repository import GLib  # pyright: ignore
 from loguru import logger
@@ -52,6 +53,10 @@ class Cava:
 
         self.byte_type, self.byte_size, self.byte_norm = ("H", 2, 65535)
 
+        # Ensure pid file exists (and parent dir)
+        Path(Const.CAVA_PIDS).parent.mkdir(parents=True, exist_ok=True)
+        Path(Const.CAVA_PIDS).touch(exist_ok=True)
+
         if not os.path.exists(self.path):
             os.mkfifo(self.path)
 
@@ -60,6 +65,7 @@ class Cava:
         self.channel = None
         self.io_watch_id = None
         self.process = None
+        self.child_watch_id = None  # GLib child watch source id
         self.last_sample = None
         GLib.timeout_add(33, self._emit_sample)
 
@@ -81,6 +87,75 @@ class Cava:
 
         return tmp_cfg
 
+    # ---------- PID file helpers ----------
+
+    def _append_pid_file(self, pid: int) -> None:
+        """Append pid as a new line (atomic-ish with flock)."""
+        try:
+            p = Path(Const.CAVA_PIDS)
+            p.parent.mkdir(parents=True, exist_ok=True)
+            # Open for append (create if not exists)
+            with p.open("a+", encoding="utf-8") as f:
+                # use advisory lock to avoid races
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                except Exception:
+                    pass
+                f.write(f"{int(pid)}\n")
+                f.flush()
+                try:
+                    fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                except Exception:
+                    pass
+            logger.debug(f"Appended cava pid {pid} to {p}")
+        except Exception:
+            logger.exception("Failed to append cava pid to file")
+
+    def _remove_pid_from_file(self, pid: int) -> None:
+        """Remove all lines equal to pid (keeps other pids)."""
+        try:
+            p = Path(Const.CAVA_PIDS)
+            if not p.exists():
+                return
+            # read with lock
+            try:
+                with p.open("r+", encoding="utf-8") as f:
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+                    except Exception:
+                        pass
+                    lines = [ln.strip() for ln in f.readlines() if ln.strip()]
+                    new_lines = [ln for ln in lines if int(ln) != int(pid)]
+                    f.seek(0)
+                    f.truncate(0)
+                    if new_lines:
+                        f.write("\n".join(new_lines) + "\n")
+                    # unlock automatically on close
+                    try:
+                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                    except Exception:
+                        pass
+            except FileNotFoundError:
+                return
+            logger.debug(f"Removed cava pid {pid} from {p}")
+        except Exception:
+            logger.exception("Failed to remove cava pid from file")
+
+    # child-watch callback: removes pid when cava terminates/crashes
+    def _on_child_exit(self, pid, status):
+        logger.debug(f"cava child {pid} exited (status {status})")
+        try:
+            self._remove_pid_from_file(pid)
+        except Exception:
+            logger.exception("Error while removing pid on child exit")
+        # clear process reference if it matches
+        if self.process and self.process.pid == pid:
+            self.process = None
+        self.state = self.NONE
+        # return False to remove the source automatically
+        return False
+
+    # ---------- process control ----------
     def _run_process(self):
         try:
             self.process = subprocess.Popen(
@@ -92,6 +167,20 @@ class Cava:
             )
             logger.debug("cava successfully launched!")
             self.state = self.RUNNING
+
+            # write pid to file
+            if self.process and self.process.pid:
+                self._append_pid_file(self.process.pid)
+
+                # register a GLib child watch so we know when it exits and can clean up
+                try:
+                    # GLib.child_watch_add returns a source id; store it so we can remove if needed
+                    self.child_watch_id = GLib.child_watch_add(
+                        self.process.pid, self._on_child_exit, None
+                    )
+                except Exception:
+                    # On some platforms the signature may differ; still we catch exceptions
+                    logger.exception("Failed to register GLib.child_watch_add")
         except Exception:
             logger.exception("Fail to launch cava")
 
@@ -141,23 +230,70 @@ class Cava:
             logger.debug("Restarting cava process...")
             self.state = self.RESTARTING
             if self.process and self.process.poll() is None:
-                self.process.kill()
+                try:
+                    pid = self.process.pid
+                    self.process.kill()
+                except Exception:
+                    logger.exception("Failed to kill cava on restart")
+                finally:
+                    # remove pid entry immediately
+                    try:
+                        if pid:
+                            self._remove_pid_from_file(pid)
+                    except Exception:
+                        logger.exception("Failed removing pid after restart")
         elif self.state == self.NONE:
             logger.warning("Restarting cava process after crash...")
             self.start()
 
     def close(self):
         self.state = self.CLOSING
+        # kill process if running
         if self.process and self.process.poll() is None:
-            self.process.kill()
+            try:
+                pid = self.process.pid
+                self.process.kill()
+            except Exception:
+                logger.exception("Failed to kill cava on close")
+            finally:
+                try:
+                    if pid:
+                        self._remove_pid_from_file(pid)
+                except Exception:
+                    logger.exception("Failed removing pid on close")
+
+        # remove child watch if present
+        if getattr(self, "child_watch_id", None):
+            try:
+                GLib.source_remove(self.child_watch_id)  # type: ignore
+            except Exception:
+                logger.exception("Failed to remove child watch")
+            self.child_watch_id = None
+
         if self.io_watch_id:
-            GLib.source_remove(self.io_watch_id)
+            try:
+                GLib.source_remove(self.io_watch_id)
+            except Exception:
+                logger.exception("Failed to remove io watch")
+            self.io_watch_id = None
+
         if self.channel:
-            self.channel.shutdown(True)
+            try:
+                self.channel.shutdown(True)
+            except Exception:
+                logger.exception("Failed to shutdown channel")
             self.channel = None
+
         if self.fifo_fd:
-            os.close(self.fifo_fd)
+            try:
+                os.close(self.fifo_fd)
+            except Exception:
+                logger.exception("Failed to close fifo_fd")
             self.fifo_fd = None
+
         if self.fifo_dummy_fd:
-            os.close(self.fifo_dummy_fd)
+            try:
+                os.close(self.fifo_dummy_fd)
+            except Exception:
+                logger.exception("Failed to close fifo_dummy_fd")
             self.fifo_dummy_fd = None
