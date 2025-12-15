@@ -8,6 +8,7 @@ from fabric.hyprland.service import Hyprland, HyprlandEvent
 from fabric.utils.helpers import idle_add
 
 from shared.app_icon import AppIcon
+from shared.app_name_relover import AppNameResolver
 from utils.constants import Const
 from utils.widget_utils import merge
 
@@ -72,7 +73,7 @@ class WindowTitleWidget(Box):
         self.hypr.connect("event::activewindow", callback=on_active_window)
 
         dummy_event = SimpleNamespace(data=["", ""])
-        idle_add(lambda: on_active_window(None, dummy_event))  # type:ignore
+        idle_add(lambda: on_active_window(None, dummy_event))
 
         self.show_all()
 
@@ -83,17 +84,20 @@ class WindowTitleWidget(Box):
         size: int,
     ) -> Box:
         window_class = (window_class or "").strip() or self.conf_unknown_title
+        resolved_name = AppNameResolver.resolve_name(window_class)
+        display_text = resolved_name
+
         window_title = (window_title or "").strip() or self.conf_unknown_title
 
         is_horizontal = self.conf.is_horizontal()
         if not is_horizontal:
-            if len(window_class) > self.conf_vertical_length:
-                text = window_class[: self.conf_vertical_length] + "…"
+            if len(display_text) > self.conf_vertical_length:
+                text = display_text[: self.conf_vertical_length] + "…"
             else:
-                text = window_class
+                text = display_text
         else:
             if self.conf_type == "class":
-                text = window_class[: self.conf_title_length]
+                text = display_text[: self.conf_title_length]
             else:
                 if len(window_title) > self.conf_title_length:
                     text = window_title[: self.conf_title_length] + " …"
@@ -103,16 +107,21 @@ class WindowTitleWidget(Box):
         icon_widget: Optional[Box] = None
         if self.conf_icon_enabled:
             if window_class == self.conf_unknown_title:
-                icon_widget = Image(  # type: ignore
+                icon_widget = Image(
                     image_file=Const.PLACEHOLDER_IMAGE_GHOST.as_posix(),
                     size=size,
                 )
             else:
-                icon_widget = AppIcon(
-                    window_class.lower(),
-                    include_hidden=True,
-                    icon_size=size,
-                )
+                try:
+                    icon_widget = AppIcon(
+                        app_name=resolved_name,
+                        include_hidden=True,
+                        icon_size=size,
+                    )
+                except Exception:
+                    icon_widget = Image(
+                        image_file=Const.PLACEHOLDER_IMAGE_GHOST.as_posix(), size=size
+                    )
 
         if not is_horizontal:
             stack_box = Box(
