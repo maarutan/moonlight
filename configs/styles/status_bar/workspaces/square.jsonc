@@ -6,12 +6,12 @@
     "border-radius": "6px",
     "background": "theme.$bg-secondary",
     "box-shadow": "theme.$shadow-soft",
-    "border": "1px solid theme.$border-color"
-  },
-  "#sb_workspaces-container-horizontal": {
-    "padding": "5px 10px"
+    "border": "1px solid theme.$border-color",
+    "padding": "5px 10px",
+    "margin": "0 5px"
   },
   "#sb_workspaces-container-vertical": {
+    "margin": "5px 0",
     "padding": "10px 5px"
   },
 

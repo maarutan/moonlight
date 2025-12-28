@@ -1,0 +1,37 @@
+@use "../theme.scss";
+
+.dock-station-hide {
+  opacity: 0;
+  margin: -100px;
+}
+
+.dock-station-show {
+  opacity: 1;
+  margin: 7px;
+}
+#dock-station-hover-line {
+  transition: 0.4s;
+  background: theme.$base;
+  border-radius: 20px;
+  border: solid theme.$border-color 1px;
+  border-left: none;
+}
+
+.dock-station-hover-line-hide {
+  opacity: 0;
+  margin: -100px;
+}
+.dock-station-hover-line-show {
+  opacity: 1;
+  margin: 0;
+}
+
+#dock-station-line {
+  background: theme.$border-color;
+  border-radius: 20px;
+  margin: 6px 0;
+  padding: 2px;
+}
+.dock-station-line-vertical {
+  margin: 0 6px;
+}

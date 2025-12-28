@@ -778,11 +778,9 @@ combobox window.popup menu menuitem:hover {
 }
 
 #day-info-weekday {
-  font-size: 6rem;
   color: #cdd6f4;
   text-shadow: 0 5px 0px rgba(0, 0, 0, 0.45);
   font-family: "anurati";
-  letter-spacing: 2rem;
 }
 
 #drop-shadow {
@@ -963,6 +961,118 @@ combobox window.popup menu menuitem:hover {
 }
 #notification-action-button:hover {
   background: #313244;
+}
+
+.dock-station-hide {
+  opacity: 0;
+  margin: -100px;
+}
+
+.dock-station-show {
+  opacity: 1;
+  margin: 7px;
+}
+
+#dock-station-hover-line {
+  transition: 0.4s;
+  background: #1e1e2e;
+  border-radius: 20px;
+  border: solid #45475a 1px;
+  border-left: none;
+}
+
+.dock-station-hover-line-hide {
+  opacity: 0;
+  margin: -100px;
+}
+
+.dock-station-hover-line-show {
+  opacity: 1;
+  margin: 0;
+}
+
+#dock-station-line {
+  background: #45475a;
+  border-radius: 20px;
+  margin: 6px 0;
+  padding: 2px;
+}
+
+.dock-station-line-vertical {
+  margin: 0 6px;
+}
+
+#dock-station {
+  background: transparent;
+}
+
+#dock-station-box {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 8px;
+  font-size: 1.5rem;
+  transition: 0.6s;
+  padding: 5px 10px;
+  border: 1px #45475a solid;
+}
+
+#dock-station-btn {
+  background: transparent;
+  color: #cdd6f4;
+  border: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  outline: transparent;
+  min-width: 48px;
+  margin: 1px -4px;
+  padding: 3px 8px;
+}
+#dock-station-btn:hover {
+  background: #313244;
+}
+#dock-station-btn:active {
+  margin-bottom: -8px;
+}
+
+.dock-station-vertical #dock-station-box {
+  padding: 10px 5px;
+}
+.dock-station-vertical #dock-station-btn {
+  margin: -4px 1px;
+  padding: 8px 3px;
+}
+
+menu {
+  background-color: #1e1e2e;
+  border-radius: 12px;
+  padding: 6px;
+  border: 1px solid #45475a;
+}
+
+menu > menuitem {
+  background: transparent;
+  padding: 8px 14px;
+  margin: 2px 0;
+  border-radius: 8px;
+  color: #eaeaea;
+  font-size: 14px;
+}
+
+menu > menuitem:hover {
+  background-color: #45475a;
+}
+
+menu > menuitem:active {
+  background-color: #313244;
+}
+
+menu > menuitem:disabled {
+  color: #bac2de;
+}
+
+menu separator {
+  margin: 6px 0;
+  background-color: #45475a;
 }
 
 /*# sourceMappingURL=main.css.map */

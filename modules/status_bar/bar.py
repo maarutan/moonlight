@@ -13,7 +13,7 @@ from .widgets.clock import ClockWidget
 from .widgets.system_tray.systemtray import SystemTrayWidget
 from .widgets.language import LanguageWidget
 from .widgets.window_title import WindowTitleWidget
-
+from .widgets.cava import CavaWidget
 
 from functools import partial
 from loguru import logger
@@ -38,6 +38,7 @@ else:
             "system-tray": SystemTrayWidget,
             "language": LanguageWidget,
             "window-title": WindowTitleWidget,
+            "cava": CavaWidget,
         }
 
         def __init__(self):

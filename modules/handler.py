@@ -26,6 +26,7 @@ from .my_corner.corners import ScreenCorners
 from fabric.widgets.stack import Stack
 from fabric.widgets.wayland import WaylandWindow as Window
 from utils.load_fonts import load_fonts_from_dir
+from .dock_station.dock import DockStation
 
 load_fonts_from_dir()
 
@@ -36,6 +37,7 @@ class Handler:
         modules = [
             ScreenCorners,
             StatusBar,
+            DockStation,
             LanguagePreview,
             ActivateLinux,
             DayInfoDesktop,

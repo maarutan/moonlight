@@ -1,0 +1,19 @@
+{
+  "dock-station": {
+    "type:type": "<class 'dict'>",
+    "type:properties": {
+      "enabled": {
+        "type:type": "<class 'bool'>"
+      },
+      "layer": {
+        "type:type": "<class 'str'>"
+      },
+      "anchor": {
+        "type:type": "<class 'str'>"
+      },
+      "margin": {
+        "type:type": "<class 'str'>"
+      }
+    }
+  }
+}

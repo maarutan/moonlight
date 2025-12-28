@@ -26,6 +26,8 @@ else:
             self.conf_weekday_enabled = config.get("weekday-enabled", True)
             self.conf_day_format = config.get("day-format", "")
             self.conf_time_format = config.get("time-format", "")
+            self.conf_weekday_font_size = config.get("weekday-font-size", 32)
+            self.conf_latter_spacing = config.get("latter-spacing", 10)
 
             super().__init__(
                 name="day-info-window",
@@ -35,7 +37,7 @@ else:
                 exclusivity="none",
                 h_align="center",
                 v_align="center",
-                style="background: none;",
+                style="background:none;",
             )
 
             self.show_all()
@@ -47,12 +49,12 @@ else:
                 orientation="v",
             )
 
-            svg = self.weekday_label()
+            weekday = self.weekday_label()
             day = self.day_label()
             time = self.time_label()
 
             box.children = [
-                svg,
+                weekday,
                 day,
                 time,
             ]
@@ -63,10 +65,16 @@ else:
         def _what_day(self) -> str:
             return strftime("%A").lower()
 
-        def weekday_label(self) -> Label | None:
-            weekday = Label(name="day-info-weekday", label=self._what_day().upper())
-            if self.conf_weekday_enabled:
-                return weekday
+        def weekday_label(self) -> Label:
+            day = self._what_day().upper() if self.conf_weekday_enabled else ""
+            label = Label(
+                name="day-info-weekday", label=day, size=self.conf_weekday_font_size
+            )
+            label.set_style(f"""
+                font-size: {self.conf_weekday_font_size}px;
+                letter-spacing: {self.conf_latter_spacing}px;
+            """)
+            return label
 
         def day_label(self) -> Label:
             day_label = Label(

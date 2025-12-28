@@ -1,0 +1,8 @@
+{
+  "dock-station": {
+    "enabled": true,
+    "layer": "bottom",
+    "anchor": "bottom right",
+    "margin": "0px 70px 70px 0px"
+  }
+}

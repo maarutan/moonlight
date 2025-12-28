@@ -191,3 +191,6 @@ class ConfigHandler:
         if isinstance(obj, list):
             return [self._copy_obj(v) for v in obj]
         return obj
+
+    def get_config_file_path(self) -> Path:
+        return self.confp

@@ -9,6 +9,7 @@ class DropShadow(Window):
             name="drop-shadow",
             layer="top",
             anchor="top-left-right-bottom",
+            all_visible=True,
         )
         self.is_hidden = True
         self.box = Box(name="drop-shadow-box")
@@ -27,10 +28,10 @@ class DropShadow(Window):
 
         if action == "show":
             self.is_hidden = False
-            self.show_all()
+            self.show()  # показать само окно
             self.box.add_style_class(class_show)
 
         elif action == "hide":
             self.is_hidden = True
             self.box.add_style_class(class_hide)
-            self.hide()
+            self.hide()  # скрыть окно
