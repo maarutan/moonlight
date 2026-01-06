@@ -1,0 +1,11 @@
+@use "../../theme" as *;
+#statusbar-headphones-button {
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 0.3rem;
+
+  &:hover {
+    background: $base;
+  }
+}

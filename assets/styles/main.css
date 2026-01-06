@@ -300,6 +300,16 @@
   margin: 0.4rem;
 }
 
+#statusbar-headphones-button {
+  background: none;
+  box-shadow: none;
+  border: none;
+  padding: 0.3rem;
+}
+#statusbar-headphones-button:hover {
+  background: #1e1e2e;
+}
+
 #statusbar {
   border: none;
   background: #1e1e2e;

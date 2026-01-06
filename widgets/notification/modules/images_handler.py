@@ -1,3 +1,4 @@
+import os
 from typing import TYPE_CHECKING, Optional
 from fabric.utils import GdkPixbuf
 from fabric.widgets.box import Box
@@ -46,7 +47,9 @@ class ImagesHandler(Box):
                 ),
             )
 
-        if getattr(self.notif, "app_icon", None):
+        if getattr(self.notif, "app_icon", None) and os.path.isfile(
+            self.notif.app_icon
+        ):
             return Image(
                 name="n_image",
                 pixbuf=GdkPixbuf.Pixbuf.new_from_file_at_size(

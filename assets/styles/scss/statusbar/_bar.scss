@@ -11,6 +11,7 @@
 @use "modules/battery";
 @use "modules/systemmonitor";
 @use "modules/network";
+@use "modules/headphones";
 
 #statusbar {
   border: none;

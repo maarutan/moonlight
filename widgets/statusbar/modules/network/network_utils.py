@@ -11,9 +11,6 @@ def setup_cursor_hover(widget):
 
 
 def get_network_info_str(network_service, field=None):
-    """
-    Возвращает информацию о сети. Если field="ssid", возвращает только SSID.
-    """
     ssid = "not connected"
     signal = 0
     bssid = "N/A"
