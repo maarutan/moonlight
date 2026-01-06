@@ -7,7 +7,7 @@ from pathlib import Path
 class Const:
     # ---------------------------------------------------------------------
 
-    APP_NAME = "moonlight2"
+    APP_NAME = "moonlight"
 
     PROJECT_ROOT = Path(__file__).parent.parent
     HOME = Path.home()
