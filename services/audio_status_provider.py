@@ -11,7 +11,12 @@ class AudioStatusProvider(Service):
     micro = Property(type=bool, default_value=False)
     micro_changed = Signal(name="micro-changed")
 
-    def __init__(self, debounce_ms: int = 500, poll_interval: float = 3.0, use_live_test: bool = False):
+    def __init__(
+        self,
+        debounce_ms: int = 500,
+        poll_interval: float = 3.0,
+        use_live_test: bool = False,
+    ):
         super().__init__()
         self._lock = threading.Lock()
         self._stop = False
@@ -77,7 +82,9 @@ class AudioStatusProvider(Service):
                 last_snapshot_time = now
                 sinks = self._parse_pactl_sinks()
                 sources = self._parse_pactl_sources()
-                new_status, new_micro = self._compute_state_from_snapshot(sinks, sources)
+                new_status, new_micro = self._compute_state_from_snapshot(
+                    sinks, sources
+                )
                 with self._lock:
                     status_changed = new_status != self.status
                     micro_changed = new_micro != self.micro
@@ -136,7 +143,11 @@ class AudioStatusProvider(Service):
             stripped = line.strip()
             if stripped.lower().startswith("name:"):
                 if cur:
-                    sinks[cur] = {"active_port": active_port or "", "props": props, "ports": ports}
+                    sinks[cur] = {
+                        "active_port": active_port or "",
+                        "props": props,
+                        "ports": ports,
+                    }
                 cur = stripped.split(":", 1)[1].strip()
                 props = {}
                 active_port = ""
@@ -157,10 +168,18 @@ class AudioStatusProvider(Service):
                 continue
             if stripped.lower().startswith("ports:"):
                 parm = True
-            if stripped and ":" in stripped and ("available" in stripped.lower() or "type:" in stripped.lower()):
+            if (
+                stripped
+                and ":" in stripped
+                and ("available" in stripped.lower() or "type:" in stripped.lower())
+            ):
                 pass
         if cur:
-            sinks[cur] = {"active_port": active_port or "", "props": props, "ports": ports}
+            sinks[cur] = {
+                "active_port": active_port or "",
+                "props": props,
+                "ports": ports,
+            }
         return sinks
 
     def _parse_pactl_sources(self) -> Dict[str, Dict]:
@@ -189,7 +208,13 @@ class AudioStatusProvider(Service):
                 continue
             if stripped.lower().startswith("name:"):
                 if cur:
-                    sources[cur] = {"props": props, "state": state, "active_port": active_port, "ports": ports, "port_details": port_details}
+                    sources[cur] = {
+                        "props": props,
+                        "state": state,
+                        "active_port": active_port,
+                        "ports": ports,
+                        "port_details": port_details,
+                    }
                 cur = stripped.split(":", 1)[1].strip()
                 props = {}
                 in_props = False
@@ -231,7 +256,9 @@ class AudioStatusProvider(Service):
                 if ":" in line:
                     port_line = line.strip()
                     port_name = port_line.split(":", 1)[0].strip()
-                    port_info = port_line.split(":", 1)[1].strip() if ":" in port_line else ""
+                    port_info = (
+                        port_line.split(":", 1)[1].strip() if ":" in port_line else ""
+                    )
                     ports.append(port_name)
                     pi = port_info.lower()
                     availability = "unknown"
@@ -241,17 +268,32 @@ class AudioStatusProvider(Service):
                         availability = "unknown"
                     elif "available" in pi:
                         availability = "yes"
-                    port_details[port_name] = {"info": port_info, "availability": availability}
+                    port_details[port_name] = {
+                        "info": port_info,
+                        "availability": availability,
+                    }
         if cur:
-            sources[cur] = {"props": props, "state": state, "active_port": active_port, "ports": ports, "port_details": port_details}
+            sources[cur] = {
+                "props": props,
+                "state": state,
+                "active_port": active_port,
+                "ports": ports,
+                "port_details": port_details,
+            }
         return sources
 
-    def _find_sources_for_sink(self, sink_name: str, sinks: Dict[str, Dict], sources: Dict[str, Dict]) -> List[str]:
+    def _find_sources_for_sink(
+        self, sink_name: str, sinks: Dict[str, Dict], sources: Dict[str, Dict]
+    ) -> List[str]:
         sink = sinks.get(sink_name)
         if not sink:
             return []
         sink_props = sink.get("props", {})
-        sink_card = sink_props.get("api.alsa.card") or sink_props.get("alsa.card") or sink_props.get("device.string")
+        sink_card = (
+            sink_props.get("api.alsa.card")
+            or sink_props.get("alsa.card")
+            or sink_props.get("device.string")
+        )
         sink_node = sink_props.get("node.name", "")
         sink_prefix = sink_node.split(".", 1)[0] if sink_node else ""
         sink_bus_id = (sink_props.get("device.bus-id") or "").lower()
@@ -262,7 +304,11 @@ class AudioStatusProvider(Service):
             if src_name.endswith(".monitor"):
                 continue
             src_props = src_data.get("props", {})
-            src_card = src_props.get("api.alsa.card") or src_props.get("alsa.card") or src_props.get("device.string")
+            src_card = (
+                src_props.get("api.alsa.card")
+                or src_props.get("alsa.card")
+                or src_props.get("device.string")
+            )
             src_node = src_props.get("node.name", "")
             src_prefix = src_node.split(".", 1)[0] if src_node else ""
             src_bus_id = (src_props.get("device.bus-id") or "").lower()
@@ -283,7 +329,10 @@ class AudioStatusProvider(Service):
             if sink_devname and src_devname and sink_devname == src_devname:
                 matched.append(src_name)
                 continue
-            if "usb" in (sink_props.get("device.bus", "") or "").lower() and "usb" in (src_props.get("device.bus", "") or "").lower():
+            if (
+                "usb" in (sink_props.get("device.bus", "") or "").lower()
+                and "usb" in (src_props.get("device.bus", "") or "").lower()
+            ):
                 matched.append(src_name)
                 continue
         return matched
@@ -291,7 +340,9 @@ class AudioStatusProvider(Service):
     def _source_has_signal(self, source_name: str, duration: float = 0.8) -> bool:
         cmd = ["parec", "--device=" + source_name, "--raw"]
         try:
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=duration)
+            proc = subprocess.run(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=duration
+            )
             data = proc.stdout or b""
             return any(b != 0 for b in data)
         except Exception:
@@ -306,7 +357,12 @@ class AudioStatusProvider(Service):
             return "usb"
         if "bluez" in node or "bluetooth" in desc:
             return "bluetooth"
-        if "hdmi" in node or "displayport" in node or "hdmi" in desc or "displayport" in desc:
+        if (
+            "hdmi" in node
+            or "displayport" in node
+            or "hdmi" in desc
+            or "displayport" in desc
+        ):
             return "hdmi"
         port = (sink_data.get("active_port") or "").lower()
         if any(k in port for k in ("headphone", "headset", "analog")):
@@ -315,12 +371,16 @@ class AudioStatusProvider(Service):
             return "aux"
         return "unknown"
 
-    def _compute_state_from_snapshot(self, sinks: Dict[str, Dict], sources: Dict[str, Dict]) -> (str, bool):
+    def _compute_state_from_snapshot(
+        self, sinks: Dict[str, Dict], sources: Dict[str, Dict]
+    ) -> (str, bool):
         default = self._get_default_sink_name()
         if not default:
             return "unknown", False
         sink = sinks.get(default, {})
-        device_type = self._detect_sink_type_from_props(default, sink) if sink else "unknown"
+        device_type = (
+            self._detect_sink_type_from_props(default, sink) if sink else "unknown"
+        )
         mic_present = False
         if device_type == "usb":
             candidates = self._find_sources_for_sink(default, sinks, sources)
@@ -351,14 +411,23 @@ class AudioStatusProvider(Service):
                 active_in = (src.get("active_port") or "").lower()
                 ports = src.get("ports", [])
                 port_details = src.get("port_details", {})
-                if "headset-mic" in active_in or "headset" in active_in or "mic" in active_in:
+                if (
+                    "headset-mic" in active_in
+                    or "headset" in active_in
+                    or "mic" in active_in
+                ):
                     pd = port_details.get(active_in, {})
                     if pd.get("availability") != "no":
                         mic_present = True
                         break
                 for p in ports:
                     pl = p.lower()
-                    if "headset" in pl or "mic" in pl or "headphone" in pl or "input" in pl:
+                    if (
+                        "headset" in pl
+                        or "mic" in pl
+                        or "headphone" in pl
+                        or "input" in pl
+                    ):
                         pd = port_details.get(p, {})
                         if pd.get("availability") == "no":
                             continue

@@ -1,18 +1,14 @@
 {
-  "global": {
-    "font": "CaskaydiaCove Nerd Font Italic",
-    "font-size": 16,
-    "theme": "catppuccin-mocha",
-    "stylesheet_file": ""
-  },
   "widgets": {
     "statusbar": {
       "enabled": true,
-      "position": "top",
+      "margin": "1px 0px 0px 0px",
+      "transparent": true,
+      "position": "left",
       "layout": {
-        "start": ["workspaces"],
+        "start": ["workspaces", "windowtitle", "headphones"],
         "center": ["clock"],
-        "end": []
+        "end": ["systemtray", "language", "systemmonitor", "network", "battery"]
       },
       "modules": {
         "clock": {
@@ -52,7 +48,7 @@
         },
         "systemtray": {
           "collapse": {
-            "enabled": false,
+            "enabled": true,
             "columns": 4,
             "button-size": 24
           },
@@ -66,12 +62,111 @@
           "unknown-title": "(づ｡◕‿‿◕｡)づ",
           "icon": {
             "enabled": true,
-            "size": 32,
+            "size": 24,
             "position": "left"
           },
           "if-vertical": {}
-        }
+        },
+        "language": {
+          "number-letters": 2,
+          "register": "lower",
+          "replace": {
+            "uk": "ua",
+            "us": "en",
+            "ru": "ru"
+          },
+          "if-vertical": {}
+        },
+        "battery": {
+          "icon-size": 32,
+          "procentage": {
+            "enabled": true,
+            "position": "right",
+            "event": "show"
+          },
+          "if-vertical": {}
+        },
+        "systemmonitor": {
+          "positions": ["cpu", "ram", "disk"]
+        },
+        "network": {
+          "icon-size": 25
+        },
+        "custom": {}
       }
+    },
+    "dockstation": {
+      "enabled": true,
+      "anchor": "center-right",
+      "margin": "0px 0px 0px 0px",
+      "auto-hide": false,
+      "dock-spacing": 15,
+      "hover": {
+        "thickness": 10,
+        "max-width": 400
+      },
+      "layer": "top",
+      "icon-size": 48,
+      "pinned": [
+        "kitty",
+        "firefox",
+        "org.pulseaudio.pavucontrol",
+        "org.telegram.desktop",
+        "com.obsproject.Studio",
+        "bitwarden",
+        "chromium",
+        "discord",
+        "nwg-look",
+        "guvcview",
+        "Alacritty",
+        "obsidian"
+      ]
+    },
+    "notification": {
+      "enabled": true,
+      "anchor": "top-right",
+      "layer": "overlay",
+      "margin": "8px 8px 8px 8px",
+      "image-size": 90,
+      "default-timeout": 5000,
+      "max-width": 400,
+      "urgency-size": 40,
+      "max-chars-width": 40,
+      "title-icon-size": 32,
+      "progress-bar-line-style": "round",
+      "progress-bar-line-width": 20
+    },
+    "languagepreview": {
+      "enabled": true,
+      "anchor": "center",
+      "layer": "top",
+      "margin": "40px 40px 40px 40px",
+      "hide-delay": 500,
+      "alias": {
+        "us": "english",
+        "ru": "russian",
+        "pl": "polish",
+        "kg": "kyrgyzstan",
+        "kz": "kazakhstan",
+        "uz": "uzbekistan"
+      },
+      "default-fullnames": {
+        "us": "English",
+        "ru": "Russian"
+      },
+      "replacer": {
+        "us": "en"
+      }
+    },
+    "activatelinux": {
+      "enabled": true,
+      "layer": "bottom",
+      "anchor": "bottom right",
+      "margin": "0px 70px 70px 0px"
+    },
+    "screencorners": {
+      "enabled": true,
+      "size": 32
     }
   }
 }
