@@ -1,0 +1,17 @@
+@use "../../theme" as *;
+
+#statusbar-language-button {
+  background: none;
+  border: none;
+  color: $text;
+  text-shadow: none;
+  box-shadow: none;
+  // margin: 0.25rem; // 4px -> 0.25rem
+
+  padding: 0.1875rem 0.625rem; // 3px 10px -> 0.1875rem 0.625rem
+  margin: 0.3rem; // 4px -> 0.25rem
+
+  &:hover {
+    background: $surf0;
+  }
+}

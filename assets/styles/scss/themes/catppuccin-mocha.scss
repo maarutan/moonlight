@@ -1,0 +1,40 @@
+// ============================
+// 🌙 Catppuccin Mocha - UI Theme
+// ============================
+
+// ---------- Base Palette ----------
+$base: #1e1e2e;
+$mantle: #181825;
+$crust: #11111b;
+$surf0: #313244;
+$surf1: #45475a;
+$surf2: #585b70;
+$overlay0: #6c7086;
+$overlay1: #7f849c;
+$overlay2: #9399b2;
+
+// ---------- Text ----------
+$text: #cdd6f4;
+$sub1: #bac2de;
+$sub0: #a6adc8;
+
+// ---------- Accents ----------
+$red: #f38ba8;
+$orange: #fab387;
+$yellow: #f9e2af;
+$green: #a6e3a1;
+$aqua: #94e2d5;
+$blue: #89b4fa;
+$purple: #cba6f7;
+$pink: #f5c2e7;
+$gray: #7f849c;
+
+// ---------- UI Elements ----------
+$btn-bg: $overlay0;
+$btn-fg: $text;
+$btn-hover: $overlay1;
+$btn-active: $blue;
+
+$border: $surf1;
+
+$shadow: rgba(0, 0, 0, 0.5);

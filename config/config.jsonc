@@ -1,0 +1,77 @@
+{
+  "global": {
+    "font": "CaskaydiaCove Nerd Font Italic",
+    "font-size": 16,
+    "theme": "catppuccin-mocha",
+    "stylesheet_file": ""
+  },
+  "widgets": {
+    "statusbar": {
+      "enabled": true,
+      "position": "top",
+      "layout": {
+        "start": ["workspaces"],
+        "center": ["clock"],
+        "end": []
+      },
+      "modules": {
+        "clock": {
+          "format": "%I:%M %p",
+          "if-vertical": {
+            "format": "%I\n%M\n%p"
+          }
+        },
+        "workspaces": {
+          "max-visible-workspaces": 5,
+          "enable-buttons-factory": true,
+          "numbering-enabled": false,
+          "numbering": [
+            "一",
+            "二",
+            "三",
+            "四",
+            "五",
+            "六",
+            "七",
+            "八",
+            "九",
+            "〇"
+          ],
+          "workspace-preview": {
+            "enabled": true,
+            "size": 400,
+            "event": "hover",
+            "event_click": "right",
+            "missing-behavior": "hide"
+          },
+          "magic-workspace": {
+            "enabled": true,
+            "icon": "✨"
+          },
+          "if-vertical": {}
+        },
+        "systemtray": {
+          "collapse": {
+            "enabled": false,
+            "columns": 4,
+            "button-size": 24
+          },
+          "icon-size": 32,
+          "if-vertical": {}
+        },
+        "windowtitle": {
+          "type": "class",
+          "vertical-length": 3,
+          "title-length": 20,
+          "unknown-title": "(づ｡◕‿‿◕｡)づ",
+          "icon": {
+            "enabled": true,
+            "size": 32,
+            "position": "left"
+          },
+          "if-vertical": {}
+        }
+      }
+    }
+  }
+}

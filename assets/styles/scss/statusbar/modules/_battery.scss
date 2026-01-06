@@ -1,0 +1,18 @@
+@use "../../theme" as *;
+
+#statusbar-battery {
+  background: $base;
+  border-radius: 0.5rem; // 8px
+  box-shadow: 0 0 0.4375rem 0 $shadow; // 7px
+  padding: 0 0.625rem; // 0px 10px
+  margin: 0 0.125rem; // 0 2px
+
+  label {
+    color: $text;
+  }
+}
+
+.statusbar-battery-vertical {
+  padding: 0.25rem; // 4px
+  margin: 0.25rem; // 4px
+}

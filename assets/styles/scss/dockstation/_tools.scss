@@ -1,0 +1,42 @@
+@use "../theme" as *;
+
+.dockstation-hide {
+  opacity: 0;
+  margin: -6.25rem; // -100px -> -6.25rem
+}
+
+.dockstation-show {
+  opacity: 1;
+  margin: 0.4375rem; // 7px -> 0.4375rem
+}
+
+#dockstation-hover-line {
+  transition: 0.4s;
+  background: $text;
+  border-radius: 1.25rem; // 20px -> 1.25rem
+  border: solid $border 0.0625rem; // 1px -> 0.0625rem
+  border-left: none;
+}
+
+.dockstation-hover-line-hide {
+  opacity: 0;
+  margin: -6.25rem; // -100px -> -6.25rem
+}
+
+.dockstation-hover-line-show {
+  opacity: 1;
+  margin: 0;
+}
+
+#dockstation-line {
+  background: $border;
+  border-radius: 1.25rem; // 20px -> 1.25rem
+  margin: 0.475rem 1rem; // 6px 0 -> rem
+  padding: 2px; // 2px -> rem
+}
+
+#dockstation-items {
+  .dockstation-line-vertical {
+    margin: 1rem 0.475rem; // 6px 0 -> rem
+  }
+}

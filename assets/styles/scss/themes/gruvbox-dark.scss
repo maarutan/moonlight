@@ -1,0 +1,40 @@
+// ============================
+// 🌑 Gruvbox Dark - UI Theme
+// ============================
+
+// ---------- Base Palette ----------
+$base: #282828;
+$mantle: #1d2021;
+$crust: #1b1b1b;
+$surf0: #32302f;
+$surf1: #3c3836;
+$surf2: #504945;
+$overlay0: #665c54;
+$overlay1: #7c6f64;
+$overlay2: #928374;
+
+// ---------- Text ----------
+$text: #ebdbb2;
+$sub1: #bdae93;
+$sub0: #928374;
+
+// ---------- Accents ----------
+$red: #fb4934;
+$orange: #d65d0e;
+$yellow: #fabd2f;
+$green: #b8bb26;
+$aqua: #8ec07c;
+$blue: #458588;
+$purple: #b16286;
+$pink: #d3869b;
+$gray: #7c6f64;
+
+// ---------- UI Elements ----------
+$btn-bg: $overlay0;
+$btn-fg: $text;
+$btn-hover: $overlay1;
+$btn-active: $blue;
+
+$border: $surf1;
+
+$shadow: rgba(0, 0, 0, 0.5);

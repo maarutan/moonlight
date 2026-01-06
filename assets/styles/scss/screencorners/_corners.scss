@@ -1,0 +1,15 @@
+@use "../theme" as *;
+
+#screen-corners {
+  background: transparent;
+}
+
+#corner {
+  background: $base;
+  border-radius: 0px;
+}
+
+#corner-container {
+  min-width: 0px;
+  min-height: 0px;
+}

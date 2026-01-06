@@ -1,0 +1,10 @@
+@use "theme" as *;
+
+* {
+  transition: 0.4s;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  text-shadow: $shadow;
+}

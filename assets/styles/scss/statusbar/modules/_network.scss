@@ -1,0 +1,15 @@
+@use "../../theme" as *;
+
+#statusbar-network-button {
+  background: none;
+  border: none;
+  color: $text;
+  box-shadow: none;
+  &:hover {
+    background: $base;
+  }
+}
+
+#statusbar-network-box {
+  margin: 0.4rem;
+}

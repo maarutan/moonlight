@@ -1,0 +1,85 @@
+@use "../theme" as *;
+
+#notification-popup {
+  background: transparent;
+  color: $text;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+#notification-box {
+  transition: 0.4s;
+  background: $base;
+  margin: 0.3125rem;
+  padding: 0.625rem;
+  border-radius: 0.9375rem;
+  box-shadow: 0 0 0.3125rem 0 $shadow;
+  border: 0.0625rem solid $border;
+  opacity: 1;
+
+  &.notification-closed {
+    margin: -0.625rem;
+    padding: 0;
+    opacity: 0;
+    background: none;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+#notification-content {
+  padding: 0.1875rem 0.625rem;
+}
+
+#notification-body {
+  padding: 0.1875rem 0.3125rem;
+}
+
+#notification_close-button {
+  background: $red;
+  color: $base;
+  box-shadow: none;
+  border: none;
+  margin-left: 2.5rem; // 40px -> 2.5rem
+  padding: 0;
+  min-width: 1.5rem; // 24px -> 1.5rem
+  min-height: 1.5rem; // 24px -> 1.5rem
+  border-radius: 100%;
+  text-shadow: none;
+  &:hover {
+    background: $surf0;
+    color: $red;
+  }
+}
+
+#notification-content-body {
+  padding: 0.625rem 0;
+}
+
+#notification-progress-bar {
+  border: solid $blue;
+  color: $border;
+  border-radius: 1.875rem;
+}
+
+#notification-progress-bar-box {
+  padding: 0 1.25rem;
+}
+
+#notification-action-button {
+  background: $surf0;
+  color: $btn-fg;
+  box-shadow: 0 0 0.1875rem 0 $shadow;
+  border: none;
+  font-weight: 400;
+  margin: 0.1875rem;
+  text-shadow: none;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.5rem;
+
+  &:hover {
+    background: $base;
+    color: $btn-fg;
+    border: 0.0625rem solid $border;
+  }
+}

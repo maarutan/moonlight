@@ -1,0 +1,34 @@
+@use "../theme" as *;
+
+menu {
+  background-color: $base;
+  border-radius: 12px;
+  padding: 6px;
+  border: 1px solid $border;
+}
+
+menu > menuitem {
+  background: transparent;
+  padding: 8px 14px;
+  margin: 0px 0;
+  border-radius: 8px;
+  color: $text;
+  font-size: 14px;
+}
+
+menu > menuitem:hover {
+  background-color: $surf1;
+}
+
+menu > menuitem:active {
+  background-color: $surf0;
+}
+
+menu > menuitem:disabled {
+  color: $surf2;
+}
+
+menu separator {
+  margin: 6px 0;
+  background-color: $border;
+}

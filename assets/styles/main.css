@@ -1,0 +1,660 @@
+* {
+  font-family: CaskaydiaCove NF;
+  font-size: 15px;
+}
+
+* {
+  transition: 0.4s;
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  text-shadow: rgba(0, 0, 0, 0.5);
+}
+
+#statusbar-modules-start,
+#statusbar-modules-center,
+#statusbar-modules-end {
+  background-color: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0.1875rem 0 #000;
+  border: solid 0.1325rem #45475a;
+  border-radius: 0.375rem;
+  margin: 0.5rem 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.statusbar-vertical #statusbar-modules-start,
+.statusbar-vertical #statusbar-modules-center,
+.statusbar-vertical #statusbar-modules-end {
+  margin: 1rem 0.5rem;
+  padding: 1rem 0.5rem;
+}
+
+#statusbar-clock {
+  background: #1e1e2e;
+  padding: 0.11rem 0.7rem;
+  border-radius: 0.1875rem;
+  color: #cdd6f4;
+  border: none;
+  box-shadow: 0 0 0.4375rem 0 rgba(0, 0, 0, 0.5);
+}
+
+.statusbar-clock-vertical {
+  padding: 0;
+}
+
+#statusbar-workspaces-container {
+  transition: 0.4s;
+  padding: 0.3125rem 0.625rem;
+  margin: 0 0.625rem;
+  border-radius: 0.5rem;
+  background: #1e1e2e;
+  box-shadow: 0 0 0.4375rem rgba(0, 0, 0, 0.5);
+}
+
+#statusbar-workspaces button {
+  transition: 0.25s ease;
+  padding: 0;
+  margin: 0 0.125rem;
+  min-width: 1.125rem;
+  min-height: 0.3125rem;
+  border: none;
+  border-radius: 999px;
+  color: #cdd6f4;
+  background: #585b70;
+  box-shadow: none;
+}
+#statusbar-workspaces button:hover {
+  background: #45475a;
+}
+
+#statusbar-workspaces button.active {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border-radius: 0.625rem;
+}
+
+#statusbar-workspaces button.active {
+  min-width: 3.5rem;
+  min-height: 0.5rem;
+}
+
+.statusbar-workspaces-container-vertical #statusbar-workspaces button.active {
+  min-width: 1.125rem;
+  min-height: 3.5rem;
+}
+
+#statusbar-magic-workspace-button {
+  border: none;
+  background: none;
+  box-shadow: none;
+  padding: 0 0.125rem;
+  margin: 0 0.125rem;
+}
+
+.statusbar-vertical #statusbar-workspaces-container {
+  padding: 0.625rem 0.3125rem;
+  margin: 0.625rem 0;
+}
+
+.statusbar-horizontal #statusbar-workspaces-container {
+  padding: 0.3125rem 0.625rem;
+  margin: 0 0.625rem;
+}
+
+#statusbar-workspaces-preview {
+  transition: 0.4s;
+  background: rgba(0, 0, 0, 0.5);
+  border: 0.0625rem solid #45475a;
+  border-radius: 0.875rem;
+  padding: 0.375rem;
+}
+
+#statusbar-workspaces-preview-image {
+  transition: 0.4s;
+  margin: 1.25rem;
+  border-radius: 1.875rem;
+}
+
+#statusbar-system-tray {
+  background: transparent;
+}
+
+.statusbar-system-tray-items {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  box-shadow: 0 0 0.4375rem 0 rgba(0, 0, 0, 0.5);
+  border: none;
+}
+.statusbar-system-tray-items:hover {
+  background: #313244;
+}
+
+#statusbar-system-tray-button {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  box-shadow: 0 0 0.4375rem 0 rgba(0, 0, 0, 0.5);
+  border: none;
+  margin: 0.1rem;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.3125rem;
+}
+#statusbar-system-tray-button:hover {
+  background: #313244;
+}
+
+#statusbar-system-tray-box {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid #45475a;
+  box-shadow: 0 0 0.4375rem 0 rgba(0, 0, 0, 0.5);
+  padding: 0.625rem;
+  margin: 0.625rem;
+}
+
+#statusbar-system-tray-header {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #cdd6f4;
+  margin-bottom: 0.625rem;
+  text-shadow: none;
+}
+
+#statusbar-system-tray-close {
+  background: #f38ba8;
+  color: #1e1e2e;
+  box-shadow: none;
+  border: none;
+  margin-left: 2.5rem;
+  padding: 0;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  border-radius: 100%;
+  text-shadow: none;
+}
+#statusbar-system-tray-close:hover {
+  background: #313244;
+  color: #f38ba8;
+}
+
+#statusbar-window-title-box,
+#statusbar-window-title-box-vertical {
+  color: #cdd6f4;
+  padding: 0.3125rem 0.625rem;
+  border-radius: 0.3125rem;
+}
+
+#statusbar-window-title-box-vertical {
+  padding: 0.625rem 0.4375rem;
+}
+
+#statusbar-language-button {
+  background: none;
+  border: none;
+  color: #cdd6f4;
+  text-shadow: none;
+  box-shadow: none;
+  padding: 0.1875rem 0.625rem;
+  margin: 0.3rem;
+}
+#statusbar-language-button:hover {
+  background: #313244;
+}
+
+.status-bar-custom-label {
+  transition: 0.25s color ease;
+  color: #cdd6f4;
+  border-radius: 0.375rem;
+  background: none;
+}
+.status-bar-custom-label:hover {
+  color: #89b4fa;
+}
+
+.status-bar-custom-label-horizontal {
+  padding: 0.125rem 0.5rem;
+}
+
+.status-bar-custom-label-vertical {
+  padding: 0.375rem 0.125rem;
+}
+
+.status-bar-custom-button {
+  transition: 0.3s ease;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border: none;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.375rem rgba(0, 0, 0, 0.5);
+  margin: 0.25rem;
+  padding: 0.1875rem 0.625rem;
+}
+.status-bar-custom-button:hover {
+  background: #313244;
+  color: #cdd6f4;
+}
+
+.status-bar-custom-button-horizontal {
+  padding: 0.375rem 0.75rem;
+}
+
+.status-bar-custom-button-vertical {
+  padding: 0.625rem 0.375rem;
+}
+
+#statusbar-battery {
+  background: #1e1e2e;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0.4375rem 0 rgba(0, 0, 0, 0.5);
+  padding: 0 0.625rem;
+  margin: 0 0.125rem;
+}
+#statusbar-battery label {
+  color: #cdd6f4;
+}
+
+.statusbar-battery-vertical {
+  padding: 0.25rem;
+  margin: 0.25rem;
+}
+
+#statusbar-systemmonitor {
+  padding: 0 5px;
+}
+
+#cpu-icon,
+#ram-icon {
+  color: #cdd6f4;
+  font-size: 14px;
+  margin-right: 5px;
+  transition: 0.4s;
+}
+
+#disk-icon {
+  color: #cdd6f4;
+  font-size: 14px;
+  margin-right: 2px;
+  transition: 0.4s;
+}
+
+#cpu-circle,
+#ram-circle,
+#disk-circle {
+  color: #45475a;
+  border: 3px solid #cdd6f4;
+  transition: 0.4s;
+}
+
+#statusbar-network-button {
+  background: none;
+  border: none;
+  color: #cdd6f4;
+  box-shadow: none;
+}
+#statusbar-network-button:hover {
+  background: #1e1e2e;
+}
+
+#statusbar-network-box {
+  margin: 0.4rem;
+}
+
+#statusbar {
+  border: none;
+  background: #1e1e2e;
+  box-shadow: 0 0 0.625rem 0 rgba(0, 0, 0, 0.5);
+  color: #cdd6f4;
+}
+
+.dockstation-hide {
+  opacity: 0;
+  margin: -6.25rem;
+}
+
+.dockstation-show {
+  opacity: 1;
+  margin: 0.4375rem;
+}
+
+#dockstation-hover-line {
+  transition: 0.4s;
+  background: #cdd6f4;
+  border-radius: 1.25rem;
+  border: solid #45475a 0.0625rem;
+  border-left: none;
+}
+
+.dockstation-hover-line-hide {
+  opacity: 0;
+  margin: -6.25rem;
+}
+
+.dockstation-hover-line-show {
+  opacity: 1;
+  margin: 0;
+}
+
+#dockstation-line {
+  background: #45475a;
+  border-radius: 1.25rem;
+  margin: 0.475rem 1rem;
+  padding: 2px;
+}
+
+#dockstation-items .dockstation-line-vertical {
+  margin: 1rem 0.475rem;
+}
+
+#dockstation-appbrowser {
+  padding: 1.3rem;
+  border: 1px solid #45475a;
+  border-radius: 1.5rem;
+  margin: 1.3rem;
+  box-shadow: 0px 0px 0.6rem 0px rgba(0, 0, 0, 0.5);
+  background: #1e1e2e;
+}
+
+#dockstation-appbrowser-flowbox {
+  padding: 0.6rem;
+}
+
+#dockstation-appbrowser-searchbox {
+  margin: 1rem;
+}
+#dockstation-appbrowser-searchbox label {
+  min-width: 2rem;
+  min-height: 1.5rem;
+  border-radius: 0.3rem;
+  font-size: 0.8rem;
+  border: 1px solid #45475a;
+  font-weight: bold;
+}
+
+#dockstation-appbrowser-entry {
+  color: #cdd6f4;
+  font-size: 1.5rem;
+  border-radius: 1.5rem;
+  background: #11111b;
+}
+#dockstation-appbrowser-entry:focus {
+  box-shadow: 0px 0px 0.6rem 0px #89b4fa;
+  background: #181825;
+  margin-bottom: 0.8rem;
+}
+
+#dockstation-appbrowser .dockstation-btn-appbrowser {
+  padding: 1rem;
+}
+#dockstation-appbrowser .dockstation-appbrowser-line {
+  padding: 2px;
+  margin: 0 7rem;
+}
+
+#dockstation-appbrowser-scrollwindow {
+  background: #181825;
+  border: 1px solid #45475a;
+  border-radius: 1.5rem;
+  padding: 0.6rem;
+  box-shadow: 0px 0px 0.6rem 0px rgba(0, 0, 0, 0.5);
+}
+
+#dockstation-appbrowser-scrollwindow scrollbar {
+  background: none;
+  border: none;
+}
+#dockstation-appbrowser-scrollwindow scrollbar slider {
+  background: #313244;
+}
+
+#dockstation-hamburger {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+#dockstation {
+  background: transparent;
+}
+
+#dockstation-box {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-radius: 0.5rem;
+  font-size: 1.5rem;
+  transition: 0.6s;
+  padding: 0.3125rem 0.625rem;
+  border: solid 0.1325rem #45475a;
+}
+
+#dockstation-btn {
+  background: transparent;
+  color: #cdd6f4;
+  border: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  outline: transparent;
+  min-width: 3rem;
+  margin: 0.0625rem -0.25rem;
+  padding: 0.1875rem 0.5rem;
+}
+#dockstation-btn:hover {
+  background: #313244;
+}
+#dockstation-btn:active {
+  background: transparent;
+  margin-bottom: -0.5rem;
+}
+
+.dockstation-vertical #dockstation-box {
+  padding: 0.625rem 0.3125rem;
+}
+.dockstation-vertical #dockstation-btn {
+  margin: -0.25rem 0.0625rem;
+  padding: 0.2rem 0.1875rem;
+}
+
+menu {
+  background-color: #1e1e2e;
+  border-radius: 12px;
+  padding: 6px;
+  border: 1px solid #45475a;
+}
+
+menu > menuitem {
+  background: transparent;
+  padding: 8px 14px;
+  margin: 0px 0;
+  border-radius: 8px;
+  color: #cdd6f4;
+  font-size: 14px;
+}
+
+menu > menuitem:hover {
+  background-color: #45475a;
+}
+
+menu > menuitem:active {
+  background-color: #313244;
+}
+
+menu > menuitem:disabled {
+  color: #585b70;
+}
+
+menu separator {
+  margin: 6px 0;
+  background-color: #45475a;
+}
+
+entry {
+  background: #585b70;
+  color: #cdd6f4;
+  border: 1px solid #45475a;
+  caret-color: transparent;
+  border-radius: 0.5rem;
+  padding: 0.1rem 1.2rem;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+}
+
+#notification-popup {
+  background: transparent;
+  color: #cdd6f4;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+#notification-box {
+  transition: 0.4s;
+  background: #1e1e2e;
+  margin: 0.3125rem;
+  padding: 0.625rem;
+  border-radius: 0.9375rem;
+  box-shadow: 0 0 0.3125rem 0 rgba(0, 0, 0, 0.5);
+  border: 0.0625rem solid #45475a;
+  opacity: 1;
+}
+#notification-box.notification-closed {
+  margin: -0.625rem;
+  padding: 0;
+  opacity: 0;
+  background: none;
+  box-shadow: none;
+  border: none;
+}
+
+#notification-content {
+  padding: 0.1875rem 0.625rem;
+}
+
+#notification-body {
+  padding: 0.1875rem 0.3125rem;
+}
+
+#notification_close-button {
+  background: #f38ba8;
+  color: #1e1e2e;
+  box-shadow: none;
+  border: none;
+  margin-left: 2.5rem;
+  padding: 0;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  border-radius: 100%;
+  text-shadow: none;
+}
+#notification_close-button:hover {
+  background: #313244;
+  color: #f38ba8;
+}
+
+#notification-content-body {
+  padding: 0.625rem 0;
+}
+
+#notification-progress-bar {
+  border: solid #89b4fa;
+  color: #45475a;
+  border-radius: 1.875rem;
+}
+
+#notification-progress-bar-box {
+  padding: 0 1.25rem;
+}
+
+#notification-action-button {
+  background: #313244;
+  color: #cdd6f4;
+  box-shadow: 0 0 0.1875rem 0 rgba(0, 0, 0, 0.5);
+  border: none;
+  font-weight: 400;
+  margin: 0.1875rem;
+  text-shadow: none;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.5rem;
+}
+#notification-action-button:hover {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border: 0.0625rem solid #45475a;
+}
+
+#language-preview {
+  transition: 0.1s;
+  background: transparent;
+}
+#language-preview label {
+  color: #cdd6f4;
+  font-weight: bolder;
+  letter-spacing: 0.1rem;
+  font-size: 1.1rem;
+}
+
+#language-preview,
+#language-preview-box {
+  min-width: 14rem;
+  min-height: 9rem;
+}
+
+#language-preview-box {
+  background: #1e1e2e;
+  min-width: 14rem;
+  min-height: 9rem;
+  border-radius: 20px;
+  border: 1px solid #45475a;
+  padding: 0.8rem;
+}
+
+.language-preview-full,
+.language-preview-full-is-active {
+  margin-top: 1rem;
+}
+
+.language-preview-wrapper-is-active,
+.language-preview-wrapper {
+  padding: 2.8rem 1.8rem;
+  border-radius: 1rem;
+  margin: 0.2rem;
+}
+
+.language-preview-wrapper-is-active {
+  background: #45475a;
+  box-shadow: 0px 0px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+#activate-linux {
+  background: none;
+  min-width: 37.5rem;
+  min-height: 37.5rem;
+  color: #cdd6f4;
+}
+
+#activate-linux-title {
+  text-shadow: 0.0625rem 0.125rem 0.125rem #1e1e2e;
+  font-size: 1.5625rem;
+  font-weight: normal;
+  transition: 0.2s;
+}
+
+#activate-linux-desc {
+  text-shadow: 0.0625rem 0.125rem 0.125rem #1e1e2e;
+  font-size: 1.1875rem;
+  font-weight: normal;
+  color: #cdd6f4;
+  transition: 0.2s;
+}
+
+#screen-corners {
+  background: transparent;
+}
+
+#corner {
+  background: #1e1e2e;
+  border-radius: 0px;
+}
+
+#corner-container {
+  min-width: 0px;
+  min-height: 0px;
+}
+
+/*# sourceMappingURL=main.css.map */

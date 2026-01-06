@@ -1,0 +1,23 @@
+@use "../theme" as *;
+
+#activate-linux {
+  background: none;
+  min-width: 37.5rem; // 600px / 16
+  min-height: 37.5rem; // 600px / 16
+  color: $text;
+}
+
+#activate-linux-title {
+  text-shadow: 0.0625rem 0.125rem 0.125rem $base; // 1px 2px 2px / 16
+  font-size: 1.5625rem; // 25px / 16
+  font-weight: normal;
+  transition: 0.2s;
+}
+
+#activate-linux-desc {
+  text-shadow: 0.0625rem 0.125rem 0.125rem $base; // 1px 2px 2px / 16
+  font-size: 1.1875rem; // 19px / 16
+  font-weight: normal;
+  color: $text;
+  transition: 0.2s;
+}

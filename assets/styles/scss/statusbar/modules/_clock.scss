@@ -1,0 +1,14 @@
+@use "../../theme" as *;
+
+#statusbar-clock {
+  background: $base;
+  padding: 0.11rem 0.7rem;
+  border-radius: 0.1875rem; // 3px -> 0.1875rem
+  color: $text;
+  border: none;
+  box-shadow: 0 0 0.4375rem 0 $shadow; // 7px -> 0.4375rem
+}
+
+.statusbar-clock-vertical {
+  padding: 0;
+}

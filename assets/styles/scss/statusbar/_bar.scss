@@ -1,0 +1,21 @@
+@use "../theme" as *;
+
+@use "modules";
+@use "modules/clock";
+@use "modules/workspaces";
+@use "modules/workspaces_preview";
+@use "modules/systemtray";
+@use "modules/windowtitle";
+@use "modules/language";
+@use "modules/custom";
+@use "modules/battery";
+@use "modules/systemmonitor";
+@use "modules/network";
+
+#statusbar {
+  border: none;
+  background: $base;
+  // background: none;
+  box-shadow: 0 0 0.625rem 0 $shadow; // 10px -> 0.625rem
+  color: $text;
+}

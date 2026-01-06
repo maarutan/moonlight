@@ -1,0 +1,21 @@
+@use "../theme" as *;
+
+#statusbar-modules-start,
+#statusbar-modules-center,
+#statusbar-modules-end {
+  background-color: $shadow;
+  box-shadow: 0 0 0.1875rem 0 #000; // 3px -> 0.1875rem
+  border: solid 0.1325rem $border; // 0.2px -> 0.0125rem
+  border-radius: 0.375rem; // 6px -> 0.375rem
+  margin: 0.5rem 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.statusbar-vertical {
+  #statusbar-modules-start,
+  #statusbar-modules-center,
+  #statusbar-modules-end {
+    margin: 1rem 0.5rem;
+    padding: 1rem 0.5rem;
+  }
+}

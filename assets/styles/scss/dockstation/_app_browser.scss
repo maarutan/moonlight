@@ -1,0 +1,61 @@
+@use "../theme" as *;
+
+#dockstation-appbrowser {
+  padding: 1.3rem;
+  border: 1px solid $border;
+  border-radius: 1.5rem;
+  margin: 1.3rem;
+  box-shadow: 0px 0px 0.6rem 0px $shadow;
+  background: $base;
+}
+#dockstation-appbrowser-flowbox {
+  padding: 0.6rem;
+}
+#dockstation-appbrowser-searchbox {
+  margin: 1rem;
+  & label {
+    min-width: 2rem;
+    min-height: 1.5rem;
+    border-radius: 0.3rem;
+    font-size: 0.8rem;
+    border: 1px solid $border;
+    font-weight: bold;
+  }
+}
+#dockstation-appbrowser-entry {
+  color: $text;
+  font-size: 1.5rem;
+  border-radius: 1.5rem;
+  background: $crust;
+  &:focus {
+    box-shadow: 0px 0px 0.6rem 0px $btn-active;
+    background: $mantle;
+    margin-bottom: 0.8rem;
+  }
+}
+
+#dockstation-appbrowser {
+  .dockstation-btn-appbrowser {
+    padding: 1rem;
+  }
+
+  .dockstation-appbrowser-line {
+    padding: 2px;
+    margin: 0 7rem;
+  }
+}
+#dockstation-appbrowser-scrollwindow {
+  background: $mantle;
+  border: 1px solid $border;
+  border-radius: 1.5rem;
+  padding: 0.6rem;
+  box-shadow: 0px 0px 0.6rem 0px $shadow;
+}
+
+#dockstation-appbrowser-scrollwindow scrollbar {
+  background: none;
+  border: none;
+  & slider {
+    background: $surf0;
+  }
+}

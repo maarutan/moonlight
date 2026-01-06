@@ -1,0 +1,51 @@
+@use "tools";
+@use "app_browser";
+@use "hamburger";
+
+@use "../theme" as *;
+
+#dockstation {
+  background: transparent;
+}
+
+#dockstation-box {
+  background: $base;
+  color: $text;
+  border-radius: 0.5rem; // 8px -> 0.5rem
+  font-size: 1.5rem;
+  transition: 0.6s;
+  padding: 0.3125rem 0.625rem; // 5px 10px -> rem
+  border: solid 0.1325rem $border; // 2.12px -> 0.1325rem (округлено)
+}
+
+#dockstation-btn {
+  background: transparent;
+  color: $text;
+  border: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  outline: transparent;
+  min-width: 3rem; // 48px -> 3rem
+  margin: 0.0625rem -0.25rem; // 1px -4px -> rem
+  padding: 0.1875rem 0.5rem; // 3px 8px -> rem
+
+  &:hover {
+    background: $surf0;
+  }
+
+  &:active {
+    background: transparent;
+    margin-bottom: -0.5rem; // -8px -> -0.5rem
+  }
+}
+
+.dockstation-vertical {
+  #dockstation-box {
+    padding: 0.625rem 0.3125rem; // 10px 5px -> rem
+  }
+
+  #dockstation-btn {
+    margin: -0.25rem 0.0625rem; // -4px 1px -> rem
+    padding: 0.2rem 0.1875rem; // 8px 3px -> rem
+  }
+}

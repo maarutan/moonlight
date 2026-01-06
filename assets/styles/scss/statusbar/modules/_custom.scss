@@ -1,0 +1,45 @@
+@use "../../theme" as *;
+
+.status-bar-custom-label {
+  transition: 0.25s color ease;
+  color: $text;
+  border-radius: 0.375rem; // 6px -> 0.375rem
+  background: none;
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.status-bar-custom-label-horizontal {
+  padding: 0.125rem 0.5rem; // 2px 8px -> 0.125rem 0.5rem
+}
+
+.status-bar-custom-label-vertical {
+  padding: 0.375rem 0.125rem; // 6px 2px -> 0.375rem 0.125rem
+}
+
+.status-bar-custom-button {
+  transition: 0.3s ease;
+  background: $base;
+  color: $btn-fg;
+  border: none;
+  border-radius: 0.375rem; // 6px -> 0.375rem
+  box-shadow: 0 0.125rem 0.375rem $shadow; // 2px 6px -> 0.125rem 0.375rem
+
+  margin: 0.25rem; // 4px -> 0.25rem
+  padding: 0.1875rem 0.625rem; // 3px 10px -> 0.1875rem 0.625rem
+
+  &:hover {
+    background: $surf0;
+    color: $text;
+  }
+}
+
+.status-bar-custom-button-horizontal {
+  padding: 0.375rem 0.75rem; // 6px 12px -> 0.375rem 0.75rem
+}
+
+.status-bar-custom-button-vertical {
+  padding: 0.625rem 0.375rem; // 10px 6px -> 0.625rem 0.375rem
+}

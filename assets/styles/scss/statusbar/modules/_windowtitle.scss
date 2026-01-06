@@ -1,0 +1,12 @@
+@use "../../theme" as *;
+
+#statusbar-window-title-box,
+#statusbar-window-title-box-vertical {
+  color: $text;
+  padding: 0.3125rem 0.625rem; // 5px 10px → 0.3125rem 0.625rem
+  border-radius: 0.3125rem; // 5px → 0.3125rem
+}
+
+#statusbar-window-title-box-vertical {
+  padding: 0.625rem 0.4375rem; // 10px 7px → 0.625rem 0.4375rem
+}

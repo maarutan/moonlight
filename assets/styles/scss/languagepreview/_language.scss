@@ -1,0 +1,44 @@
+@use "../theme" as *;
+
+#language-preview {
+  transition: 0.1s;
+  background: transparent;
+  label {
+    color: $text;
+    font-weight: bolder;
+    letter-spacing: 0.1rem;
+    font-size: 1.1rem;
+  }
+}
+
+#language-preview,
+#language-preview-box {
+  min-width: 14rem;
+  min-height: 9rem;
+}
+
+#language-preview-box {
+  background: $base;
+  min-width: 14rem;
+  min-height: 9rem;
+  border-radius: 20px;
+  border: 1px solid $border;
+  padding: 0.8rem;
+}
+
+.language-preview-full,
+.language-preview-full-is-active {
+  margin-top: 1rem;
+}
+
+.language-preview-wrapper-is-active,
+.language-preview-wrapper {
+  padding: 2.8rem 1.8rem;
+  border-radius: 1rem;
+  margin: 0.2rem;
+}
+
+.language-preview-wrapper-is-active {
+  background: $surf1;
+  box-shadow: 0px 0px 20px 0 $shadow;
+}
