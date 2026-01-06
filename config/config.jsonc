@@ -1,4 +1,10 @@
 {
+  "global": {
+    "font-size": 15,
+    "font": "CaskaydiaCove NF",
+    "theme": "catppuccin-mocha",
+    "stylesheet-file": ""
+  },
   "widgets": {
     "statusbar": {
       "enabled": true,
@@ -6,7 +12,7 @@
       "transparent": true,
       "position": "left",
       "layout": {
-        "start": ["workspaces", "windowtitle", "headphones"],
+        "start": ["workspaces", "windowtitle"],
         "center": ["clock"],
         "end": ["systemtray", "language", "systemmonitor", "network", "battery"]
       },
