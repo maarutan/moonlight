@@ -1,7 +1,5 @@
 from utils.jsonc import jsonc
-from fabric.hyprland.service import HyprlandEvent
-from fabric.hyprland.widgets import get_hyprland_connection
-from fabric.hyprland.widgets import HyprlandLanguage as HLanguage
+from fabric.hyprland.widgets import HyprlandLanguage
 from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.button import Button
@@ -51,11 +49,10 @@ class LanguageWidget(Box):
         self.children = [self.button]
 
         self.kb_devices = self.get_keyboard_devices()
-        self.hlanguage = HLanguage()
+        self.hlanguage = HyprlandLanguage()
 
         self._on_language_switch()
-        self.connection = get_hyprland_connection()
-        self.connection.connect("event::activelayout", self._on_language_switch)
+        self.hlanguage.layout_changed.connect(self._on_language_switch)
 
     def get_keyboard_devices(self):
         try:
@@ -70,16 +67,16 @@ class LanguageWidget(Box):
         for device in self.kb_devices:
             exec_shell_command_async(f"hyprctl switchxkblayout {device} next")
 
-    def _on_language_switch(self, _=None, event: HyprlandEvent | None = None):
-        lang = (
-            event.data[1]
-            if event and event.data and len(event.data) > 1
-            else self.hlanguage.get_label()
-        )
+    def _on_language_switch(self, *args):
+        if len(args) >= 2:
+            lang = args[1]
+        else:
+            lang = self.hlanguage.get_label()  # fallback
 
         lang = self.replace_map.get(lang, lang)
 
         self.set_tooltip_text(lang)
+
         short = lang[: self.number_letters]  # type: ignore
         self._lang_label.set_label(
             short.upper() if self.register in ["upper", "u"] else short.lower()
