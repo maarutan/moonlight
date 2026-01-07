@@ -14,7 +14,14 @@
       "layout": {
         "start": ["workspaces", "windowtitle", "headphones"],
         "center": ["clock"],
-        "end": ["systemtray", "language", "systemmonitor", "network", "battery"]
+        "end": [
+          "custom/pacman-update",
+          "systemtray",
+          "language",
+          "systemmonitor",
+          "network",
+          "battery"
+        ]
       },
       "modules": {
         "clock": {
@@ -53,12 +60,11 @@
           "if-vertical": {}
         },
         "systemtray": {
+          "icon-size": 32,
           "collapse": {
             "enabled": true,
-            "columns": 4,
             "button-size": 24
           },
-          "icon-size": 32,
           "if-vertical": {}
         },
         "windowtitle": {
@@ -96,13 +102,20 @@
           "positions": ["cpu", "ram", "disk"]
         },
         "network": {
-          "icon-size": 25
+          "icon-size": 25,
+          "notify-timeout": 5000
         },
         "headphones": {
           "icon-size": 48,
           "notify-timeout": 5000
         },
-        "custom": {}
+        "custom": {
+          "pacman-update": {
+            "format": "󰮯 {}",
+            "interval": 10,
+            "cmd": "checkupdates | wc -l"
+          }
+        }
       }
     },
     "dockstation": {
@@ -140,11 +153,7 @@
       "hide-delay": 500,
       "alias": {
         "us": "english",
-        "ru": "russian",
-        "pl": "polish",
-        "kg": "kyrgyzstan",
-        "kz": "kazakhstan",
-        "uz": "uzbekistan"
+        "ru": "russian"
       },
       "default-fullnames": {
         "us": "English",

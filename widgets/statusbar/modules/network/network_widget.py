@@ -179,8 +179,8 @@ class NetworkWidget(Box):
             f"notify-send {shlex.quote(title)} "
             f"{shlex.quote(info_text)} "
             f"-i {shlex.quote(icon_path.as_posix())} "
+            f"-t {shlex.quote(str(self.timeout))} "
             f"-a {shlex.quote(Const.APP_NAME)}"
-            f"-t {int(self.timeout)}"
         )
         exec_shell_command_async(cmd)
 
