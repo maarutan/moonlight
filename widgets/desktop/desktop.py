@@ -1,4 +1,5 @@
 from fabric.widgets.wayland import WaylandWindow
+from fabric.widgets.fixed import Fixed
 
 
 class Desktop(WaylandWindow):
@@ -8,4 +9,9 @@ class Desktop(WaylandWindow):
             anchor="left-top-right-bottom",
             layer="bottom",
             exclusivity="normal",
+            style="background: none;",
         )
+        self.root = Fixed(
+            name="desktop-fixed",
+        )
+        self.add(self.root)

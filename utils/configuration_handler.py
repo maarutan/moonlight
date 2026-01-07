@@ -1,12 +1,13 @@
 from __future__ import annotations
 from pathlib import Path
+import sys
 from typing import Any, Dict, Optional, Set
 import tempfile
 import shutil
 import os
 from loguru import logger
 
-from utils.jsonc import jsonc
+from utils.jsonc import JsoncParseError, jsonc
 from utils.constants import Const
 
 try:
@@ -32,6 +33,9 @@ class ConfigurationHandler:
      - get_option / set_option using dot notation
      - tries to use jsonc.update (preserve comments), fallback to full atomic write
      - optional JSON Schema validation (if Const.DEFAULT_CONFIG_FILE_SCHEMA and jsonschema is installed)
+
+    Strict behavior:
+     - any JSON/JSONC parse error in user/default/imported/schema files -> pretty print error and exit immediately
     """
 
     def __init__(self, config_file: Optional[Path] = None):
@@ -56,15 +60,21 @@ class ConfigurationHandler:
             try:
                 initial = {}
                 if self._default_file and self._default_file.exists():
-                    initial = jsonc.get_data(self._default_file) or {}
+                    # strict load of default file (parse errors are fatal)
+                    initial = self._load_jsonc_strict(self._default_file)
                 else:
                     initial = getattr(Const, "DEFAULT_CONFIG", {}) or {}
                 jsonc.write(self.config_file, initial)
                 logger.info(
                     f"Created config file at {self.config_file} (wrote default config)."
                 )
+            except SystemExit:
+                # _load_jsonc_strict already printed prettified error and exited.
+                raise
             except Exception as e:
                 logger.error(f"Failed to create default config file: {e}")
+                # This is unexpected; treat as fatal for safety
+                sys.exit(1)
 
         # If schema path provided, try to load
         self._schema_path: Optional[Path] = getattr(
@@ -97,6 +107,8 @@ class ConfigurationHandler:
         Recursively traverse `data` and when encountering a dict with key "import",
         load and merge that file's data into the dict. `visited` prevents cycles.
         parent_base - file from which relative imports are resolved.
+
+        NOTE: if an imported file has parse errors -> strict exit via _load_jsonc_strict
         """
         if visited is None:
             visited = set()
@@ -115,11 +127,8 @@ class ConfigurationHandler:
                     logger.warning(f"Skipping cyclic import {imp_path}")
                 else:
                     visited.add(imp_path)
-                    try:
-                        imported = jsonc.get_data(imp_path) or {}
-                    except Exception as e:
-                        logger.error(f"Failed to load imported config {imp_path}: {e}")
-                        imported = {}
+                    # strict load: will exit on parse errors
+                    imported = self._load_jsonc_strict(imp_path)
                     imported = self._resolve_imports_recursive(
                         imported, visited, imp_path
                     )
@@ -139,62 +148,61 @@ class ConfigurationHandler:
         return data
 
     def _load_user_config(self) -> Dict[str, Any]:
-        """Load raw user config, resolve imports (global and per-widget)."""
-        raw = jsonc.get_data(self.config_file) or {}
-        try:
-            resolved = self._resolve_imports_recursive(raw, set(), self.config_file)
-            if isinstance(resolved, dict):
-                return resolved
-            return {}
-        except Exception as e:
-            logger.error(f"Failed resolving imports in config: {e}")
-            return raw if isinstance(raw, dict) else {}
+        """Load raw user config, resolve imports (global and per-widget). Strict: parse errors -> exit."""
+        # strict load of user config
+        raw = self._load_jsonc_strict(self.config_file)
+
+        resolved = self._resolve_imports_recursive(raw, set(), self.config_file)
+
+        if not isinstance(resolved, dict):
+            logger.critical("User config root must be a JSON object")
+            sys.exit(1)
+
+        return resolved
 
     def _load_default_config(self) -> Dict[str, Any]:
-        """Load default config either from DEFAULT_CONFIG_FILE or in-memory Const.DEFAULT_CONFIG"""
+        """Load default config either from DEFAULT_CONFIG_FILE or in-memory Const.DEFAULT_CONFIG. Strict on parse errors."""
         if self._default_file and self._default_file.exists():
-            try:
-                default_raw = jsonc.get_data(self._default_file) or {}
-                default = self._resolve_imports_recursive(
-                    default_raw, set(), self._default_file
-                )
-                return default if isinstance(default, dict) else {}
-            except Exception as e:
-                logger.error(
-                    f"Failed reading default config file {self._default_file}: {e}"
-                )
-                return {}
+            # strict: parse errors in default config are fatal (developer error)
+            default_raw = self._load_jsonc_strict(self._default_file)
+            default = self._resolve_imports_recursive(
+                default_raw, set(), self._default_file
+            )
+            if not isinstance(default, dict):
+                logger.critical("Default config root must be a JSON object")
+                sys.exit(1)
+            return default
         return getattr(Const, "DEFAULT_CONFIG", {}) or {}
 
-    def _validate_schema(self, data: Dict[str, Any]) -> bool:
-        """Optional JSON Schema validation if schema file present and jsonschema installed"""
+    def _validate_schema(self, data: Dict[str, Any]) -> None:
+        """Optional JSON Schema validation if schema file present and jsonschema installed. Fail-fast on validation error."""
         if (
             not JSONSCHEMA_AVAILABLE
             or not self._schema_path
             or not self._schema_path.exists()
         ):
-            return True
+            return
         try:
-            schema = jsonc.get_data(self._schema_path) or {}
+            # strict load of schema file (parse errors -> exit)
+            schema = self._load_jsonc_strict(self._schema_path)
             jsonschema_validate(instance=data, schema=schema)  # type: ignore
-            return True
+            return
         except JsonSchemaValidationError as e:  # type: ignore
-            logger.error(f"Configuration schema validation error: {e.message}")
-            return False
+            logger.critical(f"Configuration schema validation failed: {e.message}")
+            sys.exit(1)
+        except SystemExit:
+            raise
         except Exception as e:
-            logger.error(f"Failed schema validation: {e}")
-            return False
+            logger.critical(f"Failed schema validation: {e}")
+            sys.exit(1)
 
     def _load_merged(self) -> Dict[str, Any]:
-        """Return merged config: DEFAULT_CONFIG <- user_config"""
+        """Return merged config: DEFAULT_CONFIG <- user_config. Schema validation is strict."""
         default = self._load_default_config() or {}
         user = self._load_user_config() or {}
         merged = self._merge_dicts(default, user)
-        # optional validation
-        if not self._validate_schema(merged):
-            logger.warning(
-                "Merged config failed schema validation; using user config merged with defaults anyway."
-            )
+        # strict validation: will exit on failure
+        self._validate_schema(merged)
         return merged
 
     # -------------------------
@@ -233,6 +241,7 @@ class ConfigurationHandler:
             logger.debug(f"jsonc.update failed or not applicable: {e}")
 
         # Fallback: modify user config dict and write atomically
+        # Use strict loader to ensure we don't overwrite a syntactically invalid file
         user = self._load_user_config()
         d = user
         keys = key.split(".")
@@ -262,3 +271,24 @@ class ConfigurationHandler:
             except Exception:
                 pass
             return False
+
+    def _load_jsonc_strict(self, path: Path) -> dict:
+        """
+        Strict loader: on any parse error produce pretty output and exit immediately,
+        mirroring behavior from your utils/config_handler.py.
+        """
+        try:
+            return jsonc.get_data(path)
+        except JsoncParseError as e:
+            # pretty error output with colors if available
+            try:
+                logger.opt(colors=True).error(e.pretty())
+            except Exception:
+                logger.critical("\n" + e.pretty())
+            # Fail fast with explanatory message
+            raise SystemExit(
+                f"Configuration parsing failed for {path}. Fix the JSONC syntax and restart the app."
+            )
+        except Exception as e:
+            logger.critical(f"Unexpected error while reading config {path}: {e}")
+            raise SystemExit(1)

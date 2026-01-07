@@ -4,11 +4,13 @@ from fabric.utils import GLib, Gdk
 from fabric.widgets.button import Button
 from fabric.widgets.eventbox import EventBox
 from shared.app_icon import AppIcon
+from utils.constants import Const
+from utils.jsonc import jsonc
 from .app_button import DockAppButton
 from ..indicator import WindowIndicator
 from utils.widget_utils import setup_cursor_hover
 from .pinned_unpinned_anims import PinAnimator
-from ..hamburger import HamburgerDrawing  # твой виджет
+from ..hamburger import HamburgerDrawing
 from utils.colors_parse import colors
 
 
@@ -42,7 +44,14 @@ class DockStationItems(Box):
             children=self.hamburger_event_box,
         )
 
-        self.pinned = self.dockstation.confh.config.get("pinned", [])
+        pinned_data = jsonc.get_data(Const.PINNED_BASE)
+
+        if not pinned_data:
+            jsonc.write(Const.PINNED_BASE, {"pinned": []})
+            pinned_data = {"pinned": []}
+
+        self.pinned = pinned_data["pinned"]
+
         self.pin_animator = PinAnimator(self)
         self.line_widget = None
         self.buttons: dict[str, Button] = {}

@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 from fabric.utils import GLib, Gtk
 from fabric.widgets.button import Button
 from loguru import logger
+from utils.constants import Const
+from utils.jsonc import jsonc
 from utils.widget_utils import set_cursor_now, setup_cursor_hover
 
 if TYPE_CHECKING:
@@ -232,7 +234,7 @@ class ButtonHandler:
 
         dock.items.pinned = new_order
 
-        if dock.dockstation.confh.config.get("widgets.dockstation.pinned") != new_order:
-            dock.dockstation.confh.set_option("widgets.dockstation.pinned", new_order)
+        if jsonc.get_data(Const.PINNED_BASE) != new_order:
+            jsonc.update(Const.PINNED_BASE, "pinned", new_order)
 
         dock.items._update(full_build=True)

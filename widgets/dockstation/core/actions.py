@@ -4,6 +4,8 @@ import threading
 import configparser
 from pathlib import Path
 from typing import TYPE_CHECKING
+from utils.constants import Const
+from utils.jsonc import jsonc
 
 from fabric.utils import exec_shell_command_async, GLib
 
@@ -28,7 +30,7 @@ class DockStationActions:
             return self._cache[norm_app]
 
         search_paths = [
-            Path.home() / ".local/share/applications",
+            Const.HOME / ".local/share/applications",
             Path("/usr/share/applications"),
         ]
 
@@ -73,16 +75,11 @@ class DockStationActions:
 
     def handle_app(self, app: str, instances: list[dict]):
         if not instances:
-            print()
-            print()
-            print()
-            print(app)
-            print()
-            print()
-            print()
             cmd = self._resolve_exec(app)
             threading.Thread(
-                target=exec_shell_command_async, args=(f"nohup {cmd}",), daemon=True
+                target=exec_shell_command_async,
+                args=(f"nohup setsid {cmd} >/dev/null 2>&1 &",),
+                daemon=True,
             ).start()
         else:
             focused = self._get_focused()
@@ -162,8 +159,6 @@ class DockStationActions:
                 self.close_window(w)
 
     def pin_unpin(self, app: str) -> None:
-        key = f"widgets.dockstation.pinned"
-
         old = list(self.dockstation.items.pinned)
 
         if app in old:
@@ -174,7 +169,7 @@ class DockStationActions:
         if new == old:
             return
 
-        self.dockstation.confh.set_option(key, new)
+        jsonc.update(Const.PINNED_BASE, "pinned", new)
         self.dockstation.items.pinned = new
         self.dockstation.items._update(full_build=True)
 

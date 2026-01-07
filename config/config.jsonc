@@ -12,7 +12,7 @@
       "transparent": true,
       "position": "left",
       "layout": {
-        "start": ["workspaces", "windowtitle"],
+        "start": ["workspaces", "windowtitle", "headphones"],
         "center": ["clock"],
         "end": ["systemtray", "language", "systemmonitor", "network", "battery"]
       },
@@ -98,6 +98,10 @@
         "network": {
           "icon-size": 25
         },
+        "headphones": {
+          "icon-size": 48,
+          "notify-timeout": 5000
+        },
         "custom": {}
       }
     },
@@ -112,21 +116,7 @@
         "max-width": 400
       },
       "layer": "top",
-      "icon-size": 48,
-      "pinned": [
-        "kitty",
-        "firefox",
-        "org.pulseaudio.pavucontrol",
-        "org.telegram.desktop",
-        "com.obsproject.Studio",
-        "bitwarden",
-        "chromium",
-        "discord",
-        "nwg-look",
-        "guvcview",
-        "Alacritty",
-        "obsidian"
-      ]
+      "icon-size": 48
     },
     "notification": {
       "enabled": true,

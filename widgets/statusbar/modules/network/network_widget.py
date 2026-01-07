@@ -37,6 +37,7 @@ class NetworkWidget(Box):
         self.indicator_handler = NetworkIndicatorHandler(self)
         self._last_internet_check = 0
         self._internet_cache = True
+        self.timeout = self.confh.config_modules["network"]["notify-timeout"]
 
         self.svg = Svg(
             name="statusbar-network-icon",
@@ -179,6 +180,7 @@ class NetworkWidget(Box):
             f"{shlex.quote(info_text)} "
             f"-i {shlex.quote(icon_path.as_posix())} "
             f"-a {shlex.quote(Const.APP_NAME)}"
+            f"-t {int(self.timeout)}"
         )
         exec_shell_command_async(cmd)
 

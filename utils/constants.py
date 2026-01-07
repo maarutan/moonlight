@@ -51,6 +51,9 @@ class Const:
     # Gtk default theme
     STYLESHEET_DEFAULT_GTK = STYLESHEET_DIR / "gtk" / "default.css"
 
+    # Dockstation
+    PINNED_BASE = APP_DATA_DIR / "dockstation_pinned.json"
+
     @classmethod
     def init(cls):
         _auto_create_paths(cls)

@@ -5,6 +5,7 @@ from fabric.widgets.box import Box
 from fabric.widgets.label import Label
 from fabric.widgets.wayland import WaylandWindow as Window
 from fabric.hyprland.service import Hyprland, HyprlandEvent
+from fabric.hyprland.widgets import HyprlandLanguage
 from .hypr_state import HyprState
 from .config import ConfigHandlerLanguagePreview
 
@@ -34,6 +35,7 @@ else:
                 k.lower(): v for k, v in (self.confh.config["replacer"] or {}).items()
             }
             self.hypr = Hyprland()
+            self.hypr_language = HyprlandLanguage()
             self.state = HyprState(self.hypr)
             self._hide_timeout_id: int | None = None
             self._call_id: int = 0
@@ -86,8 +88,8 @@ else:
                 h_align="center",
                 child=self.lang_box,
             )
-            if self.confh.config["enabled"]:
-                self.hypr.connect("event::activelayout", self.on_layout_change)
+            self.hypr_language.layout_changed.connect(self.on_layout_change)
+            # self.hypr_language.connect("notify::language", self.on_layout_change)
             self.hide()
 
         def _set_label_text(self, lbl: Label, text: str) -> None:
@@ -261,12 +263,14 @@ else:
             )
 
         def on_layout_change(self, *args):
-            event = next(
-                (a for a in reversed(args) if isinstance(a, HyprlandEvent)), None
-            )
-            active_value = event.data[-1] if (event and event.data) else None
+            if len(args) >= 2:
+                active_value = args[1]
+            else:
+                active_value = None
+
             now = time.monotonic()
             active_norm = self.state.norm(active_value if active_value else "")
+
             if (
                 active_norm
                 and self._last_active_value == active_norm
@@ -275,10 +279,12 @@ else:
                 self._call_id += 1
                 self._schedule_hide(self.confh.config["hide-delay"])
                 return False
+
             self._last_event_ts = now
             self._last_active_value = active_norm or self.state.norm(
                 self.state.get_active_keymap()
             )
+
             self._call_id += 1
             self.update_active(active_value or None)
             self.show_all()
