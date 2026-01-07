@@ -14,24 +14,14 @@ from utils.widget_utils import (
 )
 
 if TYPE_CHECKING:
-    from ...config import ConfigHandlerStatusBar
     from .button import SystemTrayButton
 
 from .items import SystemTrayItems
 
 
 class SystemTrayBox(Window):
-    def __init__(
-        self,
-        class_button: "SystemTrayButton",
-        statusbar_config: "ConfigHandlerStatusBar",
-        columns: int = 5,
-        icon_size: int = 24,
-    ):
-        self.confh = statusbar_config
-        self.conf_button = class_button
-        self.col = columns
-        self.icon_size = icon_size
+    def __init__(self, systemtray_btn: "SystemTrayButton"):
+        self.systemtray_btn = systemtray_btn
 
         self.is_open = False
         self._hide_timer = None
@@ -70,12 +60,7 @@ class SystemTrayBox(Window):
 
         self.main_box.children = [
             header,
-            SystemTrayItems(
-                statusbar_config=self.confh,
-                is_exist_popup=True,
-                columns=self.col,
-                icon_size=self.icon_size,
-            ),
+            SystemTrayItems(self.systemtray_btn.systemtray),
         ]
 
         return self.main_box
@@ -114,17 +99,17 @@ class SystemTrayBox(Window):
         match action:
             case "show":
                 show()
-                self.conf_button.arrow.open()
+                self.systemtray_btn.arrow.open()
             case "hide":
                 hide()
-                self.conf_button.arrow.close()
+                self.systemtray_btn.arrow.close()
             case "auto":
                 hide() if self.is_open else show()
 
     def margin_handler(self) -> str:
         return bar_margin_handler(
-            position=self.confh.config["position"],
-            layout_config=self.confh.config["layout"],
+            position=self.systemtray_btn.systemtray.confh.config["position"],
+            layout_config=self.systemtray_btn.systemtray.confh.config["layout"],
             default_value=30,
             widget_name="systemtray",
             px=40,
@@ -132,8 +117,8 @@ class SystemTrayBox(Window):
 
     def anchor_handler(self) -> str:
         return bar_anchor_handler(
-            position=self.confh.config["position"],
-            layout_config=self.confh.config["layout"],
+            position=self.systemtray_btn.systemtray.confh.config["position"],
+            layout_config=self.systemtray_btn.systemtray.confh.config["layout"],
             default_value="top-right",
             widget_name="systemtray",
         )
