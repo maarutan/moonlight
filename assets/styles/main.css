@@ -667,4 +667,32 @@ entry {
   min-height: 0px;
 }
 
+.desktop-edit-button-container-show {
+  margin: 0px;
+}
+
+.desktop-edit-button-container-hide {
+  margin-top: 300px;
+}
+
+#desktop-edit-button-expandable {
+  background: #313244;
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid #45475a;
+}
+#desktop-edit-button-expandable-header-button {
+  color: #cdd6f4;
+  background: #181825;
+  border-radius: 8px;
+  margin: 3px;
+  padding: 5px;
+}
+
+#desktop-edit-button {
+  margin-left: 20px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
 /*# sourceMappingURL=main.css.map */

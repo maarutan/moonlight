@@ -1,6 +1,7 @@
 from typing import Iterable, Literal
 from fabric.core.service import Property
 from fabric.widgets.box import Box
+from fabric.widgets.eventbox import EventBox
 from fabric.widgets.label import Label
 from fabric.widgets.revealer import Revealer
 from fabric.widgets.button import Button
@@ -69,8 +70,6 @@ class CollapsibleBox(Box):
 
         ctx = self.get_style_context()
         ctx.add_class("collapsible-box")
-        if name:
-            self.set_name(name)
 
         #
         # === HEADER ===
@@ -96,6 +95,7 @@ class CollapsibleBox(Box):
         self._header_box.pack_start(self._title_label, True, True, 0)
 
         self._header_button = Button(
+            name=f"{name}-header-button",
             h_align="fill",
             v_align="center",
             h_expand=True,
@@ -148,3 +148,30 @@ class CollapsibleBox(Box):
 
     def open(self):
         self.expanded = True
+
+
+class Expandable(Box):
+    def __init__(
+        self,
+        name: str,
+        title: str,
+        widget: Box,
+    ):
+        self.body = EventBox(child=EventBox(child=widget))
+        self.expandable_box = CollapsibleBox(
+            title=title,
+            name=name,
+            h_align="fill",
+            v_align="fill",
+            h_expand=True,
+            v_expand=True,
+            child=self.body,
+        )
+
+        super().__init__(
+            h_align="fill",
+            v_align="fill",
+            h_expand=True,
+            v_expand=True,
+            children=EventBox(child=self.expandable_box),
+        )

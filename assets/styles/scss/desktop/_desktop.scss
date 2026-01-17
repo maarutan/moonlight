@@ -1,0 +1,28 @@
+@use "../theme" as *;
+
+.desktop-edit-button-container-show {
+  margin: 0px;
+}
+.desktop-edit-button-container-hide {
+  margin-top: 300px;
+}
+
+#desktop-edit-button-expandable {
+  background: $surf0;
+  border-radius: 8px;
+  padding: 5px;
+  border: 1px solid $border;
+  &-header-button {
+    color: $text;
+    background: $mantle;
+    border-radius: 8px;
+    margin: 3px;
+    padding: 5px;
+    // border: 1px solid $border;
+  }
+}
+#desktop-edit-button {
+  margin-left: 20px;
+  background: $base;
+  color: $text;
+}

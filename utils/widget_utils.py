@@ -32,66 +32,38 @@ def set_cursor_now(widget, cursor_name: str | None):
         win.set_cursor(cursor)
 
 
+from typing import Literal
+import gi
+
+
 def setup_cursor_hover(
     widget,
     cursor_name: Literal["pointer", "crosshair", "grab"] = "pointer",
-    press_cursor_name: Literal["pointer", "crosshair", "grab"] = "grab",
 ) -> None:
     display = Gdk.Display.get_default()
-    default_cursor = None
-    press_cursor = None
+    cursor = Gdk.Cursor.new_from_name(display, cursor_name)  # type:ignore
 
-    try:
-        default_cursor = Gdk.Cursor.new_from_name(display, cursor_name)  # type: ignore
-    except Exception:
-        default_cursor = None
+    if cursor is None:
+        return
 
-    try:
-        press_cursor = Gdk.Cursor.new_from_name(display, press_cursor_name)  # type: ignore
-    except Exception:
-        press_cursor = None
-
-    def _set_cursor_on_window(win, cur):
+    def _set_cursor(w, cur):
+        win = w.get_window()
         if win is not None:
             win.set_cursor(cur)
 
-    def _set_cursor_on_toplevel(w, cur):
-        top = w.get_toplevel()
-        win = top.get_window() if top is not None else w.get_window()
-        _set_cursor_on_window(win, cur)
-
     def on_enter_notify_event(w, _event):
-        _set_cursor_on_toplevel(w, default_cursor)
+        _set_cursor(w, cursor)
         return False
 
     def on_leave_notify_event(w, _event):
-        _set_cursor_on_toplevel(w, None)
+        _set_cursor(w, None)
         return False
-
-    def on_button_press_event(w, event):
-        if event.type == Gdk.EventType.BUTTON_PRESS and event.button == 1:
-            _set_cursor_on_toplevel(w, press_cursor)
-        return False
-
-    def on_button_release_event(w, event):
-        if event.type == Gdk.EventType.BUTTON_RELEASE and event.button == 1:
-            _set_cursor_on_toplevel(w, default_cursor)
-        return False
-
-    widget.add_events(
-        Gdk.EventMask.ENTER_NOTIFY_MASK  # type: ignore
-        | Gdk.EventMask.LEAVE_NOTIFY_MASK  # type: ignore
-        | Gdk.EventMask.BUTTON_PRESS_MASK  # type: ignore
-        | Gdk.EventMask.BUTTON_RELEASE_MASK  # type: ignore
-    )
 
     bulk_connect(
         widget,
         {
             "enter-notify-event": on_enter_notify_event,
             "leave-notify-event": on_leave_notify_event,
-            "button-press-event": on_button_press_event,
-            "button-release-event": on_button_release_event,
         },
     )
 

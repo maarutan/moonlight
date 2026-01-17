@@ -14,5 +14,5 @@ WIDGETS = [
     NotificationWidget,
     LanguagePreview,
     ActivateLinux,
-    Desktop,
+    # Desktop,
 ]
