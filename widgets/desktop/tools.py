@@ -1,6 +1,6 @@
 from typing import Literal
 
-from widgets.desktop.widgets.label import DesktopWidget
+from .core.widgetparent.parent import DesktopWidget
 
 
 class DesktopTools:

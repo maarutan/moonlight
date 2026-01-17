@@ -54,6 +54,9 @@ class Const:
     # Dockstation
     PINNED_BASE = APP_DATA_DIR / "dockstation_pinned.json"
 
+    # Signal Base
+    SIGNAL_DATABASE = APP_DATA_DIR / "signals_database.json"
+
     @classmethod
     def init(cls):
         _auto_create_paths(cls)

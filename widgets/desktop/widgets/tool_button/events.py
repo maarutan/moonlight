@@ -1,8 +1,5 @@
 from typing import TYPE_CHECKING, Literal
-from fabric.utils import GLib, idle_add
-
-from utils.widget_utils import set_cursor_now, setup_cursor_hover
-
+from fabric.utils import GLib
 
 if TYPE_CHECKING:
     from .tool_button import ToolButton
@@ -11,66 +8,77 @@ if TYPE_CHECKING:
 class ButtonEvents:
     def __init__(self, toolbutton: "ToolButton"):
         self.toolbutton = toolbutton
-        self._cancel_hide = None
-        self._button_hide = False
 
-        setup_cursor_hover(
-            self.toolbutton.exp.get_children()[0]
-        )  # wrapper inside EventBox
+        self._cancel_hide_ids: list[int] = []
+        self._is_hidden = False
 
-        setup_cursor_hover(self.toolbutton.wrapper.end_container)
+        self.widget = self.toolbutton.buttons.exp.get_children()[0].get_children()[0]
+
+        self.toggle("hide")
+
         self.toolbutton.wrapper_hover.connect(
             "enter-notify-event",
-            lambda w, e: idle_add(lambda: self._on_button_enter(w, e)),
+            lambda w, e: GLib.idle_add(self._on_button_enter, w, e),
         )
         self.toolbutton.wrapper_hover.connect(
             "leave-notify-event",
-            lambda w, e: idle_add(lambda: self._on_button_leave(w, e)),
+            lambda w, e: GLib.idle_add(self._on_button_leave, w, e),
         )
 
     def _on_button_enter(self, w, e):
         self.toggle("show")
+        return False
 
     def _on_button_leave(self, w, e):
         self.toggle("hide")
-        self.toolbutton.exp.expandable_box.close()
+        try:
+            self.toolbutton.buttons.exp.expandable_box.close()
+        except Exception:
+            pass
+        return False
 
     def toggle(self, action: Literal["show", "hide", "auto"] = "auto"):
         show_class = "desktop-edit-button-container-show"
         hide_class = "desktop-edit-button-container-hide"
-
-        timeout = 400
-        widget = self.toolbutton.exp.get_children()[0].get_children()[
-            0
-        ]  # wrapper inside EventBox inside exp
+        timeout = 500
 
         if action == "auto":
-            action = "hide" if not self._is_hidden else "show"
+            action = "show" if self._is_hidden else "hide"
 
         self._cancel_hide_timeout()
 
-        widget.remove_style_class(show_class)
-        widget.remove_style_class(hide_class)
+        try:
+            self.widget.remove_style_class(show_class)
+            self.widget.remove_style_class(hide_class)
+        except AttributeError:
+            pass
 
         if action == "show":
             self._is_hidden = False
-            widget.add_style_class(show_class)
-            self._cancel_hide = idle_add(widget.show)
-            setup_cursor_hover(
-                self.toolbutton.exp.get_children()[0].get_children()[0]
-            )  # wrapper inside EventBox
+            try:
+                self.widget.add_style_class(show_class)
+            except AttributeError:
+                pass
+
+            sid = GLib.idle_add(self.widget.show)
+            self._cancel_hide_ids.append(sid)
 
         elif action == "hide":
             self._is_hidden = True
-            self._cancel_hide = GLib.timeout_add(
+
+            sid1 = GLib.timeout_add(
                 300,
-                lambda: widget.add_style_class(
-                    hide_class
-                ),  # time out for expade close animation
+                lambda: (getattr(self.widget, "add_style_class")(hide_class) or False),
             )
-            self._cancel_hide = GLib.timeout_add(timeout, widget.hide)
+            self._cancel_hide_ids.append(sid1)
+
+            sid2 = GLib.timeout_add(timeout, lambda: (self.widget.hide() or False))
+            self._cancel_hide_ids.append(sid2)
 
     def _cancel_hide_timeout(self):
-        if self._cancel_hide is not None:
-            GLib.source_remove(self._cancel_hide)
-            self._cancel_hide = None
+        for sid in self._cancel_hide_ids:
+            try:
+                GLib.source_remove(sid)
+            except Exception:
+                pass
+        self._cancel_hide_ids.clear()

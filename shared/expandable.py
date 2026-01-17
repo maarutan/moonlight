@@ -1,3 +1,4 @@
+from utils.widget_utils import set_cursor_now, setup_cursor_hover
 from typing import Iterable, Literal
 from fabric.core.service import Property
 from fabric.widgets.box import Box
@@ -102,6 +103,8 @@ class CollapsibleBox(Box):
             v_expand=False,
             child=self._header_box,
         )
+
+        setup_cursor_hover(self._header_button)
         self._header_button.connect("clicked", self._on_header_clicked)
 
         #

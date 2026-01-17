@@ -1,108 +1,88 @@
-import subprocess
-import json
-from fabric.core.service import Service, Property, Signal
+import gi
+import os
+import signal
+
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GLib, Gdk
 
 
-def run_cmd(cmd: list) -> str:
-    try:
-        return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL)
-    except Exception:
-        return ""
-
-
-def get_default_sink_name() -> str | None:
-    out = run_cmd(["pactl", "info"])
-    for line in out.splitlines():
-        if line.startswith("Default Sink:"):
-            return line.split(":", 1)[1].strip()
-    return None
-
-
-def parse_pactl_sinks() -> dict:
-    out = run_cmd(["pactl", "list", "sinks"])
-    sinks = {}
-    cur = None
-    props = {}
-    active_port = ""
-    in_props = False
-    for line in out.splitlines():
-        stripped = line.strip()
-        if stripped.startswith("Name:"):
-            if cur:
-                sinks[cur] = {"active_port": active_port or "", "props": props}
-            cur = stripped.split(":", 1)[1].strip()
-            props = {}
-            active_port = ""
-            in_props = False
-            continue
-        if cur is None:
-            continue
-        if stripped.startswith("Active Port:"):
-            active_port = stripped.split(":", 1)[1].strip()
-            continue
-        if stripped.startswith("Properties:"):
-            in_props = True
-            continue
-        if in_props and line.startswith("\t") and "=" in line:
-            left, right = line.strip().split("=", 1)
-            props[left.strip()] = right.strip().strip('"')
-    if cur:
-        sinks[cur] = {"active_port": active_port or "", "props": props}
-    return sinks
-
-
-def detect_sink_type_from_props(sink_name: str, sink_data: dict) -> str:
-    props = sink_data.get("props", {})
-    node = props.get("node.name", "").lower()
-    desc = props.get("device.description", "").lower()
-    bus = props.get("device.bus", "").lower()
-    if bus == "usb" or node.startswith("alsa_output.usb"):
-        return "usb"
-    if "bluez" in node or "bluetooth" in desc:
-        return "bluetooth"
-    if "hdmi" in node or "displayport" in desc:
-        return "hdmi"
-    port = (sink_data.get("active_port") or "").lower()
-    if "headphone" in port or "headset" in port:
-        return "aux"
-    return "unknown"
-
-
-def get_default_sink_type() -> str:
-    default = get_default_sink_name()
-    if not default:
-        return "unknown"
-    sinks = parse_pactl_sinks()
-    data = sinks.get(default)
-    if not data:
-        return "unknown"
-    return detect_sink_type_from_props(default, data)
-
-
-class AudioStatusProvider(Service):
-    # тип и дефолт свойства
-    status = Property(type=str, default_value="unknown")
-    # сигнал "changed"
-    changed = Signal(name="changed")
-
+class MyWindow(Gtk.Window):
     def __init__(self):
-        super().__init__()
-        # текущий тип аудио
-        self.status = get_default_sink_type()
+        super().__init__(title="GTK3 + сигнал")
+        self.set_default_size(300, 150)
 
-    def update_status(self, new_status: str):
+        # Box
+        self.box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        self.box.set_homogeneous(False)
+        self.box.set_margin_top(20)
+        self.box.set_margin_bottom(20)
+        self.box.set_margin_start(20)
+        self.box.set_margin_end(20)
+        self.add(self.box)
+
+        # Label внутри Box
+        self.label = Gtk.Label(label="Widget")
+        self.label.set_name("widget_label")  # имя для CSS
+        self.label.set_halign(Gtk.Align.CENTER)
+        self.label.set_valign(Gtk.Align.CENTER)
+        self.label.set_justify(Gtk.Justification.CENTER)
+
+        # Оборачиваем Label в EventBox, чтобы CSS применялся к виджету
+        self.event_box = Gtk.EventBox()
+        self.event_box.add(self.label)
+        self.event_box.set_name("widget_box")  # имя для CSS
+        self.box.pack_start(self.event_box, True, True, 0)
+
+        self.show_all()
+
+        # CSS стили
+        css = b"""
+        #widget_box {
+            background-color: #333333;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        #widget_label {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 16px;
+        }
         """
-        Эмитим сигнал только если тип аудио реально поменялся:
-        aux, bluetooth, usb, hdmi и т.д.
-        """
-        if new_status is None:
-            new_status = "unknown"
+        style_provider = Gtk.CssProvider()
+        style_provider.load_from_data(css)
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            style_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+        )
 
-        if new_status == self.status:
-            return  # тип не поменялся — сигнал не идёт
+        # Системные сигналы через GLib
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, self.hide_label)
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR2, self.show_label)
 
-        self.status = new_status
-        self.emit("changed")  # уведомляем слушателей
+    def hide_label(self):
+        print("SIGUSR1: Скрываем Label")
+        self.event_box.hide()
+        return True  # ловим сигнал снова
 
-    def get_status_json(self) -> str:
-        return json.dumps({"type": self.status})
+    def show_label(self):
+        print("SIGUSR2: Показываем Label")
+        self.event_box.show()
+        return True  # ловим сигнал снова
+
+
+def main():
+    win = MyWindow()
+    win.connect("destroy", Gtk.main_quit)
+
+    pid = os.getpid()
+    print(f"PID этого процесса: {pid}")
+    print("Используйте в другом терминале:")
+    print(f"pkill -USR1 {pid}  # чтобы скрыть Label")
+    print(f"pkill -USR2 {pid}  # чтобы показать Label")
+
+    Gtk.main()
+
+
+if __name__ == "__main__":
+    main()

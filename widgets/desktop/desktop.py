@@ -1,15 +1,12 @@
 from fabric.widgets.wayland import WaylandWindow
 from fabric.widgets.fixed import Fixed as FixedF
-from fabric.utils import Gdk
 from typing import TYPE_CHECKING, Literal
-from utils.widget_utils import setup_cursor_hover
-from .tools import DesktopTools
 from .widgets.tool_button.tool_button import ToolButton
 
 from .config import ConfigHandlerDesktop
 from .core.grid import GridConfig
 from .core.gridcell import GridOverlay
-from .widgets.label import DesktopWidget
+from .core.widgetparent.parent import DesktopWidget
 from utils.fixed_tools import FixedTools
 
 from .tools import DesktopTools
@@ -28,6 +25,12 @@ else:
 
     class Desktop(WaylandWindow):
         def __init__(self):
+            self.edit_mode = False
+
+            self.root = Fixed(name="desktop-fixed")
+            self.fixed_tools = FixedTools(self.root)
+            self.tools = DesktopTools(self)
+
             super().__init__(
                 name="desktop",
                 anchor="left-top-right-bottom",
@@ -35,15 +38,10 @@ else:
                 exclusivity="normal",
                 keyboard_mode="on-demand",
                 style="background: none;",
+                child=self.root,
             )
-            self.edit_mode = False
 
-            self.root = Fixed(name="desktop-fixed")
-            self.fixed_tools = FixedTools(self.root)
-            self.tools = DesktopTools(self)
-            self.add(self.root)
             self.confh = config_handler
-
             self.grid = GridConfig(cols=91, rows=51, cell_w=20, cell_h=20, gap=1)
 
             self.grid_overlay = GridOverlay(self.grid)
@@ -55,4 +53,4 @@ else:
             self.root.add(widget)
             self.root.move(widget, widget._grid_x, widget._grid_y)
 
-            ToolButton(self)
+            self.toolbutton = ToolButton(self)

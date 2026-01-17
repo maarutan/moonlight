@@ -12,3 +12,4 @@ python-loguru
 pkgconf
 mpv
 grim
+cinnamon-desktop
